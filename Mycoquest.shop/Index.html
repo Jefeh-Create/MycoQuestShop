@@ -1,0 +1,2700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191610">
+  <meta name="description" content="MycoQuest is a demo mushroom shop and grow log with a local, non-redeemable leveling prototype.">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23242018'/%3E%3Cpath d='M32 15v36M32 29c-9 0-15-5-15-13M32 36c9 0 15-5 15-13M32 43c-7 0-11 4-11 9M32 47c7 0 11 3 12 7' fill='none' stroke='%23a8b487' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='12' r='3' fill='%23c77c59'/%3E%3C/svg%3E">
+  <title>MycoQuest — Mushroom shop and grow log demo</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f1eade;
+      --muted: #b2a794;
+      --bg: #191610;
+      --panel: #242018;
+      --line: rgba(235, 220, 192, .14);
+      --lime: #a8b487;
+      --violet: #bd8d69;
+      --orange: #c77c59;
+      --serif: Georgia, "Times New Roman", serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding-top: 52px;
+      background:
+        radial-gradient(ellipse at 82% 4%, rgba(126, 87, 57, .19), transparent 30rem),
+        radial-gradient(ellipse at 8% 35%, rgba(116, 128, 83, .12), transparent 28rem),
+        var(--bg);
+      color: var(--ink);
+    }
+    .sticky-level-bar {
+      position: fixed;
+      z-index: 20;
+      inset: 0 0 auto;
+      display: grid;
+      height: 52px;
+      grid-template-columns: auto minmax(70px, 1fr) auto;
+      gap: 14px;
+      align-items: center;
+      padding-inline: clamp(14px, 4vw, 36px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(25, 22, 16, .96);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, .24);
+      backdrop-filter: blur(12px);
+    }
+    .sticky-level-label, .sticky-level-next { color: #d3ddb6; font-size: .72rem; font-weight: 750; white-space: nowrap; }
+    .sticky-level-track { height: 7px; overflow: hidden; border-radius: 99px; background: #393329; }
+    .sticky-level-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #71805b, #b6b989); transition: width .3s ease; }
+    .level-up-banner {
+      position: fixed;
+      z-index: 21;
+      top: 62px;
+      right: 16px;
+      display: flex;
+      max-width: calc(100vw - 32px);
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      border: 1px solid rgba(168, 180, 135, .55);
+      border-radius: 11px;
+      background: #28251c;
+      color: var(--ink);
+      box-shadow: 0 12px 35px rgba(0,0,0,.35);
+      pointer-events: none;
+    }
+    .level-up-banner[hidden] { display: none; }
+    .level-up-banner p { margin: 0; color: #d3ddb6; font-size: .85rem; font-weight: 750; }
+    .level-up-close { width: 30px; height: 30px; border: 1px solid var(--line); border-radius: 7px; background: transparent; color: var(--ink); cursor: pointer; pointer-events: auto; }
+    .xp-feed { margin-top: 24px; padding: 18px 20px; border: 1px solid var(--line); border-radius: 14px; background: rgba(36, 32, 24, .72); }
+    .xp-feed h2 { margin: 0 0 10px; font-family: var(--serif); font-size: 1.25rem; font-weight: 500; }
+    .xp-feed-list { display: grid; gap: 6px; }
+    .xp-feed-item { display: grid; grid-template-columns: auto minmax(100px, .7fr) minmax(0, 1fr); gap: 12px; align-items: center; padding: 8px 10px; border-radius: 8px; background: rgba(255,255,255,.025); font-size: .72rem; }
+    .xp-feed-item:hover { background: rgba(168, 180, 135, .09); }
+    .xp-feed-amount { color: #d3ddb6; font-weight: 750; white-space: nowrap; }
+    .xp-feed-label { color: var(--muted); }
+    .xp-feed-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .xp-feed-empty { margin: 0; color: var(--muted); font-size: .75rem; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .wrap { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+    .eyebrow {
+      color: var(--lime);
+      font-size: .73rem;
+      font-weight: 750;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 78px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; font-size: .9rem; font-weight: 750; }
+    .brand-mark {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      border: 1px solid rgba(168, 180, 135, .45);
+      border-radius: 12px;
+      color: var(--lime);
+      transform: rotate(-7deg);
+    }
+    .brand-mark svg { display: block; width: 20px; height: 20px; }
+    .nav { display: flex; align-items: center; gap: 30px; color: var(--muted); font-size: .86rem; }
+    .nav a:hover, .text-link:hover { color: var(--lime); }
+    .nav .nav-cta { color: var(--ink); }
+
+    .hero {
+      padding-block: 58px 76px;
+    }
+    .hero-intro { max-width: 720px; margin-bottom: 32px; }
+    .demo-notice {
+      display: flex;
+      width: fit-content;
+      align-items: center;
+      gap: 9px;
+      margin-top: 16px;
+      padding: 9px 12px;
+      border: 1px solid rgba(199, 124, 89, .38);
+      border-radius: 999px;
+      background: rgba(199, 124, 89, .09);
+      color: #e4c5ac;
+      font-size: .75rem;
+      line-height: 1.4;
+    }
+    .demo-notice::before { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: var(--orange); content: ""; }
+    .hero h1 {
+      max-width: 780px;
+      margin: 15px 0;
+      font-family: var(--serif);
+      font-size: clamp(3.3rem, 7vw, 6rem);
+      font-weight: 500;
+      letter-spacing: -.065em;
+      line-height: .96;
+    }
+    .hero h1 em { color: var(--lime); font-weight: 500; }
+    .hero-copy { max-width: 600px; color: var(--muted); font-size: 1.04rem; line-height: 1.75; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 24px; }
+    .forest-note {
+      display: flex;
+      max-width: 650px;
+      align-items: start;
+      gap: 14px;
+      margin-top: 30px;
+      padding: 16px 18px;
+      border: 1px solid rgba(168, 180, 135, .23);
+      border-radius: 12px;
+      background: rgba(168, 180, 135, .055);
+      animation: note-arrive .45s ease both;
+    }
+    .forest-note-icon { flex: 0 0 auto; color: #d3ddb6; }
+    .forest-note-icon svg { display: block; width: 18px; height: 18px; }
+    .forest-note .eyebrow { font-size: .64rem; }
+    .forest-note p { margin: 5px 0 0; color: #c9c0ad; font-size: .82rem; line-height: 1.55; }
+    @keyframes note-arrive { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 19px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--lime);
+      color: #14170e;
+      font-size: .87rem;
+      font-weight: 800;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .button:hover { box-shadow: 0 8px 26px rgba(168, 180, 135, .2); transform: translateY(-2px); }
+    .text-link { color: var(--muted); font-size: .87rem; transition: color .18s ease; }
+
+    .mushroom-banner {
+      display: grid;
+      grid-template-columns: 1.45fr .8fr;
+      grid-template-rows: 1fr 1fr;
+      height: clamp(340px, 42vw, 520px);
+      gap: 9px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+    }
+    .banner-photo {
+      position: relative;
+      margin: 0;
+      overflow: hidden;
+      background: #31291e;
+    }
+    .banner-feature { grid-row: 1 / 3; }
+    .banner-photo img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+    .banner-photo:hover img { transform: scale(1.045); }
+    .banner-photo::after { position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(16, 15, 11, .82)); content: ""; pointer-events: none; }
+    .banner-photo figcaption { position: absolute; z-index: 1; right: 24px; bottom: 23px; left: 24px; display: grid; gap: 6px; color: #fff8eb; }
+    .banner-feature figcaption strong { max-width: 540px; font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 3.2rem); font-weight: 500; letter-spacing: -.04em; line-height: 1.04; }
+    .banner-photo figcaption span { color: #e6d9c6; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
+    .banner-side figcaption { right: 14px; bottom: 14px; left: 14px; }
+    .banner-side figcaption strong { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; }
+    .section { padding-block: 68px; border-top: 1px solid var(--line); }
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 27px;
+    }
+    .section-heading h2 {
+      margin: 9px 0 0;
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 4vw, 3.4rem);
+      font-weight: 500;
+      letter-spacing: -.045em;
+    }
+    .section-heading p { max-width: 390px; margin: 0; color: var(--muted); line-height: 1.6; }
+    .catalog-tools { display: grid; grid-template-columns: minmax(0, 620px); margin-top: 28px; }
+    .catalog-tools label, .log-form label { display: grid; gap: 8px; color: var(--muted); font-size: .78rem; }
+    .catalog-tools input, .log-form input, .log-form select, .log-form textarea {
+      width: 100%;
+      min-height: 46px;
+      padding: 11px 13px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #211d16;
+      color: var(--ink);
+      font: inherit;
+    }
+    .catalog-tools input::placeholder, .log-form textarea::placeholder { color: #928876; }
+    .catalog-tools input:focus, .log-form input:focus, .log-form select:focus, .log-form textarea:focus { border-color: var(--lime); outline: 2px solid rgba(168, 180, 135, .2); }
+    .catalog-count { margin: 15px 0 12px; color: var(--muted); font-size: .78rem; }
+    .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .product-card { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.025); }
+    .product-card--featured { grid-column: 1 / -1; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); }
+    .product-image { position: relative; min-height: 210px; overflow: hidden; background: #30291e; }
+    .product-card--featured .product-image { min-height: 390px; }
+    .product-image img { display: block; width: 100%; height: 100%; min-height: 210px; object-fit: cover; transition: transform .5s ease; }
+    .product-card--featured .product-image img { min-height: 390px; }
+    .product-card:hover .product-image img { transform: scale(1.035); }
+    .product-placeholder { display: grid; min-height: inherit; height: 100%; align-content: center; justify-items: center; gap: 12px; padding: 24px; color: #b6b090; text-align: center; }
+    .product-placeholder svg { width: 58px; height: 58px; opacity: .8; }
+    .product-placeholder span { max-width: 230px; color: #c3b9a5; font-size: .75rem; line-height: 1.5; }
+    .product-info { display: flex; min-width: 0; flex-direction: column; align-items: stretch; padding: clamp(20px, 3vw, 30px); }
+    .product-card .product-category { color: #c8ae8a; font-size: .68rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .product-title-row { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .product-card h3 { margin: 12px 0 8px; font-family: var(--serif); font-size: clamp(1.5rem, 2.6vw, 2rem); font-weight: 500; }
+    .product-badge { flex: 0 0 auto; margin-top: 12px; padding: 6px 8px; border: 1px solid rgba(168, 180, 135, .32); border-radius: 99px; color: #d3ddb6; font-size: .62rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
+    .product-badge--testing { border-color: rgba(199, 124, 89, .42); color: #e4c5ac; }
+    .product-info > p { margin: 0; color: var(--muted); font-size: .81rem; line-height: 1.6; }
+    .product-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 15px; margin: 17px 0 0; }
+    .product-facts div { min-width: 0; }
+    .product-facts dt { margin-bottom: 4px; color: var(--muted); font-size: .63rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .product-facts dd { margin: 0; color: var(--ink); font-size: .74rem; line-height: 1.5; overflow-wrap: anywhere; }
+    .product-facts .product-fact--wide { grid-column: 1 / -1; }
+    .product-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px; margin: 18px 0 6px; font-family: var(--serif); font-size: 1.7rem; }
+    .product-price small { color: var(--muted); font-family: inherit; font-size: .75rem; }
+    .price-qualifier { display: block; margin-top: 5px; color: #d3ddb6 !important; font-family: inherit !important; font-size: .66rem !important; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+    .price-qualifier[hidden] { display: none; }
+    .purchase-xp { margin-bottom: 13px !important; color: #d3ddb6 !important; font-size: .72rem !important; }
+    .purchase-form { display: grid; width: 100%; grid-template-columns: minmax(0, 1fr) 82px; gap: 10px; align-items: end; margin-top: auto; }
+    .purchase-form label { display: grid; gap: 7px; color: var(--muted); font-size: .73rem; }
+    .purchase-form input, .purchase-form select { width: 100%; min-height: 44px; padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: #211d16; color: var(--ink); font: inherit; }
+    .purchase-button, .recipe-link, .submit-recipe {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 15px;
+      border: 1px solid rgba(168, 180, 135, .45);
+      border-radius: 8px;
+      background: rgba(168, 180, 135, .13);
+      color: #e0e6ca;
+      cursor: pointer;
+      font-size: .79rem;
+      font-weight: 750;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .purchase-button:hover, .recipe-link:hover, .submit-recipe:hover { background: rgba(168, 180, 135, .23); box-shadow: 0 8px 26px rgba(168, 180, 135, .14); transform: translateY(-2px); }
+    .purchase-button:disabled { border-color: var(--line); background: transparent; color: #928876; cursor: not-allowed; transform: none; box-shadow: none; }
+    .purchase-form .purchase-button { grid-column: 1 / -1; }
+    .recipe-link { margin-top: 13px; border-color: var(--line); background: transparent; color: var(--ink); }
+    .product-note { margin-top: 12px !important; color: #928876 !important; font-size: .68rem !important; }
+    .catalog-disclaimer { margin: 18px 0 0; color: #c2b5a0; font-size: .74rem; line-height: 1.65; }
+    .recipes-section { background: linear-gradient(180deg, rgba(91, 83, 54, .08), transparent 70%); }
+    .recipe-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .recipe-card { position: relative; min-height: 245px; padding: 22px; border: 1px solid var(--line); border-radius: 14px; background: linear-gradient(145deg, rgba(52, 45, 33, .85), rgba(32, 29, 22, .9)); transition: border-color .2s, transform .2s; }
+    .recipe-card:hover, .recipe-card.is-unlocked { border-color: rgba(168, 180, 135, .55); transform: translateY(-3px); }
+    .recipe-meta { display: flex; justify-content: space-between; gap: 8px; color: #c8ae8a; font-size: .66rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    .recipe-card h3 { margin: 18px 0 9px; font-family: var(--serif); font-size: 1.55rem; font-weight: 500; line-height: 1.13; }
+    .recipe-card > p { min-height: 58px; margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+    .recipe-toggle { display: flex; width: 100%; align-items: center; justify-content: space-between; margin-top: 18px; padding: 0; border: 0; background: none; color: #d3ddb6; cursor: pointer; font-size: .78rem; font-weight: 750; text-align: left; }
+    .recipe-toggle:hover { color: var(--ink); }
+    .recipe-details { display: none; margin-top: 17px; padding-top: 14px; border-top: 1px solid var(--line); }
+    .recipe-card.is-open .recipe-details { display: block; }
+    .recipe-details h4 { margin: 12px 0 5px; font-size: .75rem; }
+    .recipe-details p { margin: 0; color: var(--muted); font-size: .75rem; line-height: 1.6; }
+    .recipe-toast { position: fixed; z-index: 10; right: 22px; bottom: 22px; max-width: min(390px, calc(100vw - 32px)); padding: 14px 18px; border: 1px solid rgba(168, 180, 135, .45); border-radius: 11px; background: #28251c; color: var(--ink); box-shadow: 0 12px 35px rgba(0,0,0,.35); opacity: 0; pointer-events: none; transform: translateY(12px); transition: opacity .25s ease, transform .25s ease; }
+    .recipe-toast.is-visible { opacity: 1; transform: translateY(0); }
+    .recipe-share { display: grid; grid-template-columns: .8fr 1.2fr; gap: 24px; margin-top: 24px; padding: clamp(22px, 4vw, 34px); border: 1px solid rgba(168, 180, 135, .26); border-radius: 16px; background: rgba(168, 180, 135, .045); }
+    .recipe-share h3 { margin: 0 0 9px; font-family: var(--serif); font-size: 1.7rem; font-weight: 500; }
+    .recipe-share > div > p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.65; }
+    .recipe-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .recipe-form label { display: grid; gap: 7px; color: var(--muted); font-size: .74rem; }
+    .recipe-form select, .recipe-form input { width: 100%; min-height: 42px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 8px; background: #211d16; color: var(--ink); font: inherit; }
+    .recipe-form input[type="file"] { padding: 8px; font-size: .7rem; }
+    .recipe-form .full-width { grid-column: 1 / -1; }
+    .recipe-votes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .recipe-votes button { min-height: 34px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--ink); cursor: pointer; font: inherit; font-size: .7rem; }
+    .recipe-votes button[aria-pressed="true"] { border-color: var(--lime); color: var(--lime); }
+    .demo-xp-sources { margin: 14px 0; padding: 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: .72rem; line-height: 1.65; }
+    .post-status { margin: 10px 0 0; color: #d3ddb6; font-size: .73rem; font-weight: 700; }
+    .post-rejection { color: #e5a89a; font-weight: 400; }
+    .post-moderation { display: grid; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+    .post-moderation label { display: grid; gap: 5px; color: var(--muted); font-size: .7rem; }
+    .post-moderation input { width: 100%; min-height: 38px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: #211d16; color: var(--ink); font: inherit; }
+    .post-moderation-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .post-moderation button { min-height: 36px; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; background: transparent; color: var(--ink); cursor: pointer; font: inherit; font-size: .7rem; }
+    .post-moderation button:disabled { cursor: not-allowed; opacity: .55; }
+    .demo-moderation-note { color: var(--muted); font-size: .68rem; }
+    .media-preview { display: none; max-width: 100%; max-height: 220px; border-radius: 9px; background: #15130f; }
+    .media-preview.is-visible { display: block; }
+    .recipe-xp-preview { color: #d3ddb6 !important; font-size: .78rem !important; }
+    .submit-recipe { min-height: 43px; background: var(--lime); color: #1b1b14; }
+    .recipe-status { min-height: 18px; margin: 8px 0 0; color: #d3ddb6; font-size: .73rem; }
+    .submission-list { grid-column: 1 / -1; padding-top: 12px; border-top: 1px solid var(--line); }
+    .submission-list h4 { margin: 0 0 8px; font-size: .77rem; }
+    .submission-list p { margin: 5px 0; color: var(--muted); font-size: .72rem; }
+    .empty-state { grid-column: 1 / -1; padding: 25px; border: 1px dashed var(--line); border-radius: 12px; color: var(--muted); text-align: center; }
+    .section-grow { background: linear-gradient(180deg, rgba(91, 83, 54, .08), transparent 70%); }
+    .grow-layout { display: grid; grid-template-columns: .85fr 1.15fr; gap: 16px; }
+    .player-card, .log-panel, .reward-card { border: 1px solid var(--line); border-radius: 15px; background: rgba(36, 32, 24, .8); }
+    .player-card { padding: 25px; }
+    .player-top { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+    .player-top h3 { margin: 0 0 5px; font-family: var(--serif); font-size: 1.6rem; font-weight: 500; }
+    .player-top p { margin: 0; color: var(--muted); font-size: .8rem; }
+    .level-badge { padding: 7px 10px; border: 1px solid rgba(168, 180, 135, .35); border-radius: 99px; color: #d3ddb6; font-size: .75rem; white-space: nowrap; }
+    .xp-row { display: flex; justify-content: space-between; gap: 12px; margin: 25px 0 9px; color: var(--muted); font-size: .75rem; }
+    .xp-row strong { color: var(--ink); }
+    .progress-track { height: 9px; overflow: hidden; border-radius: 99px; background: #393329; }
+    .progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #71805b, #b6b989); transition: width .3s ease; }
+    .player-caption, .prototype-note { color: var(--muted); font-size: .75rem; line-height: 1.55; }
+    .player-caption { margin: 11px 0 0; }
+    .reward-list { display: grid; gap: 10px; margin-top: 23px; }
+    .reward-card { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; }
+    .reward-card h4 { margin: 0 0 4px; font-size: .83rem; }
+    .reward-card p { margin: 0; color: var(--muted); font-size: .7rem; }
+    .reward-action { flex: 0 0 auto; display: grid; justify-items: end; gap: 6px; }
+    .reward-cost { color: #d3ddb6; font-size: .73rem; white-space: nowrap; }
+    .reward-button, .log-submit {
+      min-height: 36px;
+      padding: 0 12px;
+      border: 1px solid rgba(168, 180, 135, .45);
+      border-radius: 8px;
+      background: rgba(168, 180, 135, .12);
+      color: #d3ddb6;
+      cursor: pointer;
+      font-size: .72rem;
+      font-weight: 750;
+    }
+    .reward-button:disabled { border-color: var(--line); background: transparent; color: #756d5e; cursor: not-allowed; }
+    .reset-demo-button {
+      min-height: 38px;
+      margin-top: 13px;
+      padding: 0 12px;
+      border: 1px solid rgba(235, 220, 192, .22);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: .73rem;
+      font-weight: 700;
+      transition: border-color .18s ease, color .18s ease, background .18s ease;
+    }
+    .reset-demo-button:hover { border-color: rgba(199, 124, 89, .55); background: rgba(199, 124, 89, .08); color: var(--ink); }
+    .reset-status { min-height: 18px; margin: 7px 0 0; color: #d3ddb6; font-size: .72rem; line-height: 1.5; }
+    .log-panel { padding: 25px; }
+    .log-panel h3 { margin: 0 0 7px; font-family: var(--serif); font-size: 1.55rem; font-weight: 500; }
+    .log-panel > p { margin: 0 0 20px; color: var(--muted); font-size: .8rem; line-height: 1.6; }
+    .log-form { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .log-form .full-width { grid-column: 1 / -1; }
+    .log-form textarea { min-height: 88px; resize: vertical; }
+    .log-submit { min-height: 43px; padding-inline: 17px; background: var(--lime); color: #1b1b14; }
+    .log-status { min-height: 20px; margin: 11px 0 0; color: #d3ddb6; font-size: .75rem; }
+    .recent-logs { margin-top: 21px; }
+    .recent-logs h4 { margin: 0 0 10px; font-size: .83rem; }
+    .log-list { display: grid; gap: 8px; }
+    .log-entry { padding: 11px 12px; border-left: 2px solid #87936a; background: rgba(255,255,255,.025); }
+    .log-entry, .recipe-submission { scroll-margin-top: 68px; }
+    .log-entry strong { display: block; margin-bottom: 3px; font-size: .77rem; }
+    .log-entry span { color: var(--muted); font-size: .7rem; line-height: 1.5; }
+    .quest-board { margin: 20px 0; }
+    .quest-board h4 { margin: 0 0 10px; font-size: .83rem; }
+    .quest-list { display: grid; gap: 10px; }
+    .quest-card { padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.025); }
+    .quest-card h5 { margin: 0 0 12px; font-size: .78rem; }
+    .quest-track { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 5px; margin: 0; padding: 0; list-style: none; }
+    .quest-node { min-width: 0; padding: 7px 3px; border: 1px solid rgba(235, 220, 192, .22); border-radius: 7px; color: var(--muted); font-size: .57rem; line-height: 1.25; text-align: center; overflow-wrap: anywhere; }
+    .quest-node.is-complete { border-color: rgba(168, 180, 135, .6); background: rgba(168, 180, 135, .2); color: #e4edcf; }
+    .quest-node.has-pending { border-style: dashed; }
+    .quest-node.is-active { border-color: var(--orange); color: var(--ink); animation: quest-pulse 1.8s ease-in-out infinite; }
+    .quest-node.is-complete.is-active { border-color: var(--orange); }
+    .quest-next-step { margin: 10px 0 0; color: #d3ddb6; font-size: .69rem; line-height: 1.5; }
+    .quest-node-status { display: block; margin-top: 3px; color: var(--muted); font-size: .53rem; }
+    @keyframes quest-pulse { 50% { box-shadow: 0 0 0 3px rgba(199, 124, 89, .2); } }
+    .grow-entry-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 9px; }
+    .grow-entry-actions button, .grow-edit-form button, .data-tools button {
+      min-height: 34px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      font: inherit;
+      font-size: .68rem;
+    }
+    .grow-edit-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .grow-edit-form label { display: grid; gap: 4px; color: var(--muted); font-size: .64rem; }
+    .grow-edit-form input, .grow-edit-form select, .grow-edit-form textarea { width: 100%; min-height: 36px; padding: 7px; border: 1px solid var(--line); border-radius: 6px; background: #211d16; color: var(--ink); font: inherit; font-size: .7rem; }
+    .grow-edit-form textarea { min-height: 58px; resize: vertical; }
+    .grow-edit-form .full-width { grid-column: 1 / -1; }
+    .grow-edit-form-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .data-tools { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .data-tools input[type="file"] { max-width: 100%; color: var(--muted); font-size: .65rem; }
+    .data-tools select { min-height: 34px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 7px; background: #211d16; color: var(--ink); font: inherit; font-size: .68rem; }
+    .data-tools-status { min-height: 18px; margin: 7px 0 0; color: #d3ddb6; font-size: .68rem; }
+    .redemption-list { margin-top: 12px; color: var(--muted); font-size: .72rem; line-height: 1.6; }
+    .prototype-note { margin: 16px 0 0; }
+    .image-credits { padding: 0 0 25px; color: var(--muted); font-size: .7rem; }
+    .image-credits summary { width: fit-content; cursor: pointer; }
+    .image-credits ul { display: grid; gap: 6px; padding-left: 18px; }
+    .image-credits a { text-decoration: underline; text-underline-offset: 3px; }
+    .next-up {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      padding: 34px 0 76px;
+      border-top: 1px solid var(--line);
+    }
+    .next-up h2 { margin: 8px 0 0; font-family: var(--serif); font-size: 2.2rem; font-weight: 500; letter-spacing: -.04em; }
+    .next-up p { max-width: 430px; margin: 0; color: var(--muted); line-height: 1.7; }
+    .local-section { background: linear-gradient(180deg, rgba(91, 83, 54, .08), transparent 80%); }
+    .local-card { display: grid; grid-template-columns: 1fr auto; gap: 16px 30px; align-items: center; padding: clamp(24px, 5vw, 48px); border: 1px solid var(--line); border-radius: 18px; background: rgba(36, 32, 24, .82); }
+    .local-card h2 { margin: 10px 0 12px; font-family: var(--serif); font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 500; letter-spacing: -.04em; }
+    .local-card > div:first-child p { max-width: 700px; margin: 0; color: var(--muted); font-size: .9rem; line-height: 1.75; }
+    .local-badge { display: grid; width: 128px; height: 128px; align-content: center; justify-items: center; border: 1px solid rgba(168, 180, 135, .38); border-radius: 50%; background: radial-gradient(circle, rgba(168, 180, 135, .14), transparent 70%); }
+    .local-badge span { color: #d3ddb6; }
+    .local-badge svg { display: block; width: 18px; height: 18px; }
+    .local-badge strong { font-family: var(--serif); font-size: 2rem; font-weight: 500; }
+    .local-badge small { color: var(--muted); font-size: .65rem; letter-spacing: .12em; text-transform: uppercase; }
+    .local-note { grid-column: 1 / -1; margin: 0; padding-top: 14px; border-top: 1px solid var(--line); color: #928876; font-size: .72rem; line-height: 1.55; }
+    .faq-section { background: rgba(18, 17, 13, .35); }
+    .faq-list { display: grid; gap: 9px; }
+    .faq-item { border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.02); }
+    .faq-item[open] { border-color: rgba(168, 180, 135, .38); background: rgba(168, 180, 135, .035); }
+    .faq-item summary { position: relative; padding: 18px 48px 18px 18px; cursor: pointer; font-size: .9rem; font-weight: 650; list-style: none; }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary::after { position: absolute; top: 50%; right: 19px; color: #d3ddb6; content: "+"; font-size: 1.2rem; transform: translateY(-50%); transition: transform .2s; }
+    .faq-item[open] summary::after { content: "−"; }
+    .faq-item p { max-width: 900px; margin: 0; padding: 0 48px 19px 18px; color: var(--muted); font-size: .82rem; line-height: 1.75; }
+    .faq-disclaimer { margin: 20px 0 0; color: #928876; font-size: .75rem; line-height: 1.6; }
+    footer { display: flex; justify-content: space-between; gap: 15px; padding-block: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: .75rem; }
+    :focus-visible { outline: 2px solid var(--lime); outline-offset: 4px; }
+    .skip-link {
+      position: fixed;
+      z-index: 20;
+      top: 12px;
+      left: 12px;
+      padding: 11px 15px;
+      border: 1px solid rgba(168, 180, 135, .55);
+      border-radius: 8px;
+      background: var(--panel);
+      color: var(--ink);
+      transform: translateY(-160%);
+      transition: transform .18s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+    [id] { scroll-margin-top: 1rem; }
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 34px, 560px); }
+      .topbar { min-height: 68px; flex-wrap: wrap; gap: 12px; padding-block: 12px; }
+      .nav { gap: 17px; font-size: .78rem; }
+      .hero { padding-block: 43px 58px; }
+      .mushroom-banner { height: 390px; }
+      .grow-layout, .recipe-share { grid-template-columns: 1fr; }
+      .local-card { grid-template-columns: 1fr auto; }
+      .product-grid { grid-template-columns: minmax(0, 620px); }
+      .product-card, .product-card--featured { grid-column: auto; grid-template-columns: 1fr; }
+      .product-image, .product-image img { min-height: 340px; max-height: 420px; }
+      .product-card--featured .product-image, .product-card--featured .product-image img { min-height: 300px; max-height: 380px; }
+      .recipe-grid { grid-template-columns: repeat(2, 1fr); }
+      .section-heading { align-items: start; flex-direction: column; }
+      .next-up { align-items: start; flex-direction: column; }
+    }
+    @media (max-width: 430px) {
+      .sticky-level-bar { gap: 8px; }
+      .sticky-level-label, .sticky-level-next { font-size: .62rem; }
+      .xp-feed-item { grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; }
+      .xp-feed-name { grid-column: 2; }
+      .quest-track { gap: 3px; }
+      .quest-node { padding-inline: 1px; font-size: .52rem; }
+      .nav { display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; font-size: .68rem; }
+      .nav a { text-align: center; }
+      .hero h1 { font-size: 3.35rem; }
+      .mushroom-banner { grid-template-columns: 1.2fr .8fr; height: 330px; gap: 5px; }
+      .banner-photo figcaption { right: 11px; bottom: 12px; left: 11px; }
+      .banner-feature figcaption strong { font-size: 1.65rem; }
+      .banner-side figcaption strong { font-size: 1rem; }
+      .catalog-tools, .recipe-form { grid-template-columns: 1fr; }
+      .product-grid, .recipe-grid { grid-template-columns: 1fr; }
+      .product-card, .product-card--featured { grid-template-columns: 1fr; }
+      .product-image, .product-image img { min-height: 280px; max-height: 330px; }
+      .recipe-form .full-width, .submission-list { grid-column: auto; }
+      .log-form .full-width { grid-column: auto; }
+      .local-card { grid-template-columns: 1fr; }
+      .local-badge { width: 92px; height: 92px; }
+      .local-badge strong { font-size: 1.55rem; }
+      .local-note { grid-column: auto; }
+      footer { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+      .quest-node.is-active { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sticky-level-bar" aria-label="Demo-only level progress">
+    <span class="sticky-level-label" id="sticky-level-label">Level 1</span>
+    <div class="sticky-level-track" role="progressbar" id="sticky-level-progress" aria-label="Demo-only progress to next level" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0">
+      <div class="sticky-level-fill" id="sticky-level-fill"></div>
+    </div>
+    <span class="sticky-level-next" id="sticky-level-next">Demo-only · 200 XP to next</span>
+  </div>
+  <div class="level-up-banner" id="level-up-banner" role="status" aria-live="polite" hidden>
+    <p id="level-up-message"></p>
+    <button class="level-up-close" id="level-up-close" type="button" aria-label="Dismiss level-up banner">×</button>
+  </div>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <header class="wrap topbar">
+    <a class="brand" href="#home" aria-label="MycoQuest, home">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M12 8c-4 0-6-2-6-5M12 12c4 0 6-2 6-5M12 16c-3 0-5 2-5 5M12 17c3 0 5 1 5 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span>
+      <span>MYCOQUEST</span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#shop">Shop</a>
+      <a href="#recipes">Recipes</a>
+      <a href="grow-log.html">Grow log</a>
+      <a href="#local">Local</a>
+      <a class="nav-cta" href="#faq">FAQ</a>
+    </nav>
+  </header>
+
+  <main id="main-content">
+    <section class="xp-feed wrap" aria-labelledby="xp-feed-title">
+      <h2 id="xp-feed-title">Recent XP · demo-only</h2>
+      <div class="xp-feed-list" id="xp-feed-list" aria-live="polite"></div>
+    </section>
+    <section class="wrap hero" id="home">
+      <div class="hero-intro">
+        <span class="eyebrow">Welcome to MycoQuest</span>
+        <p class="demo-notice">Demo only — no payments, live orders, or media uploads.</p>
+        <h1><span id="welcome-title">A forest of flavor.</span><br><em id="welcome-tagline">One quest at a time.</em></h1>
+        <p class="hero-copy">MycoQuest is a demo mushroom shop and grow log. Explore fresh mushrooms, try recipes, and track your growing journey.</p>
+        <div class="hero-actions">
+          <a class="button" href="#shop">Explore the demo shop <span aria-hidden="true">&nbsp;→</span></a>
+          <a class="text-link" href="#recipes">Explore recipe quests →</a>
+        </div>
+        <aside class="forest-note" aria-live="polite">
+          <span class="forest-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.8 14.3 9.7 21.2 12l-6.9 2.3-2.3 6.9-2.3-6.9L2.8 12l6.9-2.3L12 2.8Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"/></svg></span>
+          <div><span class="eyebrow" id="forest-note-label">Forest note</span><p id="forest-note-text">Lion’s Mane has long, cascading spines and a mild flavor that works well with savory seasonings.</p></div>
+        </aside>
+      </div>
+      <div class="mushroom-banner" role="group" aria-label="Mushroom species reference photos">
+        <figure class="banner-photo banner-feature">
+          <img src="assets/lions-mane.jpg" alt="Fresh Lion’s Mane mushroom with distinctive cascading white spines" fetchpriority="high">
+          <figcaption><span>Gourmet mushrooms</span><strong>Find something wonderful in the woods.</strong></figcaption>
+        </figure>
+        <figure class="banner-photo banner-side">
+          <img src="assets/oyster-mushrooms.jpg" alt="An oyster mushroom growing from a tree trunk" loading="lazy">
+          <figcaption><span>Gourmet variety</span><strong>Oyster</strong></figcaption>
+        </figure>
+        <figure class="banner-photo banner-side">
+          <img src="assets/reishi-mushroom.jpg" alt="Glossy red-brown, fan-shaped Reishi mushroom growing from a tree" loading="lazy">
+          <figcaption><span>Mushroom variety</span><strong>Reishi</strong></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="shop">
+      <div class="wrap">
+        <div class="section-heading">
+          <div><span class="eyebrow">MycoQuest shop</span><h2>Find your next favorite.</h2></div>
+          <p>Explore proposed fresh Lion’s Mane, oyster, shiitake, and mixed-box ideas. Every listing and price is a demo concept, not live inventory or an offer to buy.</p>
+        </div>
+        <div class="catalog-tools" id="catalog">
+          <label for="product-search">Search products
+            <input id="product-search" type="search" placeholder="Search varieties or boxes…" autocomplete="off">
+          </label>
+        </div>
+        <p class="catalog-count" id="catalog-count" aria-live="polite"></p>
+        <div class="product-grid" id="product-grid" aria-label="Matching products"></div>
+        <p class="catalog-disclaimer">Demo catalog only. Proposed prices are test examples informed by <a href="https://rvrvalley.com/products/river-valley-ranch-oyster-mushrooms-1-2-pound" target="_blank" rel="noreferrer">River Valley Ranch’s oyster listing</a>, <a href="https://rvrvalley.com/products/river-valley-ranch-shiitake-whole-mushrooms-1-2-pound" target="_blank" rel="noreferrer">its shiitake listing</a>, <a href="https://www.northwoodmushrooms.com/online-store/Fresh-Mushrooms-Shiitake-p429879612" target="_blank" rel="noreferrer">Northwood Mushrooms’ shiitake sizes</a> (checked November 8, 2026), and <a href="https://smallfarms.cornell.edu/2023/04/smart-marketing-for-specialty-mushrooms/" target="_blank" rel="noreferrer">Cornell’s 2023 survey</a> for historical context. These are not approved prices, a Milwaukee market average, or a profitability estimate; third-party prices, stock, and package sizes vary, and advertised prices exclude shipping and taxes. Availability, package details, photos, and storage directions must be confirmed before a real sale.</p>
+      </div>
+    </section>
+
+    <section class="section recipes-section" id="recipes">
+      <div class="wrap">
+        <div class="section-heading">
+          <div><span class="eyebrow">Recipe quest board</span><h2>Take Lion’s Mane around the world.</h2></div>
+          <p>Five MycoQuest kitchen inspirations from different food traditions. Each is an original Lion’s Mane adaptation, not a claim that the mushroom is traditional to that dish.</p>
+        </div>
+        <div class="recipe-grid" id="recipe-grid" aria-label="Lion’s Mane recipe quests"></div>
+        <div class="recipe-share">
+          <div>
+            <span class="eyebrow">Share your cook-up</span>
+            <h3>Complete a recipe quest.</h3>
+            <p>Recipe posts start pending review. Complexity and role determine the demo-only XP shown after simulated approval. Optional media is previewed on this device only; no server reviews or awards posts.</p>
+          </div>
+          <form class="recipe-form" id="recipe-form">
+            <label>Recipe tried
+              <select name="recipe" id="recipe-select" required></select>
+            </label>
+            <label>Complexity score (1–5)
+              <input name="complexity" id="recipe-complexity" type="number" min="1" max="5" step="any" value="3" required>
+            </label>
+            <label>Mushroom role
+              <select name="role" id="recipe-role" required>
+                <option value="supporting">Supporting · ×1.0</option>
+                <option value="co-star" selected>Co-star · ×1.5</option>
+                <option value="star">Star · ×2.0</option>
+              </select>
+            </label>
+            <label class="full-width">Optional photo or video (video up to 60 seconds / 25 MB)
+              <input name="media" id="recipe-media" type="file" accept="image/*,video/*">
+            </label>
+            <video class="media-preview full-width" id="media-preview" controls aria-label="Selected recipe video preview"></video>
+            <img class="media-preview full-width" id="image-preview" alt="Preview of your recipe photo">
+            <p class="recipe-xp-preview full-width" id="recipe-xp-preview" aria-live="polite"></p>
+            <div class="full-width">
+              <button class="submit-recipe" type="submit">Submit recipe post · pending review</button>
+              <p class="recipe-status" id="recipe-status" role="status"></p>
+            </div>
+            <div class="submission-list" id="submission-list" aria-live="polite"></div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-grow" id="grow-log">
+      <div class="wrap">
+        <div class="section-heading">
+          <div><span class="eyebrow">Cultivator side quest</span><h2>Keep your grow journey growing.</h2></div>
+          <p>Record grow activity and track simulated levels. XP is stored in this browser for the prototype only; it is not redeemable.</p>
+        </div>
+        <div class="grow-layout">
+          <div class="player-card" id="rewards">
+            <div class="player-top">
+              <div><h3>Leveling prototype</h3><p>Local demo XP · not a live rewards system</p></div>
+              <span class="level-badge" id="player-level">Level 1</span>
+            </div>
+            <div class="xp-row"><span><strong id="xp-into-level">0</strong> demo-only XP into level</span><span><strong id="xp-to-next-level">200</strong> demo-only XP to next level</span></div>
+            <div class="progress-track" role="progressbar" aria-label="Demo-only progress to next level" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0">
+              <div class="progress-fill" id="level-progress"></div>
+            </div>
+            <p class="player-caption" id="player-caption">0 demo-only total XP · Level 50 cap</p>
+            <p class="demo-xp-sources">Demo-only values pending approval: small interactions 5 demo-only XP each, capped at 25 demo-only XP/day; each newly approved grow stage 100 demo-only XP; approved grow photo 250 demo-only XP; first approved post across all post types 100 demo-only XP once; first approved grow 250 demo-only XP once. Recipe posts earn a demo-only base of complexity × 55 XP, multiplied by role (supporting ×1, co-star ×1.5, star ×2), plus 100 demo-only XP for video, only after simulated approval. Reactions award no XP. Verified tries from other members (25 demo-only XP, capped at 250 demo-only XP per recipe), one-time like milestones (10/50/100), and verified kit events (400–600) are not simulated here. Level 50 is the current cap, reached at 53,000 demo-only XP; no level-50 reward is configured. These local values are not validated, server-verified, or redeemable.</p>
+            <p class="prototype-note" id="storage-note" hidden></p>
+            <p class="prototype-note">Progress and simulated moderation are saved in this browser only. New posts are pending and award no XP until you use the demo approval controls. Only grow and recipe posts are modeled here; standalone photo, review, and comment posts are not implemented. This prototype cannot verify grow ownership, species legality, health claims, account age, self-votes, or moderation; server awards and rewards are not connected. Health-benefit claims and illegal species must receive no XP in the server implementation.</p>
+            <button class="reset-demo-button" id="reset-demo" type="button">Reset demo progress</button>
+            <p class="reset-status" id="reset-status" role="status"></p>
+            <div class="data-tools" aria-label="Demo-only grow-log data tools">
+              <button id="export-demo" type="button">Demo-only · Export progress</button>
+              <label for="import-demo-file" class="demo-moderation-note">Demo-only · Import site progress</label>
+              <input id="import-demo-file" type="file" accept="application/json,.json" aria-label="Demo-only import site progress JSON">
+              <label for="import-standalone-file" class="demo-moderation-note">Demo-only · Import standalone grow log (v2)</label>
+              <input id="import-standalone-file" type="file" accept="application/json,.json" aria-label="Demo-only import standalone grow log version 2 JSON">
+              <label for="import-mode" class="demo-moderation-note">Import mode</label>
+              <select id="import-mode" aria-label="Demo-only import mode">
+                <option value="replace" selected>Replace current data</option>
+                <option value="add">Add to current data</option>
+              </select>
+            </div>
+            <p class="data-tools-status" id="data-tools-status" role="status"></p>
+          </div>
+          <div class="log-panel">
+            <h3>Record a grow-log check-in</h3>
+            <p>Submit grow activity for review. Pending or rejected posts earn no XP; demo XP is added only when you simulate approval below. A grow photo is attached to its grow post.</p>
+            <form class="log-form" id="grow-form">
+              <label>Grow name / identifier
+                <input name="growId" maxlength="60" placeholder="e.g. Oyster batch 1" required>
+              </label>
+              <label>Species
+                <input name="species" maxlength="60" placeholder="e.g. Lion’s mane" required>
+              </label>
+              <label>Current stage
+                <select name="stage" required>
+                  <option value="">Choose a stage</option>
+                  <option>Planning</option>
+                  <option>Inoculation</option>
+                  <option>Colonization</option>
+                  <option>Fruiting</option>
+                  <option>Harvest</option>
+                  <option>Complete</option>
+                </select>
+              </label>
+              <label class="full-width">Observation
+                <textarea name="observation" maxlength="280" placeholder="Add a note for your own log…" required></textarea>
+              </label>
+              <label class="full-width">Optional grow photo (preview only, up to 25 MB)
+                <input name="grow-photo" id="grow-photo" type="file" accept="image/*">
+              </label>
+              <img class="media-preview full-width" id="grow-photo-preview" alt="Preview of your grow photo">
+              <div class="full-width">
+                <button class="log-submit" type="submit">Submit grow post · pending review</button>
+                <p class="log-status" id="log-status" role="status"></p>
+              </div>
+            </form>
+            <div class="quest-board" aria-labelledby="quest-board-title">
+              <h4 id="quest-board-title">Grow quests · no XP for track progress</h4>
+              <div class="quest-list" id="quest-list"></div>
+            </div>
+            <div class="recent-logs">
+              <h4>Recent check-ins</h4>
+              <div class="log-list" id="log-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section local-section" id="local">
+      <div class="wrap local-card">
+        <div>
+          <span class="eyebrow">Rooted in Milwaukee</span>
+          <h2>Local harvest, close to home.</h2>
+          <p>Planning local pickup and delivery for Milwaukee and nearby communities, including Wauwatosa, West Allis, Shorewood, Greenfield, Glendale, and Brookfield. Service areas, availability, and timing will be confirmed before any order is placed.</p>
+        </div>
+        <div class="local-badge" aria-label="Milwaukee, Wisconsin local service area">
+          <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M12 8c-4 0-6-2-6-5M12 12c4 0 6-2 6-5M12 16c-3 0-5 2-5 5M12 17c3 0 5 1 5 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><strong>MKE</strong><small>Wisconsin</small>
+        </div>
+        <p class="local-note">Local ordering is not live yet. This page does not collect addresses or promise delivery; pickup and delivery details will be added when ordering is ready.</p>
+      </div>
+    </section>
+
+    <section class="section faq-section" id="faq">
+      <div class="wrap">
+        <div class="section-heading">
+          <div><span class="eyebrow">Kitchen guide</span><h2>Mushroom questions, clearly answered.</h2></div>
+          <p>Helpful basics on cooking, storage, cultivation, and local availability.</p>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>What makes a mushroom a gourmet variety?</summary>
+            <p>Gourmet mushrooms are selected and prepared as food for their flavor and texture. MycoQuest’s demo listings focus on fresh culinary varieties and clearly identify each listing’s species, form, and example package.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Can I cook with a mushroom that’s also sold as a supplement?</summary>
+            <p>This demo focuses on fresh culinary mushrooms. Powders and tinctures are not current shop listings; any future product would need its own ingredients, preparation, and use details.</p>
+          </details>
+          <details class="faq-item">
+            <summary>How do I prepare fresh Lion’s Mane?</summary>
+            <p>Brush away debris, trim any tough base, and tear or slice the mushroom. Sauté in a hot pan to release moisture, then add oil or butter and season near the end. Cook thoroughly and use it in a rice bowl, pasta, tacos, soup, or one of the recipe quests above. Keep fresh mushrooms refrigerated and follow the storage guidance provided with the product.</p>
+          </details>
+          <details class="faq-item">
+            <summary>What does cultivating mushrooms involve?</summary>
+            <p>At a high level, cultivation means choosing a suitable species and prepared growing medium, keeping the grow environment clean, monitoring the conditions the species needs, and recording observations through each stage. Exact requirements vary widely by species and kit. Follow reputable, species-specific instructions and local rules; never eat a wild mushroom unless it has been positively identified by a qualified expert.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Do you offer pickup or delivery around Milwaukee?</summary>
+            <p>MycoQuest is planning pickup and local delivery in Milwaukee and nearby communities. Availability, delivery boundaries, fees, and pickup details are not live yet and will be confirmed before ordering opens. The current demo does not accept or fulfill orders.</p>
+          </details>
+        </div>
+        <p class="faq-disclaimer">This demo is for general food and cultivation information, not species-specific growing instructions. Follow the directions for your growing kit and local rules.</p>
+      </div>
+    </section>
+
+    <section class="wrap next-up" id="about">
+      <div><span class="eyebrow">Good to know</span><h2>Growing one step at a time.</h2></div>
+      <p>This browser demo saves prototype progress on this device only. Product listings are examples; accounts, server-verified XP, and reward fulfillment aren’t connected.</p>
+    </section>
+  </main>
+  <footer class="wrap">
+    <span>© <span id="year"></span> MycoQuest</span>
+    <span>Explore thoughtfully. Grow with curiosity.</span>
+  </footer>
+  <details class="wrap image-credits">
+    <summary>Photo credits &amp; licenses</summary>
+    <ul>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Hericium_erinaceus,Lion%27s_Mane,_Hedgehog_Mushroom.jpg" target="_blank" rel="noreferrer">Lion’s Mane</a> by Plam1234, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Gewone_oesterzwam_(Pleurotus_ostreatus)_31-12-2020_(d.j.b.)_03.jpg" target="_blank" rel="noreferrer">Oyster mushroom</a> by Dominicus Johannes Bergsma, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Ganoderma_lucidum_01.jpg" target="_blank" rel="noreferrer">Reishi</a> by Eric Steinert, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Lentinula_edodes.jpg" target="_blank" rel="noreferrer">Shiitake</a> by Eric Steinert, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Mixed_mushrooms_at_home.jpg" target="_blank" rel="noreferrer">Mixed mushrooms at home</a> by Peachyeung316, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>; resized for display and used as an illustration only, not a promise of box contents.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Kr%C3%A4uter-Seitling_Pleurotus_eryngii.jpg" target="_blank" rel="noreferrer">King oyster mushroom</a> by Holger Krisp, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>; resized for display.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Chestnut_mushrooms_cultivated_on_Cape_Cod.jpg" target="_blank" rel="noreferrer">Chestnut mushrooms cultivated on Cape Cod</a> by Alan Rockefeller, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>; resized for display.</li>
+    </ul>
+  </details>
+  <div class="recipe-toast" id="recipe-toast" role="status" aria-live="polite"></div>
+  <script>
+    const products = [
+      {
+        id: "fresh-lions-mane",
+        name: "Fresh Lion’s Mane",
+        category: "Featured · proposed demo listing",
+        species: "Hericium erinaceus",
+        form: "Fresh, whole culinary mushroom",
+        description: "The signature MycoQuest mushroom: tender, savory, and easy to use in sautés, rice bowls, tacos, and more.",
+        tags: "hericium erinaceus fresh lion's mane lion mane mushroom gourmet culinary whole featured",
+        image: "assets/lions-mane.jpg",
+        imageAlt: "Fresh Lion’s Mane mushroom showing its long, cascading white spines",
+        imageStatus: "Representative species photo",
+        availability: "Proposed demo listing · not live inventory",
+        storageStatus: "General guidance · verify before sale",
+        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use a breathable paper bag and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. Follow a future package’s date and directions.",
+        featured: true,
+        packages: [
+          { weightOz: 8, label: "½ lb (8 oz)", priceCents: 1100 },
+          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2200 }
+        ]
+      },
+      {
+        id: "fresh-oyster",
+        name: "Fresh Oyster Mushrooms",
+        category: "Proposed demo listing",
+        species: "Pleurotus ostreatus",
+        form: "Fresh cluster, culinary",
+        description: "A tender, versatile cluster for quick sautés, roasting, noodle bowls, and soups.",
+        tags: "pleurotus ostreatus oyster mushroom fresh gourmet culinary cluster",
+        image: "assets/oyster-mushrooms.jpg",
+        imageAlt: "An oyster mushroom growing from a tree trunk",
+        imageStatus: "Representative species photo",
+        availability: "Proposed demo listing · not live inventory",
+        storageStatus: "General guidance · verify before sale",
+        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use a breathable paper bag and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. Follow a future package’s date and directions.",
+        packages: [
+          { weightOz: 8, label: "½ lb (8 oz)", priceCents: 900 },
+          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 1800 }
+        ]
+      },
+      {
+        id: "fresh-shiitake",
+        name: "Fresh Shiitake",
+        category: "Proposed demo listing",
+        species: "Lentinula edodes",
+        form: "Fresh culinary mushroom",
+        description: "A savory, firm-capped mushroom for stir-fries, soups, rice dishes, and more.",
+        tags: "lentinula edodes shiitake fresh mushroom gourmet culinary",
+        image: "assets/shiitake.jpg",
+        imageAlt: "Fresh shiitake mushrooms with brown caps and pale stems",
+        imageStatus: "Representative species photo",
+        availability: "Proposed demo listing · not live inventory",
+        storageStatus: "General guidance · verify before sale",
+        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use a breathable paper bag and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. Follow a future package’s date and directions.",
+        packages: [
+          { weightOz: 8, label: "½ lb (8 oz)", priceCents: 1000 },
+          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2000 }
+        ]
+      },
+      {
+        id: "mixed-harvest-box",
+        name: "Mixed Harvest Box",
+        category: "Proposed demo concept",
+        species: "Culinary varieties · varies",
+        form: "Fresh mixed-mushroom box",
+        description: "A rotating mix concept for cooks who want to explore more than one texture and flavor.",
+        tags: "mixed harvest variety box assortment culinary mushrooms fresh",
+        image: "assets/mixed-mushrooms.jpg",
+        imageAlt: "Illustrative bowl of mixed mushrooms; actual box varieties would vary",
+        imageStatus: "Illustrative assortment photo · actual varieties vary",
+        availability: "Proposed demo box · no fixed mix promised",
+        storageStatus: "General guidance · verify before sale",
+        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use breathable packaging and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. A real box would include confirmed contents and item-specific directions.",
+        packages: [
+          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2000 }
+        ]
+      },
+      {
+        id: "king-oyster-test",
+        name: "King Oyster",
+        category: "Future concept",
+        species: "Pleurotus eryngii",
+        form: "Fresh culinary mushroom · planned",
+        description: "A future variety concept; no harvest or package is promised.",
+        tags: "pleurotus eryngii king oyster mushroom future concept",
+        image: "assets/king-oyster.jpg",
+        imageAlt: "King oyster mushrooms with thick pale stems and small brown caps",
+        imageStatus: "Representative species photo · future concept",
+        availability: "Future concept · not available",
+        storageStatus: "Not reviewed · not offered",
+        storage: "Storage instructions will be reviewed if this variety is offered.",
+        packages: []
+      },
+      {
+        id: "chestnut-test",
+        name: "Chestnut Mushroom",
+        category: "Future concept",
+        species: "Pholiota adiposa",
+        form: "Fresh culinary mushroom · planned",
+        description: "A future variety concept; no harvest or package is promised.",
+        tags: "pholiota adiposa chestnut mushroom future concept",
+        image: "assets/chestnut-mushrooms.jpg",
+        imageAlt: "Cluster of cultivated chestnut mushrooms with brown caps",
+        imageStatus: "Representative species photo · future concept",
+        availability: "Future concept · not available",
+        storageStatus: "Not reviewed · not offered",
+        storage: "Storage instructions will be reviewed if this variety is offered.",
+        packages: []
+      }
+    ];
+
+    const recipes = [
+      {
+        id: "crab-cakes",
+        name: "Lion’s Mane “Crab” Cakes",
+        region: "United States · Chesapeake-inspired",
+        summary: "A crisp-edged, tender mushroom take on a beloved coastal cake.",
+        ingredients: "Shredded Lion’s Mane, breadcrumbs, egg or binder, mustard, lemon, parsley, and a seafood-style spice blend.",
+        method: "Sear the shredded mushroom until its moisture cooks off. Fold with the binder, crumbs, herbs, and seasoning; shape into patties and pan-crisp until golden. Serve with lemon."
+      },
+      {
+        id: "miso-ramen",
+        name: "Miso Lion’s Mane Ramen",
+        region: "Japan-inspired",
+        summary: "A comforting bowl with browned mushroom, savory miso broth, and noodles.",
+        ingredients: "Lion’s Mane, ramen noodles, miso, vegetable stock, ginger, scallion, sesame oil, and your favorite toppings.",
+        method: "Tear and brown the mushroom in a hot pan. Warm stock with ginger and miso without boiling hard; add cooked noodles and finish with scallion, sesame, and the mushroom."
+      },
+      {
+        id: "mushroom-risotto",
+        name: "Creamy Lion’s Mane Risotto",
+        region: "Italy-inspired",
+        summary: "A slow-stirred rice dish with crisp mushroom pieces and herbs.",
+        ingredients: "Lion’s Mane, arborio rice, warm vegetable stock, shallot, olive oil, white wine, parmesan or a plant-based alternative, and thyme.",
+        method: "Brown the mushroom separately. Soften shallot, toast the rice, then add warm stock a ladle at a time while stirring. Finish with cheese, thyme, and the golden mushroom."
+      },
+      {
+        id: "mushroom-tacos",
+        name: "Adobo Lion’s Mane Tacos",
+        region: "Mexico-inspired",
+        summary: "Smoky, tangy mushroom tucked into warm tortillas with fresh toppings.",
+        ingredients: "Lion’s Mane, corn tortillas, tomato, garlic, onion, dried chile or smoked paprika, lime, and cilantro.",
+        method: "Shred and sear the mushroom until browned. Simmer briefly with a blended tomato, garlic, onion, chile, and splash of water. Spoon into warm tortillas and finish with lime and cilantro."
+      },
+      {
+        id: "mushroom-masala",
+        name: "Peppery Lion’s Mane Masala",
+        region: "India-inspired",
+        summary: "A warmly spiced mushroom curry to serve with rice or flatbread.",
+        ingredients: "Lion’s Mane, onion, tomato, ginger, garlic, garam masala, cumin, turmeric, black pepper, and yogurt or coconut milk.",
+        method: "Brown the mushroom and set aside. Cook onion with ginger and garlic, bloom the spices, then add tomato and simmer until thick. Return the mushroom to warm through and finish with pepper and herbs."
+      }
+    ];
+
+    const storageKey = "mycoquest-demo-progress-v1";
+    const LEVEL_CAP = 50;
+    const LEVEL_BLOCK_SIZE = 5;
+    const LEVEL_COST_PER_BLOCK = 200;
+    const LEVEL_BLOCK_COST_LAST_LEVEL = 45;
+    const LEVEL_LATE_COST_START = 46;
+    const LEVEL_LATE_COST_END = 49;
+    const LEVEL_LATE_LEVEL_COST = 2000;
+    const growQuestStages = ["Planning", "Inoculation", "Colonization", "Fruiting", "Harvest", "Complete"];
+
+    function levelUpCost(level) {
+      if (level >= 1 && level <= LEVEL_BLOCK_COST_LAST_LEVEL) {
+        return LEVEL_COST_PER_BLOCK * Math.ceil(level / LEVEL_BLOCK_SIZE);
+      }
+      if (level >= LEVEL_LATE_COST_START && level <= LEVEL_LATE_COST_END) return LEVEL_LATE_LEVEL_COST;
+      return 0;
+    }
+
+    function xpToReachLevel(level) {
+      const targetLevel = Math.max(1, Math.min(LEVEL_CAP, Math.floor(level)));
+      let totalXp = 0;
+      for (let currentLevel = 1; currentLevel < targetLevel; currentLevel += 1) {
+        totalXp += levelUpCost(currentLevel);
+      }
+      return totalXp;
+    }
+
+    function levelFromXp(totalXp) {
+      let level = 1;
+      while (level < LEVEL_CAP && totalXp >= xpToReachLevel(level + 1)) level += 1;
+      return level;
+    }
+
+    const levelTable = Array.from({ length: LEVEL_CAP }, (_, index) => {
+      const level = index + 1;
+      return {
+        level,
+        xpAtLevel: xpToReachLevel(level),
+        xpToNext: level === LEVEL_CAP ? 0 : levelUpCost(level)
+      };
+    });
+    const maxDemoLevel = LEVEL_CAP;
+    const smallInteractionXp = 5;
+    const dailyInteractionXpCap = 25;
+    const growStageXp = 100;
+    const growPhotoXp = 250;
+    const firstGrowXp = 250;
+    const firstPostXp = 100;
+    // The first approved grow also receives the first-post milestone when it has not been awarded yet.
+    const recipeRoleMultipliers = { supporting: 1, "co-star": 1.5, star: 2 };
+    const searchInput = document.querySelector("#product-search");
+    const productGrid = document.querySelector("#product-grid");
+    const catalogCount = document.querySelector("#catalog-count");
+    const logStatus = document.querySelector("#log-status");
+    const storageNote = document.querySelector("#storage-note");
+    const mediaInput = document.querySelector("#recipe-media");
+    const growPhotoInput = document.querySelector("#grow-photo");
+    const recipeStatus = document.querySelector("#recipe-status");
+    const resetStatus = document.querySelector("#reset-status");
+    const recipeToast = document.querySelector("#recipe-toast");
+    const levelUpBanner = document.querySelector("#level-up-banner");
+    const levelUpMessage = document.querySelector("#level-up-message");
+    const xpFeedList = document.querySelector("#xp-feed-list");
+    const questList = document.querySelector("#quest-list");
+    const dataToolsStatus = document.querySelector("#data-tools-status");
+    let activeMediaUrl = "";
+    let activeGrowPhotoUrl = "";
+    let growPhotoReady = false;
+    let selectedMediaDuration = 0;
+    let mediaPreviewReady = false;
+    let toastTimer;
+    let levelUpTimer;
+    let storageAvailable = true;
+    let state = loadState();
+
+    function createEmptyState() {
+      return {
+        balance: 0,
+        totalXp: 0,
+        lastRewardDate: "",
+        entries: [],
+        redemptions: [],
+        recipeSubmissions: [],
+        completedGrowStages: [],
+        growPhotoPosts: [],
+        milestones: { firstPostAwarded: false, firstGrowAwarded: false },
+        dailyInteractions: { date: "", recipeIds: [] }
+      };
+    }
+
+    function normalizeGrowStage(stage) {
+      const value = String(stage).trim().toLocaleLowerCase();
+      const legacyStages = {
+        "in progress": "Inoculation",
+        inoculated: "Inoculation",
+        inoculating: "Inoculation",
+        colonizing: "Colonization",
+        colonising: "Colonization",
+        observing: "Colonization",
+        pinning: "Fruiting",
+        "fruiting bodies": "Fruiting",
+        "harvest notes": "Harvest",
+        harvested: "Harvest",
+        completed: "Complete"
+      };
+      return growQuestStages.find((item) => item.toLocaleLowerCase() === value) || legacyStages[value] || String(stage).trim();
+    }
+
+    function normalizeGrowName(name) {
+      return String(name).trim().toLocaleLowerCase().replace(/\s+/g, " ");
+    }
+
+    function normalizeStageKey(stageKey) {
+      const delimiter = stageKey.lastIndexOf("::");
+      if (delimiter < 0) return stageKey.toLocaleLowerCase();
+      const growName = normalizeGrowName(stageKey.slice(0, delimiter));
+      return `${growName}::${normalizeGrowStage(stageKey.slice(delimiter + 2)).toLocaleLowerCase()}`;
+    }
+
+    function growStageKey(post) {
+      const growName = normalizeGrowName(post.growId || post.species);
+      return `${growName}::${normalizeGrowStage(post.stage).toLocaleLowerCase()}`;
+    }
+
+    function validateAwardBreakdown(awards) {
+      return awards === undefined || (
+        awards && typeof awards === "object" && !Array.isArray(awards) &&
+        Object.values(awards).every((amount) => Number.isFinite(amount) && amount >= 0)
+      );
+    }
+
+    function validatePostXpAwards(post) {
+      if (!validateAwardBreakdown(post.xpAwards)) return false;
+      if (post.xpAwards === undefined) return true;
+      const breakdownTotal = Object.values(post.xpAwards).reduce((total, amount) => total + amount, 0);
+      return Number.isFinite(post.xpAwarded) && Math.abs(breakdownTotal - post.xpAwarded) < 0.000001;
+    }
+
+    function recomputeApprovedProgress(target) {
+      target.completedGrowStages = [];
+      target.growPhotoPosts = [];
+      target.entries.filter((entry) => entry.status === "approved").forEach((entry) => {
+        const stageKey = growStageKey(entry);
+        if (!target.completedGrowStages.includes(stageKey)) target.completedGrowStages.push(stageKey);
+        if (entry.mediaName && !target.growPhotoPosts.includes(stageKey)) target.growPhotoPosts.push(stageKey);
+      });
+      target.milestones.firstGrowAwarded = target.entries.some((entry) => entry.status === "approved");
+      target.milestones.firstPostAwarded = target.milestones.firstGrowAwarded ||
+        target.recipeSubmissions.some((submission) => submission.status === "approved");
+      return target;
+    }
+
+    function normalizeDemoState(parsed) {
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+        throw new Error("The selected file does not contain a progress object.");
+      }
+      const validEntries = Array.isArray(parsed.entries) && parsed.entries.every((entry) =>
+        entry && ["species", "stage", "observation", "date"].every((key) => typeof entry[key] === "string") &&
+        (entry.growId === undefined || typeof entry.growId === "string") &&
+        (entry.xp === undefined || (Number.isFinite(entry.xp) && entry.xp >= 0)) &&
+        (entry.status === undefined || ["pending", "approved", "rejected", "legacy"].includes(entry.status)) &&
+        (entry.rejectionReason === undefined || typeof entry.rejectionReason === "string") &&
+        (entry.mediaName === undefined || typeof entry.mediaName === "string") &&
+        (entry.postId === undefined || typeof entry.postId === "string") &&
+        (entry.approvedAt === undefined || (typeof entry.approvedAt === "string" && Number.isFinite(Date.parse(entry.approvedAt)))) &&
+        (entry.xpAwarded === undefined || (Number.isFinite(entry.xpAwarded) && entry.xpAwarded >= 0)) &&
+        validatePostXpAwards(entry)
+      );
+      const validRedemptions = Array.isArray(parsed.redemptions) && parsed.redemptions.every((item) =>
+        item && typeof item.name === "string" && Number.isFinite(item.cost)
+      );
+      const validSubmissions = parsed.recipeSubmissions === undefined ||
+        (Array.isArray(parsed.recipeSubmissions) && parsed.recipeSubmissions.every((item) =>
+          item && typeof item.recipeId === "string" && typeof item.name === "string" &&
+          typeof item.date === "string" &&
+          (item.xp === undefined || (Number.isFinite(item.xp) && item.xp >= 0)) &&
+          (item.proposedXp === undefined || (Number.isFinite(item.proposedXp) && item.proposedXp >= 0)) &&
+          (item.status === undefined || ["pending", "approved", "rejected", "legacy"].includes(item.status)) &&
+          (item.rejectionReason === undefined || typeof item.rejectionReason === "string") &&
+          (item.postId === undefined || typeof item.postId === "string") &&
+          (item.approvedAt === undefined || (typeof item.approvedAt === "string" && Number.isFinite(Date.parse(item.approvedAt)))) &&
+          (item.xpAwarded === undefined || (Number.isFinite(item.xpAwarded) && item.xpAwarded >= 0)) &&
+          validatePostXpAwards(item)
+        ));
+      const validGrowStages = parsed.completedGrowStages === undefined ||
+        (Array.isArray(parsed.completedGrowStages) && parsed.completedGrowStages.every((item) => typeof item === "string"));
+      const validGrowPhotos = parsed.growPhotoPosts === undefined ||
+        (Array.isArray(parsed.growPhotoPosts) && parsed.growPhotoPosts.every((item) => typeof item === "string"));
+      const validDailyInteractions = parsed.dailyInteractions === undefined ||
+        (parsed.dailyInteractions && typeof parsed.dailyInteractions.date === "string" &&
+          Array.isArray(parsed.dailyInteractions.recipeIds) &&
+          parsed.dailyInteractions.recipeIds.every((item) => typeof item === "string"));
+      const validMilestones = parsed.milestones === undefined ||
+        (parsed.milestones && typeof parsed.milestones.firstPostAwarded === "boolean" &&
+          typeof parsed.milestones.firstGrowAwarded === "boolean");
+      if (!Number.isFinite(parsed.balance) || parsed.balance < 0 ||
+          !Number.isFinite(parsed.totalXp) || parsed.totalXp < 0 ||
+          typeof parsed.lastRewardDate !== "string" || !validEntries || !validRedemptions ||
+          !validSubmissions || !validGrowStages || !validGrowPhotos || !validDailyInteractions || !validMilestones) {
+        throw new Error("The selected progress file has an unexpected format.");
+      }
+      const restoredState = { ...createEmptyState(), ...parsed };
+      restoredState.milestones = { ...createEmptyState().milestones, ...parsed.milestones };
+      restoredState.entries = restoredState.entries.map((entry, index) => ({
+        ...entry,
+        stage: normalizeGrowStage(entry.stage),
+        postId: entry.postId || `legacy-grow-${index}`,
+        status: entry.status || "legacy",
+        rejectionReason: entry.rejectionReason || "",
+        xpAwarded: entry.xpAwarded ?? 0,
+        legacyXp: entry.status ? entry.legacyXp || 0 : entry.xp || 0
+      }));
+      restoredState.recipeSubmissions = restoredState.recipeSubmissions.map((submission, index) => ({
+        ...submission,
+        postId: submission.postId || `legacy-recipe-${index}`,
+        status: submission.status || "legacy",
+        rejectionReason: submission.rejectionReason || "",
+        proposedXp: submission.proposedXp ?? 0,
+        xpAwarded: submission.xpAwarded ?? 0,
+        legacyXp: submission.status ? submission.legacyXp || 0 : submission.xp || 0
+      }));
+      return recomputeApprovedProgress(restoredState);
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (!saved) return createEmptyState();
+        return normalizeDemoState(JSON.parse(saved));
+      } catch (error) {
+        storageAvailable = false;
+        storageNote.hidden = false;
+        storageNote.textContent = "Saved progress could not be read in this browser; this demo will keep changes only until you leave the page.";
+        return createEmptyState();
+      }
+    }
+
+    function saveState() {
+      if (!storageAvailable) return;
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(state));
+      } catch (error) {
+        storageAvailable = false;
+        storageNote.hidden = false;
+        storageNote.textContent = "This browser blocked local saving; progress will last only until you leave the page.";
+      }
+    }
+
+    function renderCurrentProgress() {
+      renderProgress();
+      renderRecipeSubmissions();
+    }
+
+    function exportDemoProgress() {
+      try {
+        const exportData = {
+          format: "mycoquest-demo-progress",
+          version: 1,
+          state
+        };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `MycoQuest-demo-progress-${getTodayKey()}.json`;
+        link.click();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        dataToolsStatus.textContent = "Demo-only progress exported. Keep the downloaded file private to this device.";
+      } catch (error) {
+        dataToolsStatus.textContent = "Demo progress could not be exported in this browser.";
+      }
+    }
+
+    function normalizeImportedStatus(status, label) {
+      if (status === undefined || status === null || status === "") return "pending";
+      if (typeof status !== "string") throw new Error(`${label} status must be text.`);
+      const value = status.trim().toLocaleLowerCase();
+      if (["pending", "pending review", "under review"].includes(value)) return "pending";
+      if (value === "approved") return "approved";
+      if (value === "rejected") return "rejected";
+      if (value === "legacy") return "legacy";
+      throw new Error(`${label} has an unsupported status: ${status}.`);
+    }
+
+    function createImportedPostId(type, existingIds) {
+      let postId;
+      do {
+        postId = `${type}-import-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+      } while (existingIds.has(postId));
+      existingIds.add(postId);
+      return postId;
+    }
+
+    function stableRecipeId(recipeName, existingIds) {
+      const slug = recipeName.normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      const base = `imported-${slug || "recipe"}`;
+      let recipeId = base;
+      let suffix = 2;
+      while (existingIds.has(recipeId)) recipeId = `${base}-${suffix++}`;
+      existingIds.add(recipeId);
+      return recipeId;
+    }
+
+    function importStandaloneGrowLog(parsed) {
+      if (!parsed || typeof parsed !== "object" || parsed.app !== "MycoQuest grow log" || parsed.version !== 2) {
+        throw new Error('Expected app "MycoQuest grow log" and version 2.');
+      }
+      if (!Array.isArray(parsed.entries) || !Array.isArray(parsed.recipes)) {
+        throw new Error("The standalone grow log must include entries and recipes arrays.");
+      }
+      const entryIds = new Set();
+      const recipePostIds = new Set();
+      const recipeIds = new Set();
+      const entries = parsed.entries.map((entry, index) => {
+        const label = `Grow post ${index + 1}`;
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) throw new Error(`${label} must be an object.`);
+        for (const field of ["growName", "species", "stage", "observation", "date"]) {
+          if (typeof entry[field] !== "string" || !entry[field].trim()) {
+            throw new Error(`${label} needs a non-empty ${field}.`);
+          }
+        }
+        if (entry.photoName !== undefined && typeof entry.photoName !== "string") {
+          throw new Error(`${label} photoName must be text.`);
+        }
+        if (entry.rejectionReason !== undefined && typeof entry.rejectionReason !== "string") {
+          throw new Error(`${label} rejectionReason must be text.`);
+        }
+        if (entry.xpAwarded !== undefined && (!Number.isFinite(entry.xpAwarded) || entry.xpAwarded < 0)) {
+          throw new Error(`${label} xpAwarded must be a non-negative number.`);
+        }
+        const stage = normalizeGrowStage(entry.stage);
+        if (!growQuestStages.includes(stage)) throw new Error(`${label} has an unsupported grow stage: ${entry.stage}.`);
+        const status = normalizeImportedStatus(entry.status, label);
+        const hasPostId = typeof entry.postId === "string" && entry.postId.trim();
+        const postId = hasPostId ? entry.postId.trim() : createImportedPostId("grow", entryIds);
+        if (hasPostId && entryIds.has(postId)) throw new Error(`${label} has a duplicate postId.`);
+        entryIds.add(postId);
+        return {
+          growId: entry.growName.trim(),
+          species: entry.species.trim(),
+          stage,
+          observation: entry.observation.trim(),
+          date: entry.date,
+          mediaName: entry.photoName || "",
+          status,
+          rejectionReason: entry.rejectionReason || "",
+          xpAwarded: status === "approved" ? (entry.xpAwarded ?? 0) : 0,
+          proposedXp: 0,
+          postId
+        };
+      });
+      const recipesImported = parsed.recipes.map((recipe, index) => {
+        const label = `Recipe post ${index + 1}`;
+        if (!recipe || typeof recipe !== "object" || Array.isArray(recipe)) throw new Error(`${label} must be an object.`);
+        if (typeof recipe.recipeName !== "string" || !recipe.recipeName.trim()) {
+          throw new Error(`${label} needs a non-empty recipeName.`);
+        }
+        const complexity = Number(recipe.complexity);
+        if (!Number.isFinite(complexity) || complexity < 1 || complexity > 5) {
+          throw new Error(`${label} complexity must be a number from 1 to 5.`);
+        }
+        if (typeof recipe.role !== "string" || !Object.prototype.hasOwnProperty.call(recipeRoleMultipliers, recipe.role)) {
+          throw new Error(`${label} role must be supporting, co-star, or star.`);
+        }
+        if (recipe.hasVideo !== undefined && typeof recipe.hasVideo !== "boolean") {
+          throw new Error(`${label} hasVideo must be true or false.`);
+        }
+        if (recipe.rejectionReason !== undefined && typeof recipe.rejectionReason !== "string") {
+          throw new Error(`${label} rejectionReason must be text.`);
+        }
+        if (recipe.xpAwarded !== undefined && (!Number.isFinite(recipe.xpAwarded) || recipe.xpAwarded < 0)) {
+          throw new Error(`${label} xpAwarded must be a non-negative number.`);
+        }
+        const name = recipe.recipeName.trim();
+        const status = normalizeImportedStatus(recipe.status, label);
+        const hasPostId = typeof recipe.postId === "string" && recipe.postId.trim();
+        const postId = hasPostId ? recipe.postId.trim() : createImportedPostId("recipe", recipePostIds);
+        if (hasPostId && recipePostIds.has(postId)) throw new Error(`${label} has a duplicate postId.`);
+        recipePostIds.add(postId);
+        const videoName = recipe.hasVideo ? "imported video" : "";
+        const proposedXp = recipe.proposedXp === undefined
+          ? calculateRecipeXp(complexity, recipe.role, Boolean(videoName))
+          : recipe.proposedXp;
+        if (!Number.isFinite(proposedXp) || proposedXp < 0) {
+          throw new Error(`${label} proposedXp must be a non-negative number.`);
+        }
+        const date = recipe.date ?? recipe.createdAt ?? getTodayKey();
+        if (typeof date !== "string" || !date.trim()) throw new Error(`${label} date must be text.`);
+        return {
+          recipeId: stableRecipeId(name, recipeIds),
+          name,
+          date,
+          complexity,
+          role: recipe.role,
+          videoName,
+          mediaName: videoName,
+          status,
+          rejectionReason: recipe.rejectionReason || "",
+          proposedXp,
+          xpAwarded: status === "approved" ? (recipe.xpAwarded ?? 0) : 0,
+          postId
+        };
+      });
+      const allPostIds = [...entries, ...recipesImported].map((post) => post.postId);
+      if (new Set(allPostIds).size !== allPostIds.length) {
+        throw new Error("Grow and recipe posts must have unique postId values.");
+      }
+      const importedState = normalizeDemoState({
+        ...createEmptyState(),
+        entries,
+        recipeSubmissions: recipesImported,
+        totalXp: [...entries, ...recipesImported]
+          .filter((post) => post.status === "approved")
+          .reduce((total, post) => total + post.xpAwarded, 0)
+      });
+      importedState.entries.filter((post) => post.status === "pending").forEach((post) => {
+        post.proposedXp = estimateGrowPostXp(post, importedState).totalXp;
+      });
+      return importedState;
+    }
+
+    function combineImportedState(importedState, mode) {
+      let nextState;
+      if (mode === "replace") {
+        nextState = normalizeDemoState(importedState);
+      } else {
+        const existingPostIds = new Set([
+          ...state.entries.map((post) => post.postId),
+          ...state.recipeSubmissions.map((post) => post.postId)
+        ]);
+        const importedEntries = importedState.entries.map((post) => ({
+          ...post,
+          postId: existingPostIds.has(post.postId) ? createImportedPostId("grow", existingPostIds) : post.postId
+        }));
+        const importedRecipes = importedState.recipeSubmissions.map((post) => ({
+          ...post,
+          postId: existingPostIds.has(post.postId) ? createImportedPostId("recipe", existingPostIds) : post.postId
+        }));
+        nextState = normalizeDemoState({
+          ...state,
+          balance: state.balance + importedState.balance,
+          totalXp: state.totalXp + importedState.totalXp,
+          lastRewardDate: importedState.lastRewardDate > state.lastRewardDate ? importedState.lastRewardDate : state.lastRewardDate,
+          entries: [...importedEntries, ...state.entries],
+          recipeSubmissions: [...importedRecipes, ...state.recipeSubmissions],
+          redemptions: [...importedState.redemptions, ...state.redemptions],
+          dailyInteractions: importedState.dailyInteractions.date === state.dailyInteractions.date
+            ? {
+              date: state.dailyInteractions.date,
+              recipeIds: [...new Set([...importedState.dailyInteractions.recipeIds, ...state.dailyInteractions.recipeIds])]
+            }
+            : importedState.dailyInteractions.date > state.dailyInteractions.date
+              ? importedState.dailyInteractions
+              : state.dailyInteractions
+        });
+      }
+      nextState.entries.filter((post) => post.status === "pending").forEach((post) => {
+        post.proposedXp = estimateGrowPostXp(post, nextState).totalXp;
+      });
+      return nextState;
+    }
+
+    function readImportFile(event, importType) {
+      const file = event.currentTarget.files[0];
+      event.currentTarget.value = "";
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onerror = () => {
+        dataToolsStatus.textContent = `Import failed: could not read ${file.name}.`;
+      };
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(String(reader.result));
+          let importedState;
+          if (importType === "standalone") {
+            importedState = importStandaloneGrowLog(parsed);
+          } else {
+            if (parsed?.format !== "mycoquest-demo-progress" || parsed.version !== 1) {
+              throw new Error('Expected format "mycoquest-demo-progress" and version 1.');
+            }
+            importedState = normalizeDemoState(parsed.state);
+          }
+          const mode = document.querySelector("#import-mode").value;
+          const nextState = combineImportedState(importedState, mode);
+          const modeLabel = mode === "replace" ? "replace current data" : "add to current data";
+          const message = `Import ${importedState.entries.length} grow post${importedState.entries.length === 1 ? "" : "s"} and ${importedState.recipeSubmissions.length} recipe post${importedState.recipeSubmissions.length === 1 ? "" : "s"}, with ${formatXp(importedState.totalXp)} demo-only XP, and ${modeLabel}?`;
+          if (!window.confirm(message)) return;
+          state = nextState;
+          clearMediaPreview(true);
+          clearGrowPhotoPreview(true);
+          document.querySelector("#recipe-form").reset();
+          document.querySelector("#grow-form").reset();
+          recipeStatus.textContent = "";
+          logStatus.textContent = "";
+          storageAvailable = true;
+          storageNote.hidden = true;
+          saveState();
+          renderCurrentProgress();
+          dataToolsStatus.textContent = `Demo-only progress imported (${modeLabel}) and saved on this device.`;
+        } catch (error) {
+          dataToolsStatus.textContent = `Import failed: ${error.message || "the selected file is invalid."}`;
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function importDemoProgress(event) {
+      readImportFile(event, "site");
+    }
+
+    function importStandaloneGrowLogFile(event) {
+      readImportFile(event, "standalone");
+    }
+
+    function clearMediaPreview(clearInput = false) {
+      const imagePreview = document.querySelector("#image-preview");
+      const videoPreview = document.querySelector("#media-preview");
+      imagePreview.onload = null;
+      imagePreview.onerror = null;
+      imagePreview.removeAttribute("src");
+      imagePreview.classList.remove("is-visible");
+      videoPreview.pause();
+      videoPreview.onloadedmetadata = null;
+      videoPreview.onerror = null;
+      videoPreview.removeAttribute("src");
+      videoPreview.load();
+      videoPreview.classList.remove("is-visible");
+      if (activeMediaUrl) URL.revokeObjectURL(activeMediaUrl);
+      activeMediaUrl = "";
+      selectedMediaDuration = 0;
+      mediaPreviewReady = false;
+      if (clearInput) mediaInput.value = "";
+    }
+
+    function clearGrowPhotoPreview(clearInput = false) {
+      const preview = document.querySelector("#grow-photo-preview");
+      preview.onload = null;
+      preview.onerror = null;
+      preview.removeAttribute("src");
+      preview.classList.remove("is-visible");
+      if (activeGrowPhotoUrl) URL.revokeObjectURL(activeGrowPhotoUrl);
+      activeGrowPhotoUrl = "";
+      growPhotoReady = false;
+      if (clearInput) growPhotoInput.value = "";
+    }
+
+    function resetDemoProgress() {
+      if (!window.confirm("Reset all MycoQuest demo progress saved in this browser? This clears local demo XP, grow notes, recipe posts, votes, and media previews.")) return;
+
+      let resetMessage = "Demo progress reset on this device.";
+      try {
+        localStorage.removeItem(storageKey);
+        storageAvailable = true;
+        storageNote.hidden = true;
+      } catch (error) {
+        storageAvailable = false;
+        storageNote.hidden = false;
+        storageNote.textContent = "The browser blocked removal of saved demo progress. The page has been reset, but saved progress may return after reloading.";
+        resetMessage = "Demo progress reset for this page, but saved progress could not be removed from browser storage.";
+      }
+
+      state = createEmptyState();
+      clearMediaPreview(true);
+      clearGrowPhotoPreview(true);
+      document.querySelector("#recipe-form").reset();
+      document.querySelector("#grow-form").reset();
+      searchInput.value = "";
+      recipeStatus.textContent = "";
+      logStatus.textContent = "";
+      resetStatus.textContent = resetMessage;
+      recipeToast.textContent = "";
+      recipeToast.classList.remove("is-visible");
+      window.clearTimeout(toastTimer);
+      toastTimer = undefined;
+      levelUpBanner.hidden = true;
+      window.clearTimeout(levelUpTimer);
+      levelUpTimer = undefined;
+      dataToolsStatus.textContent = "";
+      renderCatalog();
+      renderRecipes();
+      updateRecipeXpPreview();
+      renderProgress();
+      renderRecipeSubmissions();
+    }
+
+    function renderCatalog() {
+      const terms = searchInput.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+      const matches = products.filter((product) => {
+        const searchable = `${product.name} ${product.category} ${product.species} ${product.form} ${product.availability} ${product.description} ${product.tags}`.toLocaleLowerCase();
+        return terms.every((term) => searchable.includes(term));
+      });
+
+      productGrid.replaceChildren();
+      catalogCount.textContent = `${matches.length} ${matches.length === 1 ? "product" : "products"}${terms.length ? " found" : ""}.`;
+      if (!matches.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty-state";
+        empty.textContent = "No match in this demo catalog. Try Lion’s Mane, oyster, shiitake, or clear your search.";
+        productGrid.append(empty);
+        return;
+      }
+
+      matches.forEach((product) => {
+        const card = document.createElement("article");
+        card.className = product.featured ? "product-card product-card--featured" : "product-card";
+        card.dataset.productId = product.id;
+        const imageFrame = document.createElement("div");
+        imageFrame.className = "product-image";
+        if (product.image) {
+          const image = document.createElement("img");
+          image.src = product.image;
+          image.alt = product.imageAlt;
+          image.loading = "lazy";
+          imageFrame.append(image);
+        } else {
+          const placeholder = document.createElement("div");
+          placeholder.className = "product-placeholder";
+          placeholder.setAttribute("role", "img");
+          placeholder.setAttribute("aria-label", product.imageAlt);
+          placeholder.innerHTML = '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M32 34v20m0-22c-10 0-18-5-18-13 0-7 8-12 18-12s18 5 18 12c0 8-8 13-18 13Zm0 10c-6 0-10 4-10 10m10-6c6 0 10 2 10 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>';
+          const placeholderText = document.createElement("span");
+          placeholderText.textContent = product.imageStatus;
+          placeholder.append(placeholderText);
+          imageFrame.append(placeholder);
+        }
+        const info = document.createElement("div");
+        info.className = "product-info";
+        const label = document.createElement("span");
+        label.className = "product-category";
+        label.textContent = product.category;
+        const titleRow = document.createElement("div");
+        titleRow.className = "product-title-row";
+        const title = document.createElement("h3");
+        title.textContent = product.name;
+        const badge = document.createElement("span");
+        badge.className = product.packages.length ? "product-badge" : "product-badge product-badge--testing";
+        badge.textContent = product.packages.length ? "Demo concept" : "Future concept";
+        titleRow.append(title, badge);
+        const description = document.createElement("p");
+        description.textContent = product.description;
+        const facts = document.createElement("dl");
+        facts.className = "product-facts";
+        const addFact = (name, value, wide = false) => {
+          const item = document.createElement("div");
+          if (wide) item.className = "product-fact--wide";
+          const term = document.createElement("dt");
+          term.textContent = name;
+          const detail = document.createElement("dd");
+          detail.textContent = value;
+          item.append(term, detail);
+          facts.append(item);
+        };
+        addFact("Species", product.species);
+        addFact("Form", product.form);
+        addFact("Package weight", product.packages.length
+          ? product.packages.map((packageOption) => packageOption.label).join(" or ")
+          : "Not set · future concept", true);
+        addFact("Availability", product.availability, true);
+        addFact("Image status", product.imageStatus, true);
+        const storageItem = document.createElement("div");
+        storageItem.className = "product-fact--wide";
+        const storageTerm = document.createElement("dt");
+        storageTerm.textContent = "Storage instructions";
+        const storageDetail = document.createElement("dd");
+        const storageDisclosure = document.createElement("details");
+        const storageSummary = document.createElement("summary");
+        storageSummary.textContent = product.storageStatus;
+        const storageText = document.createElement("p");
+        storageText.textContent = product.storage;
+        storageDisclosure.append(storageSummary, storageText);
+        storageDetail.append(storageDisclosure);
+        storageItem.append(storageTerm, storageDetail);
+        facts.append(storageItem);
+
+        const xp = document.createElement("p");
+        xp.className = "purchase-xp";
+        let price;
+        let status;
+        const note = document.createElement("span");
+        note.className = "product-note";
+        if (product.packages.length) {
+          price = document.createElement("div");
+          price.className = "product-price";
+          const priceAmount = document.createElement("span");
+          const priceUnit = document.createElement("small");
+          const priceQualifier = document.createElement("small");
+          priceQualifier.className = "price-qualifier";
+          priceQualifier.textContent = "Example price";
+          price.append(priceAmount, priceUnit, priceQualifier);
+
+          const packageLabel = document.createElement("label");
+          packageLabel.textContent = "Package weight";
+          const packageSelect = document.createElement("select");
+          packageSelect.name = "package";
+          packageSelect.setAttribute("aria-label", `${product.name} package weight`);
+          product.packages.forEach((packageOption, index) => {
+            const option = document.createElement("option");
+            option.value = String(index);
+            option.textContent = packageOption.label;
+            packageSelect.append(option);
+          });
+          packageLabel.append(packageSelect);
+
+          const quantityLabel = document.createElement("label");
+          quantityLabel.textContent = "Packages";
+          const quantityInput = document.createElement("input");
+          quantityInput.type = "number";
+          quantityInput.name = "quantity";
+          quantityInput.min = "1";
+          quantityInput.max = "20";
+          quantityInput.step = "1";
+          quantityInput.value = "1";
+          quantityInput.required = true;
+          quantityLabel.append(quantityInput);
+
+          const purchaseForm = document.createElement("form");
+          purchaseForm.className = "purchase-form";
+          purchaseForm.dataset.productId = product.id;
+          const buyButton = document.createElement("button");
+          buyButton.className = "purchase-button";
+          buyButton.type = "submit";
+          purchaseForm.append(packageLabel, quantityLabel, buyButton);
+          status = document.createElement("p");
+          status.className = "product-note";
+          status.setAttribute("role", "status");
+          status.dataset.purchaseStatus = "";
+          xp.textContent = "Purchases do not award XP in this leveling prototype.";
+          note.textContent = "Demo only — no payment or real order is processed.";
+          info.append(label, titleRow, description, facts, price, xp, purchaseForm);
+
+          const updateCard = () => updatePurchaseButton(packageSelect, quantityInput, buyButton, priceAmount, priceUnit, priceQualifier, xp, product);
+          updateCard();
+          packageSelect.addEventListener("change", updateCard);
+          quantityInput.addEventListener("input", updateCard);
+          purchaseForm.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const quantity = Number(quantityInput.value);
+            const packageIndex = Number(packageSelect.value);
+            const packageOption = product.packages[packageIndex];
+            if (!packageOption || !Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
+              status.textContent = "Choose a listed package size and a whole number from 1 to 20 packages.";
+              return;
+            }
+            const totalCents = packageOption.priceCents * quantity;
+            const weightOz = packageOption.weightOz * quantity;
+            status.textContent = `Demo order only: ${quantity} × ${packageOption.label} (${weightOz / 16} lb) · $${(totalCents / 100).toFixed(2)} example price. No payment was taken and no XP was awarded.`;
+          });
+        } else {
+          price = document.createElement("p");
+          price.className = "product-price";
+          price.textContent = "No price proposed";
+          xp.textContent = "Not available in this demo; purchases do not award XP.";
+          note.textContent = "Not available in this demo.";
+          info.append(label, titleRow, description, facts, price, xp);
+        }
+        if (product.id === "fresh-lions-mane") {
+          const recipeLink = document.createElement("a");
+          recipeLink.className = "recipe-link";
+          recipeLink.href = "#recipes";
+          recipeLink.textContent = "Discover 5 Lion’s Mane recipe quests";
+          recipeLink.addEventListener("click", () => {
+            document.querySelectorAll(".recipe-card").forEach((recipeCard) => recipeCard.classList.add("is-unlocked"));
+            showRecipeToast("Recipe quest board unlocked — choose a dish and start your next side quest!");
+          });
+          info.append(recipeLink);
+        }
+        if (status) info.append(status);
+        info.append(note);
+        card.append(imageFrame, info);
+        productGrid.append(card);
+      });
+    }
+
+    function updatePurchaseButton(packageSelect, quantityInput, button, priceAmount, priceUnit, priceQualifier, xp, product) {
+      const packageOption = product.packages[Number(packageSelect.value)];
+      const quantity = Number(quantityInput.value);
+      if (!packageOption) {
+        button.textContent = "Choose a package";
+        button.disabled = true;
+        return;
+      }
+      const packagePrice = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(packageOption.priceCents / 100);
+      priceAmount.textContent = packagePrice;
+      priceUnit.textContent = `/ ${packageOption.label}`;
+      if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
+        button.textContent = "Choose 1–20 packages";
+        button.disabled = true;
+        return;
+      }
+      const totalCents = packageOption.priceCents * quantity;
+      button.textContent = `Demo order · ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(totalCents / 100)}`;
+      button.disabled = false;
+    }
+
+    function showRecipeToast(message) {
+      recipeToast.textContent = message;
+      recipeToast.classList.add("is-visible");
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => recipeToast.classList.remove("is-visible"), 3600);
+    }
+
+    function getTodayKey() {
+      const today = new Date();
+      return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    }
+
+    function awardDemoXp(amount) {
+      if (!Number.isFinite(amount) || amount <= 0) return;
+      state.totalXp += amount;
+      saveState();
+      renderProgress();
+    }
+
+    function awardSmallInteraction(recipeId) {
+      const todayKey = getTodayKey();
+      if (state.dailyInteractions.date !== todayKey) {
+        state.dailyInteractions = { date: todayKey, recipeIds: [] };
+      }
+      if (state.dailyInteractions.recipeIds.includes(recipeId) ||
+          state.dailyInteractions.recipeIds.length * smallInteractionXp >= dailyInteractionXpCap) return;
+      state.dailyInteractions.recipeIds.push(recipeId);
+      awardDemoXp(smallInteractionXp);
+    }
+
+    function calculateRecipeXp(complexity, role, hasVideo) {
+      const multiplier = recipeRoleMultipliers[role];
+      if (!Number.isFinite(complexity) || complexity < 1 || complexity > 5 || !multiplier) return 0;
+      return complexity * 55 * multiplier + (hasVideo ? 100 : 0);
+    }
+
+    function updateRecipeXpPreview() {
+      const formData = new FormData(document.querySelector("#recipe-form"));
+      const complexity = Number(formData.get("complexity"));
+      const role = String(formData.get("role"));
+      const hasReadyVideo = Boolean(mediaInput.files[0]?.type.startsWith("video/") && mediaPreviewReady);
+      if (!Number.isFinite(complexity) || complexity < 1 || complexity > 5) {
+        document.querySelector("#recipe-xp-preview").textContent = "Enter any complexity value from 1 to 5; decimals are allowed.";
+        return;
+      }
+      const baseXp = calculateRecipeXp(complexity, role, false);
+      const totalXp = calculateRecipeXp(complexity, role, hasReadyVideo);
+      const videoText = hasReadyVideo ? "" :
+        mediaInput.files[0]?.type.startsWith("video/") ? " Video bonus appears after a valid preview loads." : "";
+      document.querySelector("#recipe-xp-preview").textContent =
+        `Pending approval: estimated ${formatXp(baseXp)} demo-only base XP${hasReadyVideo ? " + 100 demo-only video XP" : ""} = ${formatXp(totalXp)} demo-only XP. No XP is awarded while pending.${videoText}`;
+    }
+
+    function formatXp(amount) {
+      return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(amount);
+    }
+
+    function createPostStatus(post, type, approveHandler, rejectHandler) {
+      const wrapper = document.createElement("div");
+      const status = document.createElement("p");
+      status.className = "post-status";
+      const stateLabel = post.status === "approved" ? "Approved" :
+        post.status === "rejected" ? "Rejected" :
+          post.status === "legacy" ? "Legacy demo post · no moderation record" : "Pending review";
+      status.textContent = `${stateLabel} · ${formatXp(post.xpAwarded || 0)} demo-only XP awarded${post.legacyXp ? ` · ${formatXp(post.legacyXp)} historical demo-only XP` : ""}`;
+      if (post.status === "pending" && Number.isFinite(post.proposedXp)) {
+        status.textContent += ` · estimated ${formatXp(post.proposedXp)} demo-only XP if approved`;
+      }
+      wrapper.append(status);
+
+      if (post.status === "rejected") {
+        const reason = document.createElement("p");
+        reason.className = "post-status post-rejection";
+        reason.textContent = `Rejection reason: ${post.rejectionReason}`;
+        wrapper.append(reason);
+      }
+
+      if (post.status === "pending") {
+        const controls = document.createElement("div");
+        controls.className = "post-moderation";
+        const note = document.createElement("p");
+        note.className = "demo-moderation-note";
+        note.textContent = "Demo moderation only. These controls do not submit a real review.";
+        const rejectLabel = document.createElement("label");
+        rejectLabel.textContent = "Rejection reason";
+        const rejectInput = document.createElement("input");
+        rejectInput.type = "text";
+        rejectInput.maxLength = 200;
+        rejectInput.placeholder = "Enter a reason to reject…";
+        rejectInput.setAttribute("aria-label", `Rejection reason for ${type} post`);
+        rejectLabel.append(rejectInput);
+        const actions = document.createElement("div");
+        actions.className = "post-moderation-actions";
+        const approveButton = document.createElement("button");
+        approveButton.type = "button";
+        approveButton.textContent = "Demo-only · Simulate approval";
+        approveButton.addEventListener("click", approveHandler);
+        const rejectButton = document.createElement("button");
+        rejectButton.type = "button";
+        rejectButton.textContent = "Demo-only · Reject post";
+        rejectButton.disabled = true;
+        rejectInput.addEventListener("input", () => {
+          rejectButton.disabled = !rejectInput.value.trim();
+        });
+        rejectButton.addEventListener("click", () => rejectHandler(rejectInput.value.trim()));
+        actions.append(approveButton, rejectButton);
+        controls.append(note, rejectLabel, actions);
+        wrapper.append(controls);
+      }
+      return wrapper;
+    }
+
+    function approveRecipePost(postId) {
+      const post = state.recipeSubmissions.find((submission) => submission.postId === postId);
+      if (!post || post.status !== "pending") return;
+      const previousLevel = levelFromXp(state.totalXp);
+      let awardedXp = post.proposedXp;
+      const xpAwards = { recipeApproval: post.proposedXp, firstPostBonus: 0 };
+      if (!state.milestones.firstPostAwarded) {
+        awardedXp += firstPostXp;
+        xpAwards.firstPostBonus = firstPostXp;
+        state.milestones.firstPostAwarded = true;
+      }
+      post.status = "approved";
+      post.approvedAt = new Date().toISOString();
+      post.xpAwarded = awardedXp;
+      post.xpAwards = xpAwards;
+      state.totalXp += awardedXp;
+      saveState();
+      renderProgress();
+      renderRecipeSubmissions();
+      showLevelUpBanner(previousLevel, levelFromXp(state.totalXp));
+      recipeStatus.textContent = `Demo-only approval recorded locally. +${formatXp(awardedXp)} demo-only XP awarded; this is not server-verified.`;
+    }
+
+    function approveGrowPost(postId) {
+      const post = state.entries.find((entry) => entry.postId === postId);
+      if (!post || post.status !== "pending") return;
+      const previousLevel = levelFromXp(state.totalXp);
+      const estimate = estimateGrowPostXp(post);
+      const xpAwards = {
+        growStage: estimate.stageXp,
+        photoBonus: estimate.photoXp,
+        firstGrowBonus: estimate.firstGrowAward,
+        firstPostBonus: estimate.firstPostAward
+      };
+      let awardedXp = 0;
+      if (!estimate.stageAlreadyCredited) {
+        state.completedGrowStages.push(estimate.stageKey);
+        awardedXp += estimate.stageXp;
+      }
+      if (estimate.photoXp) {
+        state.growPhotoPosts.push(estimate.stageKey);
+        awardedXp += estimate.photoXp;
+      }
+      if (estimate.firstGrowAward) {
+        state.milestones.firstGrowAwarded = true;
+        awardedXp += estimate.firstGrowAward;
+      }
+      if (estimate.firstPostAward) {
+        state.milestones.firstPostAwarded = true;
+        awardedXp += estimate.firstPostAward;
+      }
+      post.status = "approved";
+      post.approvedAt = new Date().toISOString();
+      post.xpAwarded = awardedXp;
+      post.xpAwards = xpAwards;
+      state.totalXp += awardedXp;
+      saveState();
+      renderProgress();
+      showLevelUpBanner(previousLevel, levelFromXp(state.totalXp));
+      const duplicateStageMessage = estimate.stageAlreadyCredited
+        ? "This grow stage was already credited; no stage demo-only XP was awarded. "
+        : "";
+      logStatus.textContent = `${duplicateStageMessage}Demo-only approval recorded locally. +${formatXp(awardedXp)} demo-only XP awarded; this is not server-verified.`;
+    }
+
+    function estimateGrowPostXp(post, sourceState = state) {
+      const stageKey = growStageKey(post);
+      const stageAlreadyCredited = sourceState.entries.some((entry) =>
+        entry.status === "approved" && growStageKey(entry) === stageKey
+      );
+      const photoAlreadyCredited = sourceState.entries.some((entry) =>
+        entry.status === "approved" && entry.mediaName && growStageKey(entry) === stageKey
+      );
+      const stageXp = stageAlreadyCredited ? 0 : growStageXp;
+      const photoXp = post.mediaName && !photoAlreadyCredited ? growPhotoXp : 0;
+      const firstGrowAward = sourceState.milestones.firstGrowAwarded ? 0 : firstGrowXp;
+      const firstPostAward = sourceState.milestones.firstPostAwarded ? 0 : firstPostXp;
+      return {
+        stageKey,
+        stageAlreadyCredited,
+        stageXp,
+        photoXp,
+        firstGrowAward,
+        firstPostAward,
+        totalXp: stageXp + photoXp + firstGrowAward + firstPostAward
+      };
+    }
+
+    function showLevelUpBanner(previousLevel, currentLevel) {
+      if (currentLevel <= previousLevel) return;
+      levelUpMessage.textContent = `Level up · demo only · Level ${currentLevel}`;
+      levelUpBanner.hidden = false;
+      window.clearTimeout(levelUpTimer);
+      levelUpTimer = window.setTimeout(() => {
+        levelUpBanner.hidden = true;
+        levelUpTimer = undefined;
+      }, 4000);
+    }
+
+    function buildXpEvents() {
+      const posts = [
+        ...state.entries.map((post, index) => ({ post, type: "grow", position: index, collection: 0 })),
+        ...state.recipeSubmissions.map((post, index) => ({ post, type: "recipe", position: index, collection: 1 }))
+      ].filter(({ post }) => post.status === "approved");
+      const approvalTime = (post) => {
+        const approvedAt = Date.parse(post.approvedAt || "");
+        return Number.isFinite(approvedAt) ? approvedAt : Date.parse(post.date) || 0;
+      };
+      posts.sort((left, right) => {
+        const leftTime = approvalTime(left.post);
+        const rightTime = approvalTime(right.post);
+        if (leftTime !== rightTime) return rightTime - leftTime;
+        const dateOrder = String(right.post.date || "").localeCompare(String(left.post.date || ""));
+        if (dateOrder) return dateOrder;
+        if (left.position !== right.position) return left.position - right.position;
+        return left.collection - right.collection;
+      });
+
+      const events = posts.flatMap(({ post, type }) => {
+        const postEvents = [];
+        const addEvent = (amount, label, name) => {
+          if (amount > 0) postEvents.push({ postId: post.postId, type, amount, label, name });
+        };
+        const awards = post.xpAwards;
+        if (type === "grow") {
+          const name = post.growId || post.species;
+          if (awards) {
+            addEvent(awards.growStage, "Grow stage approved", name);
+            addEvent(awards.photoBonus, "Grow photo bonus", name);
+            addEvent(awards.firstGrowBonus, "First-grow bonus", name);
+            addEvent(awards.firstPostBonus, "First-post bonus", name);
+          } else {
+            addEvent(post.xpAwarded || 0, "Approved grow XP", name);
+          }
+        } else if (awards) {
+          addEvent(awards.recipeApproval, "Recipe approval", post.name);
+          addEvent(awards.firstPostBonus, "First-post bonus", post.name);
+        } else {
+          addEvent(post.xpAwarded || 0, "Recipe approval", post.name);
+        }
+        return postEvents;
+      });
+      return events.slice(0, 10);
+    }
+
+    function renderXpFeed() {
+      xpFeedList.replaceChildren();
+      const events = buildXpEvents();
+      if (!events.length) {
+        const empty = document.createElement("p");
+        empty.className = "xp-feed-empty";
+        empty.textContent = "No approved demo-only XP events yet.";
+        xpFeedList.append(empty);
+        return;
+      }
+      events.forEach((event) => {
+        const link = document.createElement("a");
+        link.className = "xp-feed-item";
+        link.href = `#${event.type}-post-${event.postId}`;
+        const amount = document.createElement("span");
+        amount.className = "xp-feed-amount";
+        amount.textContent = `+${formatXp(event.amount)} demo-only XP`;
+        const label = document.createElement("span");
+        label.className = "xp-feed-label";
+        label.textContent = event.label;
+        const name = document.createElement("span");
+        name.className = "xp-feed-name";
+        name.textContent = event.name;
+        link.append(amount, label, name);
+        xpFeedList.append(link);
+      });
+    }
+
+    function renderGrowQuests() {
+      questList.replaceChildren();
+      const groups = new Map();
+      state.entries.forEach((post, index) => {
+        const name = (post.growId || post.species).trim() || post.species;
+        const key = normalizeGrowName(name);
+        if (!groups.has(key)) groups.set(key, { name, firstDate: post.date, firstIndex: index, posts: [] });
+        const group = groups.get(key);
+        if (String(post.date) < String(group.firstDate) ||
+            (post.date === group.firstDate && index > group.firstIndex)) {
+          group.name = name;
+          group.firstDate = post.date;
+          group.firstIndex = index;
+        }
+        group.posts.push(post);
+      });
+      if (!groups.size) {
+        const empty = document.createElement("p");
+        empty.className = "xp-feed-empty";
+        empty.textContent = "Submit a grow post to start a quest track. Track progress awards no XP.";
+        questList.append(empty);
+        return;
+      }
+
+      groups.forEach(({ name, posts }) => {
+        const card = document.createElement("article");
+        card.className = "quest-card";
+        const title = document.createElement("h5");
+        title.textContent = name;
+        const track = document.createElement("ol");
+        track.className = "quest-track";
+        track.setAttribute("aria-label", `${name} grow quest stages · track progress awards no XP`);
+        const completed = new Set(posts
+          .filter((post) => post.status === "approved")
+          .map((post) => normalizeGrowStage(post.stage).toLocaleLowerCase()));
+        const pending = new Set(posts
+          .filter((post) => post.status === "pending")
+          .map((post) => normalizeGrowStage(post.stage).toLocaleLowerCase()));
+        const activeStage = growQuestStages.find((stage) => !completed.has(stage.toLocaleLowerCase()));
+
+        growQuestStages.forEach((stage) => {
+          const normalizedStage = stage.toLocaleLowerCase();
+          const node = document.createElement("li");
+          node.className = "quest-node";
+          node.textContent = stage;
+          if (completed.has(normalizedStage)) node.classList.add("is-complete");
+          if (pending.has(normalizedStage)) node.classList.add("has-pending");
+          if (activeStage === stage) node.classList.add("is-active");
+          node.setAttribute("aria-label", `${stage}: ${completed.has(normalizedStage) ? "approved and complete" : pending.has(normalizedStage) ? "pending review" : activeStage === stage ? "active objective" : "not started"}`);
+          if (pending.has(normalizedStage)) {
+            const pendingLabel = document.createElement("span");
+            pendingLabel.className = "quest-node-status";
+            pendingLabel.textContent = "Pending";
+            node.append(pendingLabel);
+          } else if (completed.has(normalizedStage)) {
+            const completeLabel = document.createElement("span");
+            completeLabel.className = "quest-node-status";
+            completeLabel.textContent = "Approved";
+            node.append(completeLabel);
+          }
+          track.append(node);
+        });
+
+        const nextStep = document.createElement("p");
+        nextStep.className = "quest-next-step";
+        if (!activeStage) {
+          nextStep.textContent = "All quest stages approved · track completion awards no XP.";
+        } else {
+          const stageKey = `${normalizeGrowName(name)}::${activeStage.toLocaleLowerCase()}`;
+          const hasApprovedPhoto = state.growPhotoPosts.includes(stageKey);
+          nextStep.textContent = `Next: log ${activeStage}.${hasApprovedPhoto ? "" : " Tip: add a photo to earn the demo-only photo bonus."}`;
+        }
+        card.append(title, track, nextStep);
+        questList.append(card);
+      });
+    }
+
+    function createGrowEntryActions(entry) {
+      const actions = document.createElement("div");
+      actions.className = "grow-entry-actions";
+      if (entry.status === "approved") {
+        const note = document.createElement("span");
+        note.className = "demo-moderation-note";
+        note.textContent = "Approved posts are locked to preserve their demo-only XP history.";
+        actions.append(note);
+        return actions;
+      }
+
+      const editButton = document.createElement("button");
+      editButton.type = "button";
+      editButton.textContent = "Demo-only · Edit post";
+      editButton.addEventListener("click", () => {
+        const existing = actions.querySelector(".grow-edit-form");
+        if (existing) {
+          existing.remove();
+          return;
+        }
+        actions.append(createGrowEditForm(entry));
+      });
+
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.textContent = "Demo-only · Delete post";
+      deleteButton.addEventListener("click", () => {
+        if (!window.confirm("Delete this pending or rejected demo grow post?")) return;
+        state.entries = state.entries.filter((item) => item.postId !== entry.postId);
+        saveState();
+        renderProgress();
+        logStatus.textContent = "Demo-only grow post deleted. No XP was awarded or removed.";
+      });
+      actions.append(editButton, deleteButton);
+      return actions;
+    }
+
+    function createGrowEditForm(entry) {
+      const form = document.createElement("form");
+      form.className = "grow-edit-form";
+      form.setAttribute("aria-label", `Edit demo grow post for ${entry.growId || entry.species}`);
+      const addField = (labelText, name, value, type = "text") => {
+        const label = document.createElement("label");
+        label.textContent = labelText;
+        const input = document.createElement(type === "textarea" ? "textarea" : "input");
+        if (type !== "textarea") input.type = type;
+        input.name = name;
+        input.value = value;
+        input.maxLength = name === "observation" ? 280 : 60;
+        input.required = true;
+        label.append(input);
+        form.append(label);
+        return input;
+      };
+      const growId = addField("Grow name", "growId", entry.growId || entry.species, "text");
+      const species = addField("Species", "species", entry.species, "text");
+      const stageLabel = document.createElement("label");
+      stageLabel.textContent = "Stage";
+      const stage = document.createElement("select");
+      stage.name = "stage";
+      stage.required = true;
+      growQuestStages.forEach((stageName) => {
+        const option = document.createElement("option");
+        option.value = stageName;
+        option.textContent = stageName;
+        stage.append(option);
+      });
+      stage.value = normalizeGrowStage(entry.stage);
+      stageLabel.append(stage);
+      form.append(stageLabel);
+      const observation = addField("Observation", "observation", entry.observation, "textarea");
+      observation.classList.add("full-width");
+      stageLabel.classList.add("full-width");
+      const estimate = document.createElement("p");
+      estimate.className = "quest-next-step full-width";
+      estimate.setAttribute("aria-live", "polite");
+      const updateEstimate = () => {
+        const estimatePost = {
+          ...entry,
+          growId: growId.value.trim(),
+          species: species.value.trim(),
+          stage: normalizeGrowStage(stage.value)
+        };
+        const result = estimateGrowPostXp(estimatePost);
+        estimate.textContent = `Estimated ${formatXp(result.totalXp)} demo-only XP if approved · stage ${formatXp(result.stageXp)} · photo ${formatXp(result.photoXp)} · first-grow ${formatXp(result.firstGrowAward)} · first-post ${formatXp(result.firstPostAward)}.`;
+      };
+      growId.addEventListener("input", updateEstimate);
+      species.addEventListener("input", updateEstimate);
+      stage.addEventListener("change", updateEstimate);
+      updateEstimate();
+      const buttons = document.createElement("div");
+      buttons.className = "grow-edit-form-actions full-width";
+      const saveButton = document.createElement("button");
+      saveButton.type = "submit";
+      saveButton.textContent = "Demo-only · Save changes";
+      const cancelButton = document.createElement("button");
+      cancelButton.type = "button";
+      cancelButton.textContent = "Cancel";
+      cancelButton.addEventListener("click", () => form.remove());
+      buttons.append(saveButton, cancelButton);
+      form.append(estimate, buttons);
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        entry.growId = growId.value.trim();
+        entry.species = species.value.trim();
+        entry.stage = normalizeGrowStage(stage.value);
+        entry.observation = observation.value.trim();
+        entry.status = "pending";
+        entry.rejectionReason = "";
+        entry.xpAwarded = 0;
+        delete entry.xpAwards;
+        entry.proposedXp = estimateGrowPostXp(entry).totalXp;
+        saveState();
+        renderProgress();
+        logStatus.textContent = "Grow post updated and returned to pending review. No demo-only XP was awarded.";
+      });
+      return form;
+    }
+
+    function rejectPost(posts, postId, reason, render) {
+      const post = posts.find((item) => item.postId === postId);
+      if (!post || post.status !== "pending" || !reason) return;
+      post.status = "rejected";
+      post.rejectionReason = reason;
+      post.xpAwarded = 0;
+      saveState();
+      render();
+    }
+
+    function chooseWelcomeNote() {
+      const welcomeNotes = [
+        {
+          title: "A forest of flavor.",
+          tagline: "One quest at a time.",
+          label: "Today’s field note",
+          fact: "Lion’s Mane’s cascading spines are one of its easiest visual clues. In the kitchen, it takes on a tender, savory character when browned."
+        },
+        {
+          title: "Follow the forest floor.",
+          tagline: "Good things grow slowly.",
+          label: "Cultivation minute",
+          fact: "Mushrooms are fungi, not plants. A grow log helps you notice changes in stages and conditions instead of relying on memory."
+        },
+        {
+          title: "Meet your next meal.",
+          tagline: "The wild has a menu.",
+          label: "Kitchen note",
+          fact: "For better browning, give mushrooms room in the pan. Crowding can trap steam and slow the golden sear."
+        },
+        {
+          title: "Small harvest. Big wonder.",
+          tagline: "There’s always more to learn.",
+          label: "Species spotlight",
+          fact: "Oyster mushrooms grow in overlapping clusters, while Lion’s Mane forms a rounded mass of soft, icicle-like spines."
+        },
+        {
+          title: "Let curiosity take root.",
+          tagline: "Your next quest is simmering.",
+          label: "Flavor pairing",
+          fact: "Lion’s Mane pairs easily with savory staples like garlic, black pepper, lemon, and fresh herbs. Add seasoning as it finishes cooking."
+        },
+        {
+          title: "Good food grows stories.",
+          tagline: "Bring a little forest home.",
+          label: "Grow-log tip",
+          fact: "A useful grow note captures what changed, when you noticed it, and any conditions you adjusted. Little details make a better record."
+        }
+      ];
+      const welcomeNoteKey = "mycoquest-last-welcome-note";
+      let previousIndex = -1;
+      try {
+        const savedIndex = Number(sessionStorage.getItem(welcomeNoteKey));
+        if (Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < welcomeNotes.length) {
+          previousIndex = savedIndex;
+        }
+      } catch (error) {
+        document.querySelector("#forest-note-label").textContent = "Forest note · visit rotation unavailable";
+      }
+
+      let index = Math.floor(Math.random() * welcomeNotes.length);
+      if (welcomeNotes.length > 1 && index === previousIndex) {
+        index = (index + 1 + Math.floor(Math.random() * (welcomeNotes.length - 1))) % welcomeNotes.length;
+      }
+      const welcome = welcomeNotes[index];
+      document.querySelector("#welcome-title").textContent = welcome.title;
+      document.querySelector("#welcome-tagline").textContent = welcome.tagline;
+      document.querySelector("#forest-note-label").textContent = welcome.label;
+      document.querySelector("#forest-note-text").textContent = welcome.fact;
+      try {
+        sessionStorage.setItem(welcomeNoteKey, String(index));
+      } catch (error) {
+        document.querySelector("#forest-note-label").textContent = `${welcome.label} · fresh pick`;
+      }
+    }
+
+    function renderRecipes() {
+      const recipeGrid = document.querySelector("#recipe-grid");
+      const recipeSelect = document.querySelector("#recipe-select");
+      recipeGrid.replaceChildren();
+      recipeSelect.replaceChildren();
+      recipes.forEach((recipe, index) => {
+        const option = document.createElement("option");
+        option.value = recipe.id;
+        option.textContent = recipe.name;
+        recipeSelect.append(option);
+
+        const card = document.createElement("article");
+        card.className = "recipe-card";
+        card.id = `recipe-${recipe.id}`;
+        const meta = document.createElement("div");
+        meta.className = "recipe-meta";
+        const region = document.createElement("span");
+        region.textContent = recipe.region;
+        const indexLabel = document.createElement("span");
+        indexLabel.textContent = `Quest ${String(index + 1).padStart(2, "0")}`;
+        meta.append(region, indexLabel);
+        const title = document.createElement("h3");
+        title.textContent = recipe.name;
+        const summary = document.createElement("p");
+        summary.textContent = recipe.summary;
+        const toggle = document.createElement("button");
+        toggle.className = "recipe-toggle";
+        toggle.type = "button";
+        toggle.setAttribute("aria-expanded", "false");
+        toggle.setAttribute("aria-controls", `details-${recipe.id}`);
+        const toggleText = document.createElement("span");
+        toggleText.textContent = "Open recipe quest";
+        const icon = document.createElement("span");
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "↗";
+        toggle.append(toggleText, icon);
+        const details = document.createElement("div");
+        details.className = "recipe-details";
+        details.id = `details-${recipe.id}`;
+        const ingredientsTitle = document.createElement("h4");
+        ingredientsTitle.textContent = "Gather your ingredients";
+        const ingredients = document.createElement("p");
+        ingredients.textContent = recipe.ingredients;
+        const methodTitle = document.createElement("h4");
+        methodTitle.textContent = "The cooking quest";
+        const method = document.createElement("p");
+        method.textContent = recipe.method;
+        details.append(ingredientsTitle, ingredients, methodTitle, method);
+        toggle.addEventListener("click", () => {
+          const isOpen = card.classList.toggle("is-open");
+          toggle.setAttribute("aria-expanded", String(isOpen));
+          toggleText.textContent = isOpen ? "Close recipe quest" : "Open recipe quest";
+          card.classList.add("is-unlocked");
+          if (isOpen) awardSmallInteraction(recipe.id);
+          showRecipeToast(isOpen ? `Quest unlocked: ${recipe.name}` : "Recipe quest tucked away.");
+        });
+        card.append(meta, title, summary, toggle, details);
+        recipeGrid.append(card);
+      });
+    }
+
+    function renderRecipeSubmissions() {
+      const container = document.querySelector("#submission-list");
+      container.replaceChildren();
+      const title = document.createElement("h4");
+      title.textContent = "Recipe posts · local prototype";
+      container.append(title);
+      if (!state.recipeSubmissions.length) {
+        const empty = document.createElement("p");
+        empty.textContent = "No recipe posts submitted yet.";
+        container.append(empty);
+        return;
+      }
+      state.recipeSubmissions.forEach((submission) => {
+        const item = document.createElement("div");
+        item.className = "recipe-submission";
+        item.id = `recipe-post-${submission.postId}`;
+        const summary = document.createElement("p");
+        summary.textContent = `${submission.name} · ${submission.date} · complexity ${submission.complexity ?? "legacy"} · ${submission.role || "legacy role"}${submission.videoName ? ` · video: ${submission.videoName}` : ""}`;
+        item.append(summary, createPostStatus(
+          submission,
+          "recipe",
+          () => approveRecipePost(submission.postId),
+          (reason) => rejectPost(state.recipeSubmissions, submission.postId, reason, renderRecipeSubmissions)
+        ));
+        const votes = document.createElement("div");
+        votes.className = "recipe-votes";
+        votes.setAttribute("aria-label", `Demo feedback for ${submission.name}; reactions do not award XP`);
+        [
+          ["like", "Like"],
+          ["dislike", "Dislike"],
+          ["undecided", "Undecided"]
+        ].forEach(([value, label]) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.textContent = label;
+          button.setAttribute("aria-pressed", String(submission.vote === value));
+          button.addEventListener("click", () => {
+            submission.vote = value;
+            saveState();
+            renderRecipeSubmissions();
+            recipeStatus.textContent = "Demo reaction saved locally. Reactions are not counted as votes and do not award XP.";
+          });
+          votes.append(button);
+        });
+        item.append(votes);
+        container.append(item);
+      });
+    }
+
+    function handleRecipeMediaChange() {
+      const file = mediaInput.files[0];
+      const imagePreview = document.querySelector("#image-preview");
+      const videoPreview = document.querySelector("#media-preview");
+      clearMediaPreview();
+      recipeStatus.textContent = "";
+      if (!file) {
+        updateRecipeXpPreview();
+        return;
+      }
+      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+        recipeStatus.textContent = "Choose an image or video file.";
+        mediaInput.value = "";
+        updateRecipeXpPreview();
+        return;
+      }
+      if (file.size > 25 * 1024 * 1024) {
+        recipeStatus.textContent = "That file is over 25 MB. Choose a smaller image or video.";
+        mediaInput.value = "";
+        updateRecipeXpPreview();
+        return;
+      }
+      activeMediaUrl = URL.createObjectURL(file);
+      if (file.type.startsWith("video/")) {
+        videoPreview.src = activeMediaUrl;
+        videoPreview.classList.add("is-visible");
+        videoPreview.onloadedmetadata = () => {
+          if (videoPreview.src !== activeMediaUrl) return;
+          selectedMediaDuration = videoPreview.duration;
+          if (!Number.isFinite(selectedMediaDuration) || selectedMediaDuration <= 0) {
+            clearMediaPreview(true);
+            recipeStatus.textContent = "This video could not be previewed. Choose a different file.";
+          } else if (selectedMediaDuration > 60) {
+            clearMediaPreview(true);
+            recipeStatus.textContent = "Choose a video that is 60 seconds or shorter.";
+          } else {
+            mediaPreviewReady = true;
+            recipeStatus.textContent = `${file.name} is ready for the local demo preview.`;
+            updateRecipeXpPreview();
+          }
+        };
+        videoPreview.onerror = () => {
+          if (videoPreview.src !== activeMediaUrl || !activeMediaUrl) return;
+          clearMediaPreview(true);
+          recipeStatus.textContent = "This video could not be previewed. Choose a supported video file.";
+          updateRecipeXpPreview();
+        };
+      } else {
+        imagePreview.src = activeMediaUrl;
+        imagePreview.classList.add("is-visible");
+        imagePreview.onload = () => {
+          if (imagePreview.src !== activeMediaUrl) return;
+          mediaPreviewReady = true;
+          recipeStatus.textContent = `${file.name} is ready for the local demo preview.`;
+          updateRecipeXpPreview();
+        };
+        imagePreview.onerror = () => {
+          if (imagePreview.src !== activeMediaUrl || !activeMediaUrl) return;
+          clearMediaPreview(true);
+          recipeStatus.textContent = "This image could not be previewed. Choose a supported image file.";
+          updateRecipeXpPreview();
+        };
+      }
+      recipeStatus.textContent = `Loading ${file.name} for the local demo preview…`;
+      updateRecipeXpPreview();
+    }
+
+    function handleRecipeSubmit(event) {
+      event.preventDefault();
+      const file = mediaInput.files[0];
+      if (file && (!file.type.startsWith("image/") && !file.type.startsWith("video/") || file.size > 25 * 1024 * 1024)) {
+        recipeStatus.textContent = "Choose a supported image or video up to 25 MB, or remove the optional media.";
+        return;
+      }
+      if (file && !mediaPreviewReady) {
+        recipeStatus.textContent = "Wait for the optional media preview to load, or remove it before submitting.";
+        return;
+      }
+      if (file && file.type.startsWith("video/") && (!selectedMediaDuration || selectedMediaDuration > 60)) {
+        recipeStatus.textContent = "Wait for the video preview to load, then submit a clip up to 60 seconds.";
+        return;
+      }
+      const form = event.currentTarget;
+      const formData = new FormData(form);
+      const recipeId = String(formData.get("recipe"));
+      const recipe = recipes.find((item) => item.id === recipeId);
+      if (!recipe) {
+        recipeStatus.textContent = "Choose a recipe quest before submitting.";
+        return;
+      }
+      if (state.recipeSubmissions.some((submission) =>
+        submission.recipeId === recipeId && submission.status !== "rejected"
+      )) {
+        recipeStatus.textContent = "This recipe already has a pending or approved demo post.";
+        return;
+      }
+      const complexity = Number(formData.get("complexity"));
+      const role = String(formData.get("role"));
+      const videoName = file && file.type.startsWith("video/") ? file.name : "";
+      const proposedXp = calculateRecipeXp(complexity, role, Boolean(videoName));
+      if (!proposedXp) {
+        recipeStatus.textContent = "Enter a complexity from 1 to 5 (decimals are allowed) and choose a mushroom role.";
+        return;
+      }
+      state.recipeSubmissions.unshift({
+        postId: `recipe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        recipeId,
+        name: recipe.name,
+        date: getTodayKey(),
+        status: "pending",
+        rejectionReason: "",
+        proposedXp,
+        xpAwarded: 0,
+        complexity,
+        role,
+        mediaName: file ? file.name : "",
+        videoName,
+        vote: ""
+      });
+      saveState();
+      renderRecipeSubmissions();
+      recipeStatus.textContent = `Recipe post submitted locally and is pending review. No XP was awarded. Estimated ${formatXp(proposedXp)} demo-only XP if approved, before any first-post milestone.`;
+      showRecipeToast(`${recipe.name} submitted · pending review.`);
+    }
+
+    function renderProgress() {
+      const currentLevel = levelFromXp(state.totalXp);
+      const levelInfo = levelTable[currentLevel - 1];
+      const atLevelCap = levelInfo.level === maxDemoLevel;
+      const xpIntoLevel = state.totalXp - levelInfo.xpAtLevel;
+      const xpToNext = atLevelCap ? 0 : levelInfo.xpToNext;
+      const progress = atLevelCap ? 100 : Math.min(100, (xpIntoLevel / xpToNext) * 100);
+      document.querySelector("#player-level").textContent = `Level ${levelInfo.level}`;
+      document.querySelector("#xp-into-level").textContent = formatXp(xpIntoLevel);
+      document.querySelector("#xp-to-next-level").textContent = formatXp(xpToNext);
+      document.querySelector("#level-progress").style.width = `${progress}%`;
+      document.querySelector(".progress-track").setAttribute("aria-valuemax", String(Math.max(1, xpToNext)));
+      document.querySelector(".progress-track").setAttribute("aria-valuenow", String(atLevelCap ? 1 : xpIntoLevel));
+      document.querySelector(".progress-track").setAttribute("aria-label", atLevelCap ? `Demo-only Level ${maxDemoLevel} cap reached` : `Demo-only progress to level ${levelInfo.level + 1}`);
+      document.querySelector("#player-caption").textContent =
+        `${formatXp(state.totalXp)} demo-only total XP earned · ${atLevelCap ? `Level ${maxDemoLevel} cap reached` : `${formatXp(xpToNext - xpIntoLevel)} demo-only XP to level ${levelInfo.level + 1}`}`;
+      document.querySelector("#sticky-level-label").textContent = `Level ${levelInfo.level}`;
+      document.querySelector("#sticky-level-fill").style.width = `${progress}%`;
+      document.querySelector("#sticky-level-progress").setAttribute("aria-valuemax", String(Math.max(1, xpToNext)));
+      document.querySelector("#sticky-level-progress").setAttribute("aria-valuenow", String(atLevelCap ? 1 : xpIntoLevel));
+      document.querySelector("#sticky-level-progress").setAttribute("aria-label", atLevelCap ? `Demo-only Level ${maxDemoLevel} cap reached` : `Demo-only progress to level ${levelInfo.level + 1}`);
+      document.querySelector("#sticky-level-next").textContent = atLevelCap
+        ? "Demo-only · Level cap"
+        : `Demo-only · ${formatXp(xpToNext - xpIntoLevel)} XP to next`;
+
+      const logList = document.querySelector("#log-list");
+      logList.replaceChildren();
+      state.entries.forEach((entry) => {
+        const item = document.createElement("div");
+        item.className = "log-entry";
+        item.id = `grow-post-${entry.postId}`;
+        const title = document.createElement("strong");
+        title.textContent = `${entry.growId || entry.species} · ${entry.species} · ${entry.stage}`;
+        const note = document.createElement("span");
+        note.textContent = `${entry.date} — ${entry.observation}${entry.mediaName ? ` · photo preview: ${entry.mediaName}` : ""}`;
+        item.append(title, note, createPostStatus(
+          entry,
+          "grow",
+          () => approveGrowPost(entry.postId),
+          (reason) => rejectPost(state.entries, entry.postId, reason, renderProgress)
+        ));
+        item.append(createGrowEntryActions(entry));
+        logList.append(item);
+      });
+      if (!state.entries.length) {
+        const empty = document.createElement("p");
+        empty.className = "player-caption";
+        empty.textContent = "Your first check-in will show up here.";
+        logList.append(empty);
+      }
+      renderGrowQuests();
+      renderXpFeed();
+    }
+
+    searchInput.addEventListener("input", renderCatalog);
+    mediaInput.addEventListener("change", handleRecipeMediaChange);
+    document.querySelector("#export-demo").addEventListener("click", exportDemoProgress);
+    document.querySelector("#import-demo-file").addEventListener("change", importDemoProgress);
+    document.querySelector("#import-standalone-file").addEventListener("change", importStandaloneGrowLogFile);
+    document.querySelector("#level-up-close").addEventListener("click", () => {
+      levelUpBanner.hidden = true;
+      window.clearTimeout(levelUpTimer);
+      levelUpTimer = undefined;
+    });
+    document.querySelector("#recipe-form").addEventListener("input", updateRecipeXpPreview);
+    document.querySelector("#recipe-form").addEventListener("change", updateRecipeXpPreview);
+    document.querySelector("#recipe-form").addEventListener("submit", handleRecipeSubmit);
+    document.querySelector("#reset-demo").addEventListener("click", resetDemoProgress);
+
+    growPhotoInput.addEventListener("change", () => {
+      const file = growPhotoInput.files[0];
+      clearGrowPhotoPreview();
+      logStatus.textContent = "";
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        logStatus.textContent = "Choose an image for the optional grow photo.";
+        growPhotoInput.value = "";
+        return;
+      }
+      if (file.size > 25 * 1024 * 1024) {
+        logStatus.textContent = "That grow photo is over 25 MB. Choose a smaller image.";
+        growPhotoInput.value = "";
+        return;
+      }
+      activeGrowPhotoUrl = URL.createObjectURL(file);
+      const preview = document.querySelector("#grow-photo-preview");
+      preview.src = activeGrowPhotoUrl;
+      preview.classList.add("is-visible");
+      preview.onload = () => {
+        if (preview.src !== activeGrowPhotoUrl) return;
+        growPhotoReady = true;
+        logStatus.textContent = `${file.name} is ready for a local grow-photo preview.`;
+      };
+      preview.onerror = () => {
+        if (preview.src !== activeGrowPhotoUrl || !activeGrowPhotoUrl) return;
+        clearGrowPhotoPreview(true);
+        logStatus.textContent = "This grow photo could not be previewed. Choose a different image.";
+      };
+    });
+
+    document.querySelector("#grow-form").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.currentTarget);
+      const todayKey = getTodayKey();
+      const photo = growPhotoInput.files[0];
+      if (photo && (!photo.type.startsWith("image/") || photo.size > 25 * 1024 * 1024)) {
+        logStatus.textContent = "Choose a supported grow photo up to 25 MB, or remove it.";
+        return;
+      }
+      if (photo && !growPhotoReady) {
+        logStatus.textContent = "Wait for the grow photo preview to load, or remove it before saving.";
+        return;
+      }
+      const entry = {
+        growId: String(formData.get("growId")).trim(),
+        species: String(formData.get("species")).trim(),
+        stage: String(formData.get("stage")),
+        observation: String(formData.get("observation")).trim(),
+        date: todayKey,
+        mediaName: photo ? photo.name : ""
+      };
+      if (!entry.growId || !entry.species || !entry.observation) {
+        logStatus.textContent = "Add a grow name, species, and observation before saving.";
+        return;
+      }
+      const estimate = estimateGrowPostXp(entry);
+      entry.postId = `grow-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      entry.status = "pending";
+      entry.rejectionReason = "";
+      entry.proposedXp = estimate.totalXp;
+      entry.xpAwarded = 0;
+      state.entries.unshift(entry);
+      saveState();
+      renderProgress();
+      logStatus.textContent = `Grow post submitted locally and is pending review. No XP was awarded. Estimated ${formatXp(estimate.totalXp)} demo-only XP if approved; approval rechecks duplicate grow stages and milestones. Photo preview is local only.`;
+      clearGrowPhotoPreview(true);
+      event.currentTarget.reset();
+    });
+
+    searchInput.value = new URLSearchParams(location.search).get("search") || "";
+    document.querySelector("#year").textContent = new Date().getFullYear();
+    chooseWelcomeNote();
+    renderCatalog();
+    renderRecipes();
+    updateRecipeXpPreview();
+    renderRecipeSubmissions();
+    renderProgress();
+  </script>
+</body>
+</html>
