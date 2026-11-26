@@ -4,7 +4,11 @@ Updated 2026-11-26.
 
 ## What this is today
 
-A static, private prelaunch project with no server, accounts, database, payments, or hosting.
+A static prelaunch project with no server, accounts, database, or payments.
+
+The visitor demo is published on GitHub Pages at https://jefeh-create.github.io/MycoQuestShop/, deployed by
+`.github/workflows/pages.yml` on every push to `main`. That workflow leaves out `lab.html` and removes its footer link.
+The prep lab is not hosted.
 
 | Page | Who it's for | What it does |
 | --- | --- | --- |
