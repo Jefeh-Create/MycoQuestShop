@@ -4,9 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#191610">
-  <meta name="description" content="MycoQuest is a demo mushroom shop and grow log with a local, non-redeemable leveling prototype.">
+  <!-- Static demo: no network requests from script, no remote code. A real host should also send this as a header, plus frame-ancestors. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; media-src blob:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" data-i18n-attr="content: demo.meta.description" content="MycoQuest is a demo mushroom shop and grow log with a local, non-redeemable leveling prototype.">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23242018'/%3E%3Cpath d='M32 15v36M32 29c-9 0-15-5-15-13M32 36c9 0 15-5 15-13M32 43c-7 0-11 4-11 9M32 47c7 0 11 3 12 7' fill='none' stroke='%23a8b487' stroke-width='3' stroke-linecap='round'/%3E%3Ccircle cx='32' cy='12' r='3' fill='%23c77c59'/%3E%3C/svg%3E">
-  <title>MycoQuest — Mushroom shop and grow log demo</title>
+  <title data-i18n="demo.meta.title">MycoQuest — Mushroom shop and grow log demo</title>
   <style>
     :root {
       color-scheme: dark;
@@ -180,31 +183,6 @@
     .button:hover { box-shadow: 0 8px 26px rgba(168, 180, 135, .2); transform: translateY(-2px); }
     .text-link { color: var(--muted); font-size: .87rem; transition: color .18s ease; }
 
-    .mushroom-banner {
-      display: grid;
-      grid-template-columns: 1.45fr .8fr;
-      grid-template-rows: 1fr 1fr;
-      height: clamp(340px, 42vw, 520px);
-      gap: 9px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-    }
-    .banner-photo {
-      position: relative;
-      margin: 0;
-      overflow: hidden;
-      background: #31291e;
-    }
-    .banner-feature { grid-row: 1 / 3; }
-    .banner-photo img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
-    .banner-photo:hover img { transform: scale(1.045); }
-    .banner-photo::after { position: absolute; inset: 35% 0 0; background: linear-gradient(transparent, rgba(16, 15, 11, .82)); content: ""; pointer-events: none; }
-    .banner-photo figcaption { position: absolute; z-index: 1; right: 24px; bottom: 23px; left: 24px; display: grid; gap: 6px; color: #fff8eb; }
-    .banner-feature figcaption strong { max-width: 540px; font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 3.2rem); font-weight: 500; letter-spacing: -.04em; line-height: 1.04; }
-    .banner-photo figcaption span { color: #e6d9c6; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; }
-    .banner-side figcaption { right: 14px; bottom: 14px; left: 14px; }
-    .banner-side figcaption strong { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; }
     .section { padding-block: 68px; border-top: 1px solid var(--line); }
     .section-heading {
       display: flex;
@@ -234,7 +212,7 @@
       font: inherit;
     }
     .catalog-tools input::placeholder, .log-form textarea::placeholder { color: #928876; }
-    .catalog-tools input:focus, .log-form input:focus, .log-form select:focus, .log-form textarea:focus { border-color: var(--lime); outline: 2px solid rgba(168, 180, 135, .2); }
+    .catalog-tools input:focus, .log-form input:focus, .log-form select:focus, .log-form textarea:focus { border-color: var(--lime); outline: 2px solid var(--lime); outline-offset: 2px; }
     .catalog-count { margin: 15px 0 12px; color: var(--muted); font-size: .78rem; }
     .product-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
     .product-card { display: grid; min-width: 0; grid-template-columns: minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.025); }
@@ -484,13 +462,12 @@
       transition: transform .18s ease;
     }
     .skip-link:focus { transform: translateY(0); }
-    [id] { scroll-margin-top: 1rem; }
+    [id] { scroll-margin-top: 68px; }
     @media (max-width: 760px) {
       .wrap { width: min(100% - 34px, 560px); }
       .topbar { min-height: 68px; flex-wrap: wrap; gap: 12px; padding-block: 12px; }
       .nav { gap: 17px; font-size: .78rem; }
       .hero { padding-block: 43px 58px; }
-      .mushroom-banner { height: 390px; }
       .grow-layout, .recipe-share { grid-template-columns: 1fr; }
       .local-card { grid-template-columns: 1fr auto; }
       .product-grid { grid-template-columns: minmax(0, 620px); }
@@ -511,10 +488,6 @@
       .nav { display: grid; width: 100%; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; font-size: .68rem; }
       .nav a { text-align: center; }
       .hero h1 { font-size: 3.35rem; }
-      .mushroom-banner { grid-template-columns: 1.2fr .8fr; height: 330px; gap: 5px; }
-      .banner-photo figcaption { right: 11px; bottom: 12px; left: 11px; }
-      .banner-feature figcaption strong { font-size: 1.65rem; }
-      .banner-side figcaption strong { font-size: 1rem; }
       .catalog-tools, .recipe-form { grid-template-columns: 1fr; }
       .product-grid, .recipe-grid { grid-template-columns: 1fr; }
       .product-card, .product-card--featured { grid-template-columns: 1fr; }
@@ -527,6 +500,105 @@
       .local-note { grid-column: auto; }
       footer { flex-direction: column; }
     }
+    /* ---- trail, journey, categories, share ---- */
+    :root { --gold: #e3a94f; --spruce: #20271c; }
+    .eyebrow, .forest-note .eyebrow { font-size: .85rem; letter-spacing: 0; text-transform: none; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 0 48px; align-items: center; padding-block: 44px 64px; }
+    .hero-intro { margin: 0; }
+    .hero h1 { font-size: clamp(2.9rem, 5.6vw, 4.8rem); letter-spacing: -.045em; line-height: 1.02; }
+    .demo-notice { margin: 0 0 14px; font-size: .8rem; }
+    .cap-art { position: relative; margin: 0; padding-bottom: 38px; }
+    .cap-art > img:not(.spore) { display: block; width: 100%; aspect-ratio: 1 / 1.02; object-fit: cover; border-radius: 50% 50% 22px 22px / 46% 46% 22px 22px; border: 1px solid rgba(227, 169, 79, .35); }
+    .spore { position: absolute; width: 31%; aspect-ratio: 1; border-radius: 50%; border: 5px solid var(--bg); object-fit: cover; }
+    .spore--one { left: -22px; bottom: 0; }
+    .spore--two { right: -14px; bottom: 22px; width: 24%; }
+
+    .trail { grid-column: 1 / -1; margin-top: 52px; padding: clamp(20px, 4vw, 40px); border-radius: 28px; background: radial-gradient(ellipse at 50% 0, rgba(227, 169, 79, .14), transparent 60%), var(--spruce); }
+    .trail-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
+    .trail h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.9rem, 4vw, 2.7rem); font-weight: 500; }
+    .level-switch { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; border: 0; }
+    .level-switch button, .category-bar button { min-height: 44px; padding: 8px 16px; border: 1px solid rgba(235, 220, 192, .28); border-radius: 99px; background: transparent; color: var(--ink); cursor: pointer; font-size: .85rem; }
+    .level-switch button[aria-pressed="true"], .category-bar button[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: #1d170c; font-weight: 750; }
+    .trail-map { display: block; width: 100%; height: 110px; margin-top: 10px; }
+    .trail-map path { fill: none; stroke: rgba(168, 180, 135, .4); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+    .trail-map path.is-lit { stroke: var(--gold); stroke-width: 4; animation: hypha-glow .6s ease; }
+    @keyframes hypha-glow { from { opacity: 0; } to { opacity: 1; } }
+    .trailheads { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .trailheads button { display: grid; gap: 4px; min-height: 92px; align-content: start; padding: 16px; border: 1px solid rgba(235, 220, 192, .2); border-radius: 40px 40px 14px 14px; background: rgba(25, 22, 16, .6); color: var(--ink); cursor: pointer; text-align: center; }
+    .trailheads strong { font-family: var(--serif); font-size: 1.35rem; font-weight: 500; }
+    .trailheads span { color: #c4bca8; font-size: .8rem; line-height: 1.45; }
+    .trailheads button[aria-pressed="true"] { border-color: var(--gold); background: rgba(227, 169, 79, .16); }
+    .trail-panel { margin-top: 14px; padding: 18px 20px; border-radius: 14px; background: var(--bg); }
+    .trail-panel p { margin: 0 0 14px; max-width: 65ch; line-height: 1.6; }
+    .trail-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+    .chip-link { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 16px; border: 1px solid rgba(168, 180, 135, .55); border-radius: 99px; color: #e0e6ca; font-size: .85rem; font-weight: 700; }
+    .chip-link:first-child { background: var(--lime); border-color: var(--lime); color: #14170e; }
+    .hero .forest-note { grid-column: 1 / -1; max-width: none; margin-top: 16px; }
+
+    .journey { display: grid; grid-template-columns: .8fr 1.2fr; gap: 22px 40px; padding-block: 0 56px; }
+    .journey h2 { margin: 0 0 8px; font-family: var(--serif); font-size: 1.9rem; font-weight: 500; }
+    .journey p { margin: 0 0 12px; color: var(--muted); font-size: .9rem; line-height: 1.6; }
+    .milestones { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-self: center; margin: 0; padding: 0; list-style: none; }
+    .milestones li { position: relative; padding: 34px 8px 0; color: var(--muted); font-size: .8rem; line-height: 1.45; text-align: center; }
+    .milestones li::before { position: absolute; z-index: 1; top: 0; left: calc(50% - 11px); width: 18px; height: 18px; border: 2px solid #7d745f; border-radius: 50%; background: var(--bg); content: ""; }
+    .milestones li:not(:last-child)::after { position: absolute; top: 10px; left: 50%; width: 100%; height: 2px; background: #4a4335; content: ""; }
+    .milestones li.is-done { color: var(--ink); }
+    .milestones li.is-done::before { border-color: var(--gold); background: var(--gold); box-shadow: 0 0 0 5px rgba(227, 169, 79, .18); }
+
+    .category-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .category-about { max-width: 68ch; margin: 14px 0 0; color: #d6cdba; font-size: .9rem; line-height: 1.65; }
+    .catalog-tools { margin-top: 18px; }
+    .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .product-card { align-content: start; }
+    .product-more { margin: 14px 0 0; border-block: 1px solid var(--line); }
+    .product-more summary, .xp-rules summary { padding-block: 12px; cursor: pointer; color: #d3ddb6; font-size: .85rem; font-weight: 700; }
+    .product-more .product-facts { margin: 0 0 14px; }
+    .start-grow { margin-top: 10px; }
+    .category-empty { grid-column: 1 / -1; padding: clamp(24px, 5vw, 44px); border-radius: 50% 50% 18px 18px / 70px 70px 18px 18px; background: var(--spruce); text-align: center; }
+    .category-empty h3 { margin: 0 0 8px; font-family: var(--serif); font-size: 1.7rem; font-weight: 500; }
+    .category-empty p { max-width: 55ch; margin: 0 auto 16px; color: #c9c0ad; line-height: 1.65; }
+
+    .section-grow .xp-feed { margin: 0 0 16px; }
+    .xp-rules { margin: 14px 0; }
+    .share-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+    .share-controls { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+    .share-controls select { width: 100%; min-height: 44px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: #211d16; color: var(--ink); font: inherit; }
+    .share-controls label { display: flex; min-height: 32px; align-items: center; gap: 10px; font-size: .9rem; }
+    .share-controls input { width: 20px; height: 20px; accent-color: var(--gold); }
+    .share-card { padding: 24px; border: 1px solid rgba(227, 169, 79, .4); border-radius: 60px 60px 16px 16px; background: var(--spruce); }
+    .share-card pre { min-height: 130px; margin: 8px 0 16px; font-family: var(--serif); font-size: 1.15rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .share-card p { margin: 10px 0 0; color: #c9c0ad; font-size: .8rem; line-height: 1.55; }
+    .share-rules { margin-top: 24px; max-width: 75ch; color: var(--muted); font-size: .88rem; line-height: 1.7; }
+
+    /* readability floor for the small prototype text */
+    .quest-node, .quest-node-status, .product-facts dt, .product-badge, .recipe-meta, .product-card .product-category, .price-qualifier { font-size: .72rem !important; letter-spacing: 0; text-transform: none; }
+    .data-tools button, .data-tools select, .data-tools input, .post-moderation button, .post-moderation label, .demo-moderation-note, .grow-entry-actions button, .log-entry span, .xp-feed-item, .product-facts dd, .recipe-details p, .product-note, .demo-xp-sources, .prototype-note { font-size: .78rem !important; }
+
+    @media (max-width: 760px) {
+      .hero, .journey, .share-layout { grid-template-columns: minmax(0, 1fr); }
+      .cap-art { margin: 30px 14px 0; }
+      .trail { margin-top: 32px; }
+      .trail-map { display: none; }
+      .trailheads { grid-template-columns: 1fr 1fr; margin-top: 18px; }
+      .product-grid { grid-template-columns: minmax(0, 620px); }
+      .quest-track { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 430px) {
+      .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); font-size: .85rem; }
+      .nav a { padding-block: 7px; }
+      .trailheads { grid-template-columns: 1fr; }
+      .trailheads button { min-height: 0; border-radius: 30px 14px 14px 30px; text-align: left; padding-left: 22px; }
+      .milestones { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 0; }
+      .milestones li::after { display: none; }
+    }
+    /* ---- language switch ---- */
+    .topbar { flex-wrap: wrap; gap: 12px 24px; }
+    .lang-switch { display: inline-flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid rgba(227, 169, 79, .5); border-radius: 99px; background: rgba(36, 32, 24, .85); }
+    .lang-switch button { min-width: 44px; min-height: 40px; padding: 4px 13px; border: 0; border-radius: 99px; background: transparent; color: var(--ink); cursor: pointer; font-size: .86rem; }
+    .lang-switch button:hover { background: rgba(227, 169, 79, .14); }
+    .lang-switch button[aria-pressed="true"] { background: var(--gold); color: #1d170c; font-weight: 750; }
+    .lang-icon { display: grid; width: 28px; place-items: center; color: var(--gold); }
+    .lang-icon svg { width: 18px; height: 18px; }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
       .quest-node.is-active { animation: none; }
@@ -534,120 +606,137 @@
   </style>
 </head>
 <body>
-  <div class="sticky-level-bar" aria-label="Demo-only level progress">
-    <span class="sticky-level-label" id="sticky-level-label">Level 1</span>
-    <div class="sticky-level-track" role="progressbar" id="sticky-level-progress" aria-label="Demo-only progress to next level" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0">
+  <div class="sticky-level-bar" data-i18n-attr="aria-label: demo.level.barLabel">
+    <span class="sticky-level-label" id="sticky-level-label"></span>
+    <div class="sticky-level-track" role="progressbar" id="sticky-level-progress" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0">
       <div class="sticky-level-fill" id="sticky-level-fill"></div>
     </div>
-    <span class="sticky-level-next" id="sticky-level-next">Demo-only · 200 XP to next</span>
+    <span class="sticky-level-next" id="sticky-level-next"></span>
   </div>
   <div class="level-up-banner" id="level-up-banner" role="status" aria-live="polite" hidden>
     <p id="level-up-message"></p>
-    <button class="level-up-close" id="level-up-close" type="button" aria-label="Dismiss level-up banner">×</button>
+    <button class="level-up-close" id="level-up-close" type="button" data-i18n-attr="aria-label: demo.level.dismiss">×</button>
   </div>
-  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <a class="skip-link" href="#main-content" data-i18n="common.skip">Skip to main content</a>
   <header class="wrap topbar">
-    <a class="brand" href="#home" aria-label="MycoQuest, home">
+    <a class="brand" href="#home" data-i18n-attr="aria-label: demo.nav.home">
       <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M12 8c-4 0-6-2-6-5M12 12c4 0 6-2 6-5M12 16c-3 0-5 2-5 5M12 17c3 0 5 1 5 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span>
       <span>MYCOQUEST</span>
     </a>
-    <nav class="nav" aria-label="Main navigation">
-      <a href="#shop">Shop</a>
-      <a href="#recipes">Recipes</a>
-      <a href="grow-log.html">Grow log</a>
-      <a href="#local">Local</a>
-      <a class="nav-cta" href="#faq">FAQ</a>
+    <nav class="nav" data-i18n-attr="aria-label: demo.nav.label">
+      <a href="#shop" data-i18n="demo.nav.shop">Shop</a>
+      <a href="#recipes" data-i18n="demo.nav.recipes">Recipes</a>
+      <a href="#grow-log" data-i18n="demo.nav.grow">Grow log</a>
+      <a href="#share" data-i18n="demo.nav.share">Share</a>
+      <a href="#local" data-i18n="demo.nav.local">Local</a>
+      <a class="nav-cta" href="#faq" data-i18n="demo.nav.faq">FAQ</a>
     </nav>
+    <div id="language-switch"></div>
   </header>
 
   <main id="main-content">
-    <section class="xp-feed wrap" aria-labelledby="xp-feed-title">
-      <h2 id="xp-feed-title">Recent XP · demo-only</h2>
-      <div class="xp-feed-list" id="xp-feed-list" aria-live="polite"></div>
-    </section>
     <section class="wrap hero" id="home">
       <div class="hero-intro">
-        <span class="eyebrow">Welcome to MycoQuest</span>
-        <p class="demo-notice">Demo only — no payments, live orders, or media uploads.</p>
-        <h1><span id="welcome-title">A forest of flavor.</span><br><em id="welcome-tagline">One quest at a time.</em></h1>
-        <p class="hero-copy">MycoQuest is a demo mushroom shop and grow log. Explore fresh mushrooms, try recipes, and track your growing journey.</p>
-        <div class="hero-actions">
-          <a class="button" href="#shop">Explore the demo shop <span aria-hidden="true">&nbsp;→</span></a>
-          <a class="text-link" href="#recipes">Explore recipe quests →</a>
+        <p class="demo-notice" data-i18n="demo.hero.notice">Demo only — no payments, live orders, or media uploads.</p>
+        <h1><span id="welcome-title"></span><br><em id="welcome-tagline"></em></h1>
+        <p class="hero-copy" data-i18n="demo.hero.copy">A mushroom shop and grow log you explore like a trail.</p>
+      </div>
+      <figure class="cap-art">
+        <img src="assets/lions-mane.jpg" data-i18n-attr="alt: demo.hero.alt.lionsMane" alt="" fetchpriority="high">
+        <img class="spore spore--one" src="assets/oyster-mushrooms.jpg" data-i18n-attr="alt: demo.hero.alt.oyster" alt="">
+        <img class="spore spore--two" src="assets/reishi-mushroom.jpg" data-i18n-attr="alt: demo.hero.alt.reishi" alt="">
+      </figure>
+      <div class="trail" id="trail">
+        <div class="trail-head">
+          <h2 id="trail-title" data-i18n="demo.trail.title">Where do you want to go?</h2>
+          <fieldset class="level-switch" data-i18n-attr="aria-label: demo.trail.experience">
+            <button type="button" data-level="new" aria-pressed="true" data-i18n="demo.trail.level.new">I’m new to this</button>
+            <button type="button" data-level="experienced" aria-pressed="false" data-i18n="demo.trail.level.experienced">I’ve done this before</button>
+          </fieldset>
         </div>
-        <aside class="forest-note" aria-live="polite">
-          <span class="forest-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.8 14.3 9.7 21.2 12l-6.9 2.3-2.3 6.9-2.3-6.9L2.8 12l6.9-2.3L12 2.8Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"/></svg></span>
-          <div><span class="eyebrow" id="forest-note-label">Forest note</span><p id="forest-note-text">Lion’s Mane has long, cascading spines and a mild flavor that works well with savory seasonings.</p></div>
-        </aside>
+        <svg class="trail-map" viewBox="0 0 800 110" preserveAspectRatio="none" aria-hidden="true">
+          <path data-branch="cook" d="M400 0 C400 55 100 40 100 110"/>
+          <path data-branch="grow" d="M400 0 C400 60 300 50 300 110"/>
+          <path data-branch="learn" d="M400 0 C400 60 500 50 500 110"/>
+          <path data-branch="share" d="M400 0 C400 55 700 40 700 110"/>
+        </svg>
+        <div class="trailheads" role="group" aria-labelledby="trail-title">
+          <button type="button" data-trail="cook" aria-pressed="true"><strong data-i18n="demo.trail.cook">Cook</strong><span data-i18n="demo.trail.cook.hint"></span></button>
+          <button type="button" data-trail="grow" aria-pressed="false"><strong data-i18n="demo.trail.grow">Grow</strong><span data-i18n="demo.trail.grow.hint"></span></button>
+          <button type="button" data-trail="learn" aria-pressed="false"><strong data-i18n="demo.trail.learn">Learn</strong><span data-i18n="demo.trail.learn.hint"></span></button>
+          <button type="button" data-trail="share" aria-pressed="false"><strong data-i18n="demo.trail.share">Share</strong><span data-i18n="demo.trail.share.hint"></span></button>
+        </div>
+        <div class="trail-panel" id="trail-panel" aria-live="polite"></div>
       </div>
-      <div class="mushroom-banner" role="group" aria-label="Mushroom species reference photos">
-        <figure class="banner-photo banner-feature">
-          <img src="assets/lions-mane.jpg" alt="Fresh Lion’s Mane mushroom with distinctive cascading white spines" fetchpriority="high">
-          <figcaption><span>Gourmet mushrooms</span><strong>Find something wonderful in the woods.</strong></figcaption>
-        </figure>
-        <figure class="banner-photo banner-side">
-          <img src="assets/oyster-mushrooms.jpg" alt="An oyster mushroom growing from a tree trunk" loading="lazy">
-          <figcaption><span>Gourmet variety</span><strong>Oyster</strong></figcaption>
-        </figure>
-        <figure class="banner-photo banner-side">
-          <img src="assets/reishi-mushroom.jpg" alt="Glossy red-brown, fan-shaped Reishi mushroom growing from a tree" loading="lazy">
-          <figcaption><span>Mushroom variety</span><strong>Reishi</strong></figcaption>
-        </figure>
+      <aside class="forest-note">
+        <span class="forest-note-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.8 14.3 9.7 21.2 12l-6.9 2.3-2.3 6.9-2.3-6.9L2.8 12l6.9-2.3L12 2.8Z" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5"/></svg></span>
+        <div><span class="eyebrow" id="forest-note-label"></span><p id="forest-note-text"></p></div>
+      </aside>
+    </section>
+
+    <section class="wrap journey" aria-labelledby="journey-title">
+      <div>
+        <h2 id="journey-title" data-i18n="demo.journey.title">Your trail so far</h2>
+        <p id="journey-next" aria-live="polite"></p>
+        <a class="chip-link" id="journey-link" href="#grow-log"></a>
       </div>
+      <ol class="milestones" id="milestones" data-i18n-attr="aria-label: demo.journey.listLabel"></ol>
     </section>
 
     <section class="section" id="shop">
       <div class="wrap">
         <div class="section-heading">
-          <div><span class="eyebrow">MycoQuest shop</span><h2>Find your next favorite.</h2></div>
-          <p>Explore proposed fresh Lion’s Mane, oyster, shiitake, and mixed-box ideas. Every listing and price is a demo concept, not live inventory or an offer to buy.</p>
+          <div><span class="eyebrow" data-i18n="demo.shop.eyebrow">MycoQuest shop</span><h2 data-i18n="demo.shop.title">Find your next favorite.</h2></div>
+          <p data-i18n="demo.shop.intro"></p>
         </div>
+        <div class="category-bar" id="category-bar" role="group" data-i18n-attr="aria-label: demo.shop.types"></div>
+        <p class="category-about" id="category-about"></p>
         <div class="catalog-tools" id="catalog">
-          <label for="product-search">Search products
-            <input id="product-search" type="search" placeholder="Search varieties or boxes…" autocomplete="off">
+          <label for="product-search"><span data-i18n="demo.shop.searchLabel">Search products</span>
+            <input id="product-search" type="search" data-i18n-attr="placeholder: demo.shop.searchPlaceholder" autocomplete="off">
           </label>
         </div>
         <p class="catalog-count" id="catalog-count" aria-live="polite"></p>
-        <div class="product-grid" id="product-grid" aria-label="Matching products"></div>
-        <p class="catalog-disclaimer">Demo catalog only. Proposed prices are test examples informed by <a href="https://rvrvalley.com/products/river-valley-ranch-oyster-mushrooms-1-2-pound" target="_blank" rel="noreferrer">River Valley Ranch’s oyster listing</a>, <a href="https://rvrvalley.com/products/river-valley-ranch-shiitake-whole-mushrooms-1-2-pound" target="_blank" rel="noreferrer">its shiitake listing</a>, <a href="https://www.northwoodmushrooms.com/online-store/Fresh-Mushrooms-Shiitake-p429879612" target="_blank" rel="noreferrer">Northwood Mushrooms’ shiitake sizes</a> (checked November 8, 2026), and <a href="https://smallfarms.cornell.edu/2023/04/smart-marketing-for-specialty-mushrooms/" target="_blank" rel="noreferrer">Cornell’s 2023 survey</a> for historical context. These are not approved prices, a Milwaukee market average, or a profitability estimate; third-party prices, stock, and package sizes vary, and advertised prices exclude shipping and taxes. Availability, package details, photos, and storage directions must be confirmed before a real sale.</p>
+        <div class="product-grid" id="product-grid" data-i18n-attr="aria-label: demo.shop.gridLabel"></div>
+        <p class="catalog-disclaimer" data-i18n="demo.shop.disclaimer"><a data-slot="rvrOyster" data-i18n="demo.shop.source.rvrOyster" href="https://rvrvalley.com/products/river-valley-ranch-oyster-mushrooms-1-2-pound" target="_blank" rel="noreferrer"></a><a data-slot="rvrShiitake" data-i18n="demo.shop.source.rvrShiitake" href="https://rvrvalley.com/products/river-valley-ranch-shiitake-whole-mushrooms-1-2-pound" target="_blank" rel="noreferrer"></a><a data-slot="northwood" data-i18n="demo.shop.source.northwood" href="https://www.northwoodmushrooms.com/online-store/Fresh-Mushrooms-Shiitake-p429879612" target="_blank" rel="noreferrer"></a><a data-slot="cornell" data-i18n="demo.shop.source.cornell" href="https://smallfarms.cornell.edu/2023/04/smart-marketing-for-specialty-mushrooms/" target="_blank" rel="noreferrer"></a></p>
       </div>
     </section>
 
     <section class="section recipes-section" id="recipes">
       <div class="wrap">
         <div class="section-heading">
-          <div><span class="eyebrow">Recipe quest board</span><h2>Take Lion’s Mane around the world.</h2></div>
-          <p>Five MycoQuest kitchen inspirations from different food traditions. Each is an original Lion’s Mane adaptation, not a claim that the mushroom is traditional to that dish.</p>
+          <div><span class="eyebrow" data-i18n="demo.recipes.eyebrow">Recipe quest board</span><h2 data-i18n="demo.recipes.title">Take Lion’s Mane around the world.</h2></div>
+          <p data-i18n="demo.recipes.intro"></p>
         </div>
-        <div class="recipe-grid" id="recipe-grid" aria-label="Lion’s Mane recipe quests"></div>
+        <div class="recipe-grid" id="recipe-grid" data-i18n-attr="aria-label: demo.recipes.gridLabel"></div>
         <div class="recipe-share">
           <div>
-            <span class="eyebrow">Share your cook-up</span>
-            <h3>Complete a recipe quest.</h3>
-            <p>Recipe posts start pending review. Complexity and role determine the demo-only XP shown after simulated approval. Optional media is previewed on this device only; no server reviews or awards posts.</p>
+            <span class="eyebrow" data-i18n="demo.recipes.shareEyebrow">Share your cook-up</span>
+            <h3 data-i18n="demo.recipes.shareTitle">Complete a recipe quest.</h3>
+            <p data-i18n="demo.recipes.shareIntro"></p>
           </div>
           <form class="recipe-form" id="recipe-form">
-            <label>Recipe tried
+            <label><span data-i18n="demo.recipes.form.recipe">Recipe tried</span>
               <select name="recipe" id="recipe-select" required></select>
             </label>
-            <label>Complexity score (1–5)
+            <label><span data-i18n="demo.recipes.form.complexity">Complexity score (1–5)</span>
               <input name="complexity" id="recipe-complexity" type="number" min="1" max="5" step="any" value="3" required>
             </label>
-            <label>Mushroom role
+            <label><span data-i18n="demo.recipes.form.role">Mushroom role</span>
               <select name="role" id="recipe-role" required>
-                <option value="supporting">Supporting · ×1.0</option>
-                <option value="co-star" selected>Co-star · ×1.5</option>
-                <option value="star">Star · ×2.0</option>
+                <option value="supporting" data-i18n="demo.recipes.role.supporting">Supporting · ×1.0</option>
+                <option value="co-star" selected data-i18n="demo.recipes.role.co-star">Co-star · ×1.5</option>
+                <option value="star" data-i18n="demo.recipes.role.star">Star · ×2.0</option>
               </select>
             </label>
-            <label class="full-width">Optional photo or video (video up to 60 seconds / 25 MB)
-              <input name="media" id="recipe-media" type="file" accept="image/*,video/*">
+            <label class="full-width"><span data-i18n="demo.recipes.form.media">Optional photo or video</span>
+              <input name="media" id="recipe-media" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime">
             </label>
-            <video class="media-preview full-width" id="media-preview" controls aria-label="Selected recipe video preview"></video>
-            <img class="media-preview full-width" id="image-preview" alt="Preview of your recipe photo">
+            <video class="media-preview full-width" id="media-preview" controls data-i18n-attr="aria-label: demo.recipes.form.videoPreview"></video>
+            <img class="media-preview full-width" id="image-preview" data-i18n-attr="alt: demo.recipes.form.imagePreview" alt="">
             <p class="recipe-xp-preview full-width" id="recipe-xp-preview" aria-live="polite"></p>
             <div class="full-width">
-              <button class="submit-recipe" type="submit">Submit recipe post · pending review</button>
+              <button class="submit-recipe" type="submit" data-i18n="demo.recipes.form.submit">Submit recipe post · pending review</button>
               <p class="recipe-status" id="recipe-status" role="status"></p>
             </div>
             <div class="submission-list" id="submission-list" aria-live="polite"></div>
@@ -659,78 +748,84 @@
     <section class="section section-grow" id="grow-log">
       <div class="wrap">
         <div class="section-heading">
-          <div><span class="eyebrow">Cultivator side quest</span><h2>Keep your grow journey growing.</h2></div>
-          <p>Record grow activity and track simulated levels. XP is stored in this browser for the prototype only; it is not redeemable.</p>
+          <div><span class="eyebrow" data-i18n="demo.grow.eyebrow">Cultivator side quest</span><h2 data-i18n="demo.grow.title">Keep your grow journey growing.</h2></div>
+          <p data-i18n="demo.grow.intro"></p>
         </div>
+        <section class="xp-feed" aria-labelledby="xp-feed-title">
+          <h2 id="xp-feed-title" data-i18n="demo.feed.title">Recent XP · demo-only</h2>
+          <div class="xp-feed-list" id="xp-feed-list" aria-live="polite"></div>
+        </section>
         <div class="grow-layout">
           <div class="player-card" id="rewards">
             <div class="player-top">
-              <div><h3>Leveling prototype</h3><p>Local demo XP · not a live rewards system</p></div>
-              <span class="level-badge" id="player-level">Level 1</span>
+              <div><h3 data-i18n="demo.level.title">Leveling prototype</h3><p data-i18n="demo.level.subtitle">Local demo XP · not a live rewards system</p></div>
+              <span class="level-badge" id="player-level"></span>
             </div>
-            <div class="xp-row"><span><strong id="xp-into-level">0</strong> demo-only XP into level</span><span><strong id="xp-to-next-level">200</strong> demo-only XP to next level</span></div>
-            <div class="progress-track" role="progressbar" aria-label="Demo-only progress to next level" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0">
+            <div class="xp-row"><span data-i18n="demo.level.into"><strong id="xp-into-level" data-slot="amount">0</strong></span><span data-i18n="demo.level.toNext"><strong id="xp-to-next-level" data-slot="amount">200</strong></span></div>
+            <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="200" aria-valuenow="0">
               <div class="progress-fill" id="level-progress"></div>
             </div>
-            <p class="player-caption" id="player-caption">0 demo-only total XP · Level 50 cap</p>
-            <p class="demo-xp-sources">Demo-only values pending approval: small interactions 5 demo-only XP each, capped at 25 demo-only XP/day; each newly approved grow stage 100 demo-only XP; approved grow photo 250 demo-only XP; first approved post across all post types 100 demo-only XP once; first approved grow 250 demo-only XP once. Recipe posts earn a demo-only base of complexity × 55 XP, multiplied by role (supporting ×1, co-star ×1.5, star ×2), plus 100 demo-only XP for video, only after simulated approval. Reactions award no XP. Verified tries from other members (25 demo-only XP, capped at 250 demo-only XP per recipe), one-time like milestones (10/50/100), and verified kit events (400–600) are not simulated here. Level 50 is the current cap, reached at 53,000 demo-only XP; no level-50 reward is configured. These local values are not validated, server-verified, or redeemable.</p>
+            <p class="player-caption" id="player-caption"></p>
+            <details class="xp-rules"><summary data-i18n="demo.level.rulesSummary">How demo XP works and what isn’t checked</summary>
+            <p class="demo-xp-sources" data-i18n="demo.level.rules"></p>
             <p class="prototype-note" id="storage-note" hidden></p>
-            <p class="prototype-note">Progress and simulated moderation are saved in this browser only. New posts are pending and award no XP until you use the demo approval controls. Only grow and recipe posts are modeled here; standalone photo, review, and comment posts are not implemented. This prototype cannot verify grow ownership, species legality, health claims, account age, self-votes, or moderation; server awards and rewards are not connected. Health-benefit claims and illegal species must receive no XP in the server implementation.</p>
-            <button class="reset-demo-button" id="reset-demo" type="button">Reset demo progress</button>
+            <p class="prototype-note" data-i18n="demo.level.prototypeNote"></p>
+            </details>
+            <button class="reset-demo-button" id="reset-demo" type="button" data-i18n="demo.level.reset">Reset demo progress</button>
             <p class="reset-status" id="reset-status" role="status"></p>
-            <div class="data-tools" aria-label="Demo-only grow-log data tools">
-              <button id="export-demo" type="button">Demo-only · Export progress</button>
-              <label for="import-demo-file" class="demo-moderation-note">Demo-only · Import site progress</label>
-              <input id="import-demo-file" type="file" accept="application/json,.json" aria-label="Demo-only import site progress JSON">
-              <label for="import-standalone-file" class="demo-moderation-note">Demo-only · Import standalone grow log (v2)</label>
-              <input id="import-standalone-file" type="file" accept="application/json,.json" aria-label="Demo-only import standalone grow log version 2 JSON">
-              <label for="import-mode" class="demo-moderation-note">Import mode</label>
-              <select id="import-mode" aria-label="Demo-only import mode">
-                <option value="replace" selected>Replace current data</option>
-                <option value="add">Add to current data</option>
+            <div class="data-tools" data-i18n-attr="aria-label: demo.data.label">
+              <button id="export-demo" type="button" data-i18n="demo.data.export">Demo-only · Export progress</button>
+              <label for="import-demo-file" class="demo-moderation-note" data-i18n="demo.data.importSite">Demo-only · Import site progress</label>
+              <input id="import-demo-file" type="file" accept="application/json,.json" data-i18n-attr="aria-label: demo.data.importSiteLabel">
+              <label for="import-standalone-file" class="demo-moderation-note" data-i18n="demo.data.importStandalone">Demo-only · Import standalone grow log (v2)</label>
+              <input id="import-standalone-file" type="file" accept="application/json,.json" data-i18n-attr="aria-label: demo.data.importStandaloneLabel">
+              <label for="import-mode" class="demo-moderation-note" data-i18n="demo.data.mode">Import mode</label>
+              <select id="import-mode" data-i18n-attr="aria-label: demo.data.modeLabel">
+                <option value="replace" selected data-i18n="demo.data.replace">Replace current data</option>
+                <option value="add" data-i18n="demo.data.add">Add to current data</option>
               </select>
             </div>
             <p class="data-tools-status" id="data-tools-status" role="status"></p>
           </div>
           <div class="log-panel">
-            <h3>Record a grow-log check-in</h3>
-            <p>Submit grow activity for review. Pending or rejected posts earn no XP; demo XP is added only when you simulate approval below. A grow photo is attached to its grow post.</p>
+            <h3 data-i18n="demo.log.title">Record a grow-log check-in</h3>
+            <p data-i18n="demo.log.intro"></p>
             <form class="log-form" id="grow-form">
-              <label>Grow name / identifier
-                <input name="growId" maxlength="60" placeholder="e.g. Oyster batch 1" required>
+              <label><span data-i18n="demo.log.growName">Grow name / identifier</span>
+                <input name="growId" maxlength="60" data-i18n-attr="placeholder: demo.log.growNamePlaceholder" required>
               </label>
-              <label>Species
-                <input name="species" maxlength="60" placeholder="e.g. Lion’s mane" required>
+              <label><span data-i18n="demo.log.species">Species</span>
+                <input name="species" maxlength="60" data-i18n-attr="placeholder: demo.log.speciesPlaceholder" required>
               </label>
-              <label>Current stage
+              <label><span data-i18n="demo.log.stage">Current stage</span>
                 <select name="stage" required>
-                  <option value="">Choose a stage</option>
-                  <option>Planning</option>
-                  <option>Inoculation</option>
-                  <option>Colonization</option>
-                  <option>Fruiting</option>
-                  <option>Harvest</option>
-                  <option>Complete</option>
+                  <option value="" data-i18n="demo.log.chooseStage">Choose a stage</option>
+                  <option value="Planning" data-i18n="common.stage.Planning">Planning</option>
+                  <option value="Inoculation" data-i18n="common.stage.Inoculation">Inoculation</option>
+                  <option value="Colonization" data-i18n="common.stage.Colonization">Colonization</option>
+                  <option value="Fruiting" data-i18n="common.stage.Fruiting">Fruiting</option>
+                  <option value="Harvest" data-i18n="common.stage.Harvest">Harvest</option>
+                  <option value="Complete" data-i18n="common.stage.Complete">Complete</option>
                 </select>
               </label>
-              <label class="full-width">Observation
-                <textarea name="observation" maxlength="280" placeholder="Add a note for your own log…" required></textarea>
+              <label class="full-width"><span data-i18n="demo.log.observation">Observation</span>
+                <textarea name="observation" maxlength="280" data-i18n-attr="placeholder: demo.log.observationPlaceholder" required></textarea>
               </label>
-              <label class="full-width">Optional grow photo (preview only, up to 25 MB)
-                <input name="grow-photo" id="grow-photo" type="file" accept="image/*">
+              <label class="full-width"><span data-i18n="demo.log.photo">Optional grow photo (preview only, up to 25 MB)</span>
+                <input name="grow-photo" id="grow-photo" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
               </label>
-              <img class="media-preview full-width" id="grow-photo-preview" alt="Preview of your grow photo">
+              <img class="media-preview full-width" id="grow-photo-preview" data-i18n-attr="alt: demo.log.photoPreview" alt="">
               <div class="full-width">
-                <button class="log-submit" type="submit">Submit grow post · pending review</button>
+                <button class="log-submit" type="submit" data-i18n="demo.log.submit">Submit grow post · pending review</button>
                 <p class="log-status" id="log-status" role="status"></p>
               </div>
             </form>
             <div class="quest-board" aria-labelledby="quest-board-title">
-              <h4 id="quest-board-title">Grow quests · no XP for track progress</h4>
+              <h4 id="quest-board-title" data-i18n="demo.log.questTitle">Grow quests · no XP for track progress</h4>
               <div class="quest-list" id="quest-list"></div>
             </div>
             <div class="recent-logs">
-              <h4>Recent check-ins</h4>
+              <h4 data-i18n="demo.log.recentTitle">Recent check-ins</h4>
               <div class="log-list" id="log-list"></div>
             </div>
           </div>
@@ -738,228 +833,116 @@
       </div>
     </section>
 
+    <section class="section" id="share">
+      <div class="wrap">
+        <div class="section-heading">
+          <div><h2 data-i18n="demo.share.title">Share a grow, on your terms.</h2></div>
+          <p data-i18n="demo.share.intro"></p>
+        </div>
+        <div class="share-layout">
+          <fieldset class="share-controls">
+            <legend class="eyebrow" data-i18n="demo.share.includes">What the card includes</legend>
+            <label for="share-grow" data-i18n="demo.share.grow">Grow</label>
+            <select id="share-grow"></select>
+            <label><input type="checkbox" id="share-species" checked> <span data-i18n="demo.share.species">Species</span></label>
+            <label><input type="checkbox" id="share-stage" checked> <span data-i18n="demo.share.stage">Latest stage</span></label>
+            <label><input type="checkbox" id="share-name"> <span data-i18n="demo.share.name">Grow name</span></label>
+            <label><input type="checkbox" id="share-note"> <span data-i18n="demo.share.note">Latest observation</span></label>
+          </fieldset>
+          <div class="share-card">
+            <span class="eyebrow" data-i18n="demo.share.preview">Card preview</span>
+            <pre id="share-preview" aria-live="polite"></pre>
+            <div class="trail-actions">
+              <button class="purchase-button" type="button" id="share-copy" data-i18n="demo.share.copy">Copy card text</button>
+              <button class="purchase-button" type="button" id="share-send" hidden data-i18n="demo.share.send">Send with another app</button>
+            </div>
+            <p id="share-status" role="status"></p>
+            <p data-i18n="demo.share.never"></p>
+          </div>
+        </div>
+        <p class="share-rules" data-i18n="demo.share.rules"></p>
+      </div>
+    </section>
+
     <section class="section local-section" id="local">
       <div class="wrap local-card">
         <div>
-          <span class="eyebrow">Rooted in Milwaukee</span>
-          <h2>Local harvest, close to home.</h2>
-          <p>Planning local pickup and delivery for Milwaukee and nearby communities, including Wauwatosa, West Allis, Shorewood, Greenfield, Glendale, and Brookfield. Service areas, availability, and timing will be confirmed before any order is placed.</p>
+          <span class="eyebrow" data-i18n="demo.local.eyebrow">Rooted in Milwaukee</span>
+          <h2 data-i18n="demo.local.title">Local harvest, close to home.</h2>
+          <p data-i18n="demo.local.text"></p>
         </div>
-        <div class="local-badge" aria-label="Milwaukee, Wisconsin local service area">
-          <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M12 8c-4 0-6-2-6-5M12 12c4 0 6-2 6-5M12 16c-3 0-5 2-5 5M12 17c3 0 5 1 5 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><strong>MKE</strong><small>Wisconsin</small>
+        <div class="local-badge" role="img" data-i18n-attr="aria-label: demo.local.badge">
+          <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M12 8c-4 0-6-2-6-5M12 12c4 0 6-2 6-5M12 16c-3 0-5 2-5 5M12 17c3 0 5 1 5 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span><strong aria-hidden="true">MKE</strong><small aria-hidden="true">Wisconsin</small>
         </div>
-        <p class="local-note">Local ordering is not live yet. This page does not collect addresses or promise delivery; pickup and delivery details will be added when ordering is ready.</p>
+        <p class="local-note" data-i18n="demo.local.note"></p>
       </div>
     </section>
 
     <section class="section faq-section" id="faq">
       <div class="wrap">
         <div class="section-heading">
-          <div><span class="eyebrow">Kitchen guide</span><h2>Mushroom questions, clearly answered.</h2></div>
-          <p>Helpful basics on cooking, storage, cultivation, and local availability.</p>
+          <div><span class="eyebrow" data-i18n="demo.faq.eyebrow">Kitchen guide</span><h2 data-i18n="demo.faq.title">Mushroom questions, clearly answered.</h2></div>
+          <p data-i18n="demo.faq.intro"></p>
         </div>
         <div class="faq-list">
-          <details class="faq-item">
-            <summary>What makes a mushroom a gourmet variety?</summary>
-            <p>Gourmet mushrooms are selected and prepared as food for their flavor and texture. MycoQuest’s demo listings focus on fresh culinary varieties and clearly identify each listing’s species, form, and example package.</p>
-          </details>
-          <details class="faq-item">
-            <summary>Can I cook with a mushroom that’s also sold as a supplement?</summary>
-            <p>This demo focuses on fresh culinary mushrooms. Powders and tinctures are not current shop listings; any future product would need its own ingredients, preparation, and use details.</p>
-          </details>
-          <details class="faq-item">
-            <summary>How do I prepare fresh Lion’s Mane?</summary>
-            <p>Brush away debris, trim any tough base, and tear or slice the mushroom. Sauté in a hot pan to release moisture, then add oil or butter and season near the end. Cook thoroughly and use it in a rice bowl, pasta, tacos, soup, or one of the recipe quests above. Keep fresh mushrooms refrigerated and follow the storage guidance provided with the product.</p>
-          </details>
-          <details class="faq-item">
-            <summary>What does cultivating mushrooms involve?</summary>
-            <p>At a high level, cultivation means choosing a suitable species and prepared growing medium, keeping the grow environment clean, monitoring the conditions the species needs, and recording observations through each stage. Exact requirements vary widely by species and kit. Follow reputable, species-specific instructions and local rules; never eat a wild mushroom unless it has been positively identified by a qualified expert.</p>
-          </details>
-          <details class="faq-item">
-            <summary>Do you offer pickup or delivery around Milwaukee?</summary>
-            <p>MycoQuest is planning pickup and local delivery in Milwaukee and nearby communities. Availability, delivery boundaries, fees, and pickup details are not live yet and will be confirmed before ordering opens. The current demo does not accept or fulfill orders.</p>
-          </details>
+          <details class="faq-item"><summary data-i18n="demo.faq.gourmet.q"></summary><p data-i18n="demo.faq.gourmet.a"></p></details>
+          <details class="faq-item"><summary data-i18n="demo.faq.supplement.q"></summary><p data-i18n="demo.faq.supplement.a"></p></details>
+          <details class="faq-item"><summary data-i18n="demo.faq.prepare.q"></summary><p data-i18n="demo.faq.prepare.a"></p></details>
+          <details class="faq-item" id="faq-cultivating"><summary data-i18n="demo.faq.cultivate.q"></summary><p data-i18n="demo.faq.cultivate.a"></p></details>
+          <details class="faq-item"><summary data-i18n="demo.faq.local.q"></summary><p data-i18n="demo.faq.local.a"></p></details>
         </div>
-        <p class="faq-disclaimer">This demo is for general food and cultivation information, not species-specific growing instructions. Follow the directions for your growing kit and local rules.</p>
+        <p class="faq-disclaimer" data-i18n="demo.faq.disclaimer"></p>
       </div>
     </section>
 
     <section class="wrap next-up" id="about">
-      <div><span class="eyebrow">Good to know</span><h2>Growing one step at a time.</h2></div>
-      <p>This browser demo saves prototype progress on this device only. Product listings are examples; accounts, server-verified XP, and reward fulfillment aren’t connected.</p>
+      <div><span class="eyebrow" data-i18n="demo.about.eyebrow">Good to know</span><h2 data-i18n="demo.about.title">Growing one step at a time.</h2></div>
+      <p data-i18n="demo.about.text"></p>
     </section>
   </main>
   <footer class="wrap">
     <span>© <span id="year"></span> MycoQuest</span>
-    <span>Explore thoughtfully. Grow with curiosity.</span>
+    <span data-i18n="demo.footer.motto">Explore thoughtfully. Grow with curiosity.</span>
+    <a href="lab.html" data-i18n="demo.footer.lab">Prep lab (private, this browser only)</a>
   </footer>
   <details class="wrap image-credits">
-    <summary>Photo credits &amp; licenses</summary>
+    <summary data-i18n="demo.credits.summary">Photo credits &amp; licenses</summary>
     <ul>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Hericium_erinaceus,Lion%27s_Mane,_Hedgehog_Mushroom.jpg" target="_blank" rel="noreferrer">Lion’s Mane</a> by Plam1234, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.</li>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Gewone_oesterzwam_(Pleurotus_ostreatus)_31-12-2020_(d.j.b.)_03.jpg" target="_blank" rel="noreferrer">Oyster mushroom</a> by Dominicus Johannes Bergsma, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Ganoderma_lucidum_01.jpg" target="_blank" rel="noreferrer">Reishi</a> by Eric Steinert, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Lentinula_edodes.jpg" target="_blank" rel="noreferrer">Shiitake</a> by Eric Steinert, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Mixed_mushrooms_at_home.jpg" target="_blank" rel="noreferrer">Mixed mushrooms at home</a> by Peachyeung316, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>; resized for display and used as an illustration only, not a promise of box contents.</li>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Kr%C3%A4uter-Seitling_Pleurotus_eryngii.jpg" target="_blank" rel="noreferrer">King oyster mushroom</a> by Holger Krisp, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>; resized for display.</li>
-      <li><a href="https://commons.wikimedia.org/wiki/File:Chestnut_mushrooms_cultivated_on_Cape_Cod.jpg" target="_blank" rel="noreferrer">Chestnut mushrooms cultivated on Cape Cod</a> by Alan Rockefeller, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>; resized for display.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Hericium_erinaceus,Lion%27s_Mane,_Hedgehog_Mushroom.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.lionsMane"></a> <span data-i18n="demo.credits.by">by</span> Plam1234, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Gewone_oesterzwam_(Pleurotus_ostreatus)_31-12-2020_(d.j.b.)_03.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.oyster"></a> <span data-i18n="demo.credits.by">by</span> Dominicus Johannes Bergsma, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Ganoderma_lucidum_01.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.reishi"></a> <span data-i18n="demo.credits.by">by</span> Eric Steinert, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Lentinula_edodes.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.shiitake"></a> <span data-i18n="demo.credits.by">by</span> Eric Steinert, <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noreferrer">CC BY-SA 3.0</a>.</li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Mixed_mushrooms_at_home.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.mixed"></a> <span data-i18n="demo.credits.by">by</span> Peachyeung316, <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a>; <span data-i18n="demo.credits.mixedNote"></span></li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Kr%C3%A4uter-Seitling_Pleurotus_eryngii.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.kingOyster"></a> <span data-i18n="demo.credits.by">by</span> Holger Krisp, <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank" rel="noreferrer">CC BY 3.0</a>; <span data-i18n="demo.credits.resized"></span></li>
+      <li><a href="https://commons.wikimedia.org/wiki/File:Chestnut_mushrooms_cultivated_on_Cape_Cod.jpg" target="_blank" rel="noreferrer" data-i18n="demo.credits.chestnut"></a> <span data-i18n="demo.credits.by">by</span> Alan Rockefeller, <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>; <span data-i18n="demo.credits.resized"></span></li>
     </ul>
   </details>
   <div class="recipe-toast" id="recipe-toast" role="status" aria-live="polite"></div>
+  <script src="i18n/en.js"></script>
+  <script src="i18n/es.js"></script>
+  <script src="i18n/hmn.js"></script>
+  <script src="i18n/i18n.js"></script>
   <script>
+    // Text for each listing lives in i18n/<language>.js under demo.product.<text>.*.
+    // Species are scientific names and are never translated.
     const products = [
-      {
-        id: "fresh-lions-mane",
-        name: "Fresh Lion’s Mane",
-        category: "Featured · proposed demo listing",
-        species: "Hericium erinaceus",
-        form: "Fresh, whole culinary mushroom",
-        description: "The signature MycoQuest mushroom: tender, savory, and easy to use in sautés, rice bowls, tacos, and more.",
-        tags: "hericium erinaceus fresh lion's mane lion mane mushroom gourmet culinary whole featured",
-        image: "assets/lions-mane.jpg",
-        imageAlt: "Fresh Lion’s Mane mushroom showing its long, cascading white spines",
-        imageStatus: "Representative species photo",
-        availability: "Proposed demo listing · not live inventory",
-        storageStatus: "General guidance · verify before sale",
-        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use a breathable paper bag and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. Follow a future package’s date and directions.",
-        featured: true,
-        packages: [
-          { weightOz: 8, label: "½ lb (8 oz)", priceCents: 1100 },
-          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2200 }
-        ]
-      },
-      {
-        id: "fresh-oyster",
-        name: "Fresh Oyster Mushrooms",
-        category: "Proposed demo listing",
-        species: "Pleurotus ostreatus",
-        form: "Fresh cluster, culinary",
-        description: "A tender, versatile cluster for quick sautés, roasting, noodle bowls, and soups.",
-        tags: "pleurotus ostreatus oyster mushroom fresh gourmet culinary cluster",
-        image: "assets/oyster-mushrooms.jpg",
-        imageAlt: "An oyster mushroom growing from a tree trunk",
-        imageStatus: "Representative species photo",
-        availability: "Proposed demo listing · not live inventory",
-        storageStatus: "General guidance · verify before sale",
-        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use a breathable paper bag and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. Follow a future package’s date and directions.",
-        packages: [
-          { weightOz: 8, label: "½ lb (8 oz)", priceCents: 900 },
-          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 1800 }
-        ]
-      },
-      {
-        id: "fresh-shiitake",
-        name: "Fresh Shiitake",
-        category: "Proposed demo listing",
-        species: "Lentinula edodes",
-        form: "Fresh culinary mushroom",
-        description: "A savory, firm-capped mushroom for stir-fries, soups, rice dishes, and more.",
-        tags: "lentinula edodes shiitake fresh mushroom gourmet culinary",
-        image: "assets/shiitake.jpg",
-        imageAlt: "Fresh shiitake mushrooms with brown caps and pale stems",
-        imageStatus: "Representative species photo",
-        availability: "Proposed demo listing · not live inventory",
-        storageStatus: "General guidance · verify before sale",
-        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use a breathable paper bag and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. Follow a future package’s date and directions.",
-        packages: [
-          { weightOz: 8, label: "½ lb (8 oz)", priceCents: 1000 },
-          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2000 }
-        ]
-      },
-      {
-        id: "mixed-harvest-box",
-        name: "Mixed Harvest Box",
-        category: "Proposed demo concept",
-        species: "Culinary varieties · varies",
-        form: "Fresh mixed-mushroom box",
-        description: "A rotating mix concept for cooks who want to explore more than one texture and flavor.",
-        tags: "mixed harvest variety box assortment culinary mushrooms fresh",
-        image: "assets/mixed-mushrooms.jpg",
-        imageAlt: "Illustrative bowl of mixed mushrooms; actual box varieties would vary",
-        imageStatus: "Illustrative assortment photo · actual varieties vary",
-        availability: "Proposed demo box · no fixed mix promised",
-        storageStatus: "General guidance · verify before sale",
-        storage: "Refrigerate promptly at 40°F (4°C) or below. For loose mushrooms, use breathable packaging and clean just before use. Utah State Extension notes that properly stored mushrooms last about five days; actual freshness varies. A real box would include confirmed contents and item-specific directions.",
-        packages: [
-          { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2000 }
-        ]
-      },
-      {
-        id: "king-oyster-test",
-        name: "King Oyster",
-        category: "Future concept",
-        species: "Pleurotus eryngii",
-        form: "Fresh culinary mushroom · planned",
-        description: "A future variety concept; no harvest or package is promised.",
-        tags: "pleurotus eryngii king oyster mushroom future concept",
-        image: "assets/king-oyster.jpg",
-        imageAlt: "King oyster mushrooms with thick pale stems and small brown caps",
-        imageStatus: "Representative species photo · future concept",
-        availability: "Future concept · not available",
-        storageStatus: "Not reviewed · not offered",
-        storage: "Storage instructions will be reviewed if this variety is offered.",
-        packages: []
-      },
-      {
-        id: "chestnut-test",
-        name: "Chestnut Mushroom",
-        category: "Future concept",
-        species: "Pholiota adiposa",
-        form: "Fresh culinary mushroom · planned",
-        description: "A future variety concept; no harvest or package is promised.",
-        tags: "pholiota adiposa chestnut mushroom future concept",
-        image: "assets/chestnut-mushrooms.jpg",
-        imageAlt: "Cluster of cultivated chestnut mushrooms with brown caps",
-        imageStatus: "Representative species photo · future concept",
-        availability: "Future concept · not available",
-        storageStatus: "Not reviewed · not offered",
-        storage: "Storage instructions will be reviewed if this variety is offered.",
-        packages: []
-      }
+      { id: "fresh-lions-mane", text: "lionsMane", type: "fresh", species: "Hericium erinaceus", image: "assets/lions-mane.jpg", category: "featured", availability: "listing", imageStatus: "species", storage: "fresh", featured: true, grow: true,
+        packages: [{ weightOz: 8, label: "½ lb (8 oz)", priceCents: 1100 }, { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2200 }] },
+      { id: "fresh-oyster", text: "oyster", type: "fresh", species: "Pleurotus ostreatus", image: "assets/oyster-mushrooms.jpg", category: "listing", availability: "listing", imageStatus: "species", storage: "fresh", grow: true,
+        packages: [{ weightOz: 8, label: "½ lb (8 oz)", priceCents: 900 }, { weightOz: 16, label: "1 lb (16 oz)", priceCents: 1800 }] },
+      { id: "fresh-shiitake", text: "shiitake", type: "fresh", species: "Lentinula edodes", image: "assets/shiitake.jpg", category: "listing", availability: "listing", imageStatus: "species", storage: "fresh", grow: true,
+        packages: [{ weightOz: 8, label: "½ lb (8 oz)", priceCents: 1000 }, { weightOz: 16, label: "1 lb (16 oz)", priceCents: 2000 }] },
+      { id: "mixed-harvest-box", text: "mixedBox", type: "fresh", species: "", image: "assets/mixed-mushrooms.jpg", category: "concept", availability: "box", imageStatus: "assortment", storage: "box",
+        packages: [{ weightOz: 16, label: "1 lb (16 oz)", priceCents: 2000 }] },
+      { id: "king-oyster-test", text: "kingOyster", type: "fresh", species: "Pleurotus eryngii", image: "assets/king-oyster.jpg", category: "future", availability: "future", imageStatus: "future", storage: "future", grow: true, packages: [] },
+      { id: "chestnut-test", text: "chestnut", type: "fresh", species: "Pholiota adiposa", image: "assets/chestnut-mushrooms.jpg", category: "future", availability: "future", imageStatus: "future", storage: "future", grow: true, packages: [] }
     ];
 
-    const recipes = [
-      {
-        id: "crab-cakes",
-        name: "Lion’s Mane “Crab” Cakes",
-        region: "United States · Chesapeake-inspired",
-        summary: "A crisp-edged, tender mushroom take on a beloved coastal cake.",
-        ingredients: "Shredded Lion’s Mane, breadcrumbs, egg or binder, mustard, lemon, parsley, and a seafood-style spice blend.",
-        method: "Sear the shredded mushroom until its moisture cooks off. Fold with the binder, crumbs, herbs, and seasoning; shape into patties and pan-crisp until golden. Serve with lemon."
-      },
-      {
-        id: "miso-ramen",
-        name: "Miso Lion’s Mane Ramen",
-        region: "Japan-inspired",
-        summary: "A comforting bowl with browned mushroom, savory miso broth, and noodles.",
-        ingredients: "Lion’s Mane, ramen noodles, miso, vegetable stock, ginger, scallion, sesame oil, and your favorite toppings.",
-        method: "Tear and brown the mushroom in a hot pan. Warm stock with ginger and miso without boiling hard; add cooked noodles and finish with scallion, sesame, and the mushroom."
-      },
-      {
-        id: "mushroom-risotto",
-        name: "Creamy Lion’s Mane Risotto",
-        region: "Italy-inspired",
-        summary: "A slow-stirred rice dish with crisp mushroom pieces and herbs.",
-        ingredients: "Lion’s Mane, arborio rice, warm vegetable stock, shallot, olive oil, white wine, parmesan or a plant-based alternative, and thyme.",
-        method: "Brown the mushroom separately. Soften shallot, toast the rice, then add warm stock a ladle at a time while stirring. Finish with cheese, thyme, and the golden mushroom."
-      },
-      {
-        id: "mushroom-tacos",
-        name: "Adobo Lion’s Mane Tacos",
-        region: "Mexico-inspired",
-        summary: "Smoky, tangy mushroom tucked into warm tortillas with fresh toppings.",
-        ingredients: "Lion’s Mane, corn tortillas, tomato, garlic, onion, dried chile or smoked paprika, lime, and cilantro.",
-        method: "Shred and sear the mushroom until browned. Simmer briefly with a blended tomato, garlic, onion, chile, and splash of water. Spoon into warm tortillas and finish with lime and cilantro."
-      },
-      {
-        id: "mushroom-masala",
-        name: "Peppery Lion’s Mane Masala",
-        region: "India-inspired",
-        summary: "A warmly spiced mushroom curry to serve with rice or flatbread.",
-        ingredients: "Lion’s Mane, onion, tomato, ginger, garlic, garam masala, cumin, turmeric, black pepper, and yogurt or coconut milk.",
-        method: "Brown the mushroom and set aside. Cook onion with ginger and garlic, bloom the spices, then add tomato and simmer until thick. Return the mushroom to warm through and finish with pepper and herbs."
-      }
-    ];
+    // Plain definitions only. Add a listing to `products` with a matching `type` once it is real and verified.
+    const categories = ["all", "fresh", "genetics", "kits", "supplements", "tinctures"].map((id) => ({ id }));
+
+    // Recipe ids are shared with lab.html. Their text lives under demo.recipe.<id>.*.
+    const recipes = ["crab-cakes", "miso-ramen", "mushroom-risotto", "mushroom-tacos", "mushroom-masala"].map((id) => ({ id }));
 
     const storageKey = "mycoquest-demo-progress-v1";
     const LEVEL_CAP = 50;
@@ -1011,6 +994,27 @@
     const firstPostXp = 100;
     // The first approved grow also receives the first-post milestone when it has not been awarded yet.
     const recipeRoleMultipliers = { supporting: 1, "co-star": 1.5, star: 2 };
+    const { t } = I18N;
+    const productText = (product, field) => t(`demo.product.${product.text}.${field}`);
+    const categoryText = (id, field) => t(`demo.category.${id}.${field}`);
+    const recipeText = (id, field) => t(`demo.recipe.${id}.${field}`);
+    const recipeDisplayName = (post) => (recipes.some((recipe) => recipe.id === post.recipeId) ? recipeText(post.recipeId, "name") : post.name);
+    const stageName = (stage) => (I18N.has(`common.stage.${stage}`) ? t(`common.stage.${stage}`) : stage);
+    const fmtDate = (key) => I18N.date(key);
+    const listOr = (items) => new Intl.ListFormat(I18N.locale(), { type: "disjunction" }).format(items);
+    let storageNoteKey = "";
+    function setStorageNote(key) {
+      storageNoteKey = key;
+      storageNote.hidden = !key;
+      storageNote.textContent = key ? t(key) : "";
+    }
+    const imageTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    const videoTypes = ["video/mp4", "video/webm", "video/quicktime"];
+    // Site exports hold no media. Standalone grow-log backups carry photos inline, so they need far more room.
+    const importLimits = { site: 5 * 1024 * 1024, standalone: 100 * 1024 * 1024 };
+    let activeCategory = "all";
+    let activeTrail = "cook";
+    let activeLevel = "new";
     const searchInput = document.querySelector("#product-search");
     const productGrid = document.querySelector("#product-grid");
     const catalogCount = document.querySelector("#catalog-count");
@@ -1115,7 +1119,7 @@
 
     function normalizeDemoState(parsed) {
       if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
-        throw new Error("The selected file does not contain a progress object.");
+        throw new Error(t("demo.import.notProgress"));
       }
       const validEntries = Array.isArray(parsed.entries) && parsed.entries.every((entry) =>
         entry && ["species", "stage", "observation", "date"].every((key) => typeof entry[key] === "string") &&
@@ -1160,7 +1164,7 @@
           !Number.isFinite(parsed.totalXp) || parsed.totalXp < 0 ||
           typeof parsed.lastRewardDate !== "string" || !validEntries || !validRedemptions ||
           !validSubmissions || !validGrowStages || !validGrowPhotos || !validDailyInteractions || !validMilestones) {
-        throw new Error("The selected progress file has an unexpected format.");
+        throw new Error(t("demo.import.badFormat"));
       }
       const restoredState = { ...createEmptyState(), ...parsed };
       restoredState.milestones = { ...createEmptyState().milestones, ...parsed.milestones };
@@ -1192,8 +1196,7 @@
         return normalizeDemoState(JSON.parse(saved));
       } catch (error) {
         storageAvailable = false;
-        storageNote.hidden = false;
-        storageNote.textContent = "Saved progress could not be read in this browser; this demo will keep changes only until you leave the page.";
+        setStorageNote("demo.storage.unreadable");
         return createEmptyState();
       }
     }
@@ -1204,8 +1207,7 @@
         localStorage.setItem(storageKey, JSON.stringify(state));
       } catch (error) {
         storageAvailable = false;
-        storageNote.hidden = false;
-        storageNote.textContent = "This browser blocked local saving; progress will last only until you leave the page.";
+        setStorageNote("demo.storage.blocked");
       }
     }
 
@@ -1228,21 +1230,21 @@
         link.download = `MycoQuest-demo-progress-${getTodayKey()}.json`;
         link.click();
         window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-        dataToolsStatus.textContent = "Demo-only progress exported. Keep the downloaded file private to this device.";
+        dataToolsStatus.textContent = t("demo.data.exported");
       } catch (error) {
-        dataToolsStatus.textContent = "Demo progress could not be exported in this browser.";
+        dataToolsStatus.textContent = t("demo.data.exportFailed");
       }
     }
 
     function normalizeImportedStatus(status, label) {
       if (status === undefined || status === null || status === "") return "pending";
-      if (typeof status !== "string") throw new Error(`${label} status must be text.`);
+      if (typeof status !== "string") throw new Error(t("demo.import.statusText", { label }));
       const value = status.trim().toLocaleLowerCase();
       if (["pending", "pending review", "under review"].includes(value)) return "pending";
       if (value === "approved") return "approved";
       if (value === "rejected") return "rejected";
       if (value === "legacy") return "legacy";
-      throw new Error(`${label} has an unsupported status: ${status}.`);
+      throw new Error(t("demo.import.statusUnknown", { label, status }));
     }
 
     function createImportedPostId(type, existingIds) {
@@ -1267,37 +1269,29 @@
 
     function importStandaloneGrowLog(parsed) {
       if (!parsed || typeof parsed !== "object" || parsed.app !== "MycoQuest grow log" || parsed.version !== 2) {
-        throw new Error('Expected app "MycoQuest grow log" and version 2.');
+        throw new Error(t("demo.import.expectStandalone"));
       }
       if (!Array.isArray(parsed.entries) || !Array.isArray(parsed.recipes)) {
-        throw new Error("The standalone grow log must include entries and recipes arrays.");
+        throw new Error(t("demo.import.needArrays"));
       }
       const entryIds = new Set();
       const recipePostIds = new Set();
       const recipeIds = new Set();
       const entries = parsed.entries.map((entry, index) => {
-        const label = `Grow post ${index + 1}`;
-        if (!entry || typeof entry !== "object" || Array.isArray(entry)) throw new Error(`${label} must be an object.`);
+        const label = t("demo.import.growLabel", { number: index + 1 });
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) throw new Error(t("demo.import.notObject", { label }));
         for (const field of ["growName", "species", "stage", "observation", "date"]) {
-          if (typeof entry[field] !== "string" || !entry[field].trim()) {
-            throw new Error(`${label} needs a non-empty ${field}.`);
-          }
+          if (typeof entry[field] !== "string" || !entry[field].trim()) throw new Error(t("demo.import.needField", { label, field }));
         }
-        if (entry.photoName !== undefined && typeof entry.photoName !== "string") {
-          throw new Error(`${label} photoName must be text.`);
-        }
-        if (entry.rejectionReason !== undefined && typeof entry.rejectionReason !== "string") {
-          throw new Error(`${label} rejectionReason must be text.`);
-        }
-        if (entry.xpAwarded !== undefined && (!Number.isFinite(entry.xpAwarded) || entry.xpAwarded < 0)) {
-          throw new Error(`${label} xpAwarded must be a non-negative number.`);
-        }
+        if (entry.photoName !== undefined && typeof entry.photoName !== "string") throw new Error(t("demo.import.photoName", { label }));
+        if (entry.rejectionReason !== undefined && typeof entry.rejectionReason !== "string") throw new Error(t("demo.import.rejection", { label }));
+        if (entry.xpAwarded !== undefined && (!Number.isFinite(entry.xpAwarded) || entry.xpAwarded < 0)) throw new Error(t("demo.import.xpAwarded", { label }));
         const stage = normalizeGrowStage(entry.stage);
-        if (!growQuestStages.includes(stage)) throw new Error(`${label} has an unsupported grow stage: ${entry.stage}.`);
+        if (!growQuestStages.includes(stage)) throw new Error(t("demo.import.stage", { label, stage: entry.stage }));
         const status = normalizeImportedStatus(entry.status, label);
         const hasPostId = typeof entry.postId === "string" && entry.postId.trim();
         const postId = hasPostId ? entry.postId.trim() : createImportedPostId("grow", entryIds);
-        if (hasPostId && entryIds.has(postId)) throw new Error(`${label} has a duplicate postId.`);
+        if (hasPostId && entryIds.has(postId)) throw new Error(t("demo.import.duplicateId", { label }));
         entryIds.add(postId);
         return {
           growId: entry.growName.trim(),
@@ -1314,42 +1308,28 @@
         };
       });
       const recipesImported = parsed.recipes.map((recipe, index) => {
-        const label = `Recipe post ${index + 1}`;
-        if (!recipe || typeof recipe !== "object" || Array.isArray(recipe)) throw new Error(`${label} must be an object.`);
-        if (typeof recipe.recipeName !== "string" || !recipe.recipeName.trim()) {
-          throw new Error(`${label} needs a non-empty recipeName.`);
-        }
+        const label = t("demo.import.recipeLabel", { number: index + 1 });
+        if (!recipe || typeof recipe !== "object" || Array.isArray(recipe)) throw new Error(t("demo.import.notObject", { label }));
+        if (typeof recipe.recipeName !== "string" || !recipe.recipeName.trim()) throw new Error(t("demo.import.recipeName", { label }));
         const complexity = Number(recipe.complexity);
-        if (!Number.isFinite(complexity) || complexity < 1 || complexity > 5) {
-          throw new Error(`${label} complexity must be a number from 1 to 5.`);
-        }
-        if (typeof recipe.role !== "string" || !Object.prototype.hasOwnProperty.call(recipeRoleMultipliers, recipe.role)) {
-          throw new Error(`${label} role must be supporting, co-star, or star.`);
-        }
-        if (recipe.hasVideo !== undefined && typeof recipe.hasVideo !== "boolean") {
-          throw new Error(`${label} hasVideo must be true or false.`);
-        }
-        if (recipe.rejectionReason !== undefined && typeof recipe.rejectionReason !== "string") {
-          throw new Error(`${label} rejectionReason must be text.`);
-        }
-        if (recipe.xpAwarded !== undefined && (!Number.isFinite(recipe.xpAwarded) || recipe.xpAwarded < 0)) {
-          throw new Error(`${label} xpAwarded must be a non-negative number.`);
-        }
+        if (!Number.isFinite(complexity) || complexity < 1 || complexity > 5) throw new Error(t("demo.import.complexity", { label }));
+        if (typeof recipe.role !== "string" || !Object.prototype.hasOwnProperty.call(recipeRoleMultipliers, recipe.role)) throw new Error(t("demo.import.role", { label }));
+        if (recipe.hasVideo !== undefined && typeof recipe.hasVideo !== "boolean") throw new Error(t("demo.import.hasVideo", { label }));
+        if (recipe.rejectionReason !== undefined && typeof recipe.rejectionReason !== "string") throw new Error(t("demo.import.rejection", { label }));
+        if (recipe.xpAwarded !== undefined && (!Number.isFinite(recipe.xpAwarded) || recipe.xpAwarded < 0)) throw new Error(t("demo.import.xpAwarded", { label }));
         const name = recipe.recipeName.trim();
         const status = normalizeImportedStatus(recipe.status, label);
         const hasPostId = typeof recipe.postId === "string" && recipe.postId.trim();
         const postId = hasPostId ? recipe.postId.trim() : createImportedPostId("recipe", recipePostIds);
-        if (hasPostId && recipePostIds.has(postId)) throw new Error(`${label} has a duplicate postId.`);
+        if (hasPostId && recipePostIds.has(postId)) throw new Error(t("demo.import.duplicateId", { label }));
         recipePostIds.add(postId);
         const videoName = recipe.hasVideo ? "imported video" : "";
         const proposedXp = recipe.proposedXp === undefined
           ? calculateRecipeXp(complexity, recipe.role, Boolean(videoName))
           : recipe.proposedXp;
-        if (!Number.isFinite(proposedXp) || proposedXp < 0) {
-          throw new Error(`${label} proposedXp must be a non-negative number.`);
-        }
+        if (!Number.isFinite(proposedXp) || proposedXp < 0) throw new Error(t("demo.import.proposedXp", { label }));
         const date = recipe.date ?? recipe.createdAt ?? getTodayKey();
-        if (typeof date !== "string" || !date.trim()) throw new Error(`${label} date must be text.`);
+        if (typeof date !== "string" || !date.trim()) throw new Error(t("demo.import.date", { label }));
         return {
           recipeId: stableRecipeId(name, recipeIds),
           name,
@@ -1366,9 +1346,7 @@
         };
       });
       const allPostIds = [...entries, ...recipesImported].map((post) => post.postId);
-      if (new Set(allPostIds).size !== allPostIds.length) {
-        throw new Error("Grow and recipe posts must have unique postId values.");
-      }
+      if (new Set(allPostIds).size !== allPostIds.length) throw new Error(t("demo.import.uniqueIds"));
       const importedState = normalizeDemoState({
         ...createEmptyState(),
         entries,
@@ -1428,9 +1406,13 @@
       const file = event.currentTarget.files[0];
       event.currentTarget.value = "";
       if (!file) return;
+      if (file.size > importLimits[importType]) {
+        dataToolsStatus.textContent = t("demo.data.tooLarge", { mb: I18N.number(importLimits[importType] / 1024 / 1024) });
+        return;
+      }
       const reader = new FileReader();
       reader.onerror = () => {
-        dataToolsStatus.textContent = `Import failed: could not read ${file.name}.`;
+        dataToolsStatus.textContent = t("demo.data.unreadableFile", { file: file.name });
       };
       reader.onload = () => {
         try {
@@ -1439,15 +1421,18 @@
           if (importType === "standalone") {
             importedState = importStandaloneGrowLog(parsed);
           } else {
-            if (parsed?.format !== "mycoquest-demo-progress" || parsed.version !== 1) {
-              throw new Error('Expected format "mycoquest-demo-progress" and version 1.');
-            }
+            if (parsed?.format !== "mycoquest-demo-progress" || parsed.version !== 1) throw new Error(t("demo.import.expectSite"));
             importedState = normalizeDemoState(parsed.state);
           }
           const mode = document.querySelector("#import-mode").value;
           const nextState = combineImportedState(importedState, mode);
-          const modeLabel = mode === "replace" ? "replace current data" : "add to current data";
-          const message = `Import ${importedState.entries.length} grow post${importedState.entries.length === 1 ? "" : "s"} and ${importedState.recipeSubmissions.length} recipe post${importedState.recipeSubmissions.length === 1 ? "" : "s"}, with ${formatXp(importedState.totalXp)} demo-only XP, and ${modeLabel}?`;
+          const modeLabel = t(mode === "replace" ? "demo.data.modeReplace" : "demo.data.modeAdd");
+          const message = t("demo.data.confirm", {
+            grows: t("demo.data.growPosts", { count: importedState.entries.length }),
+            recipes: t("demo.data.recipePosts", { count: importedState.recipeSubmissions.length }),
+            xp: formatXp(importedState.totalXp),
+            mode: modeLabel
+          });
           if (!window.confirm(message)) return;
           state = nextState;
           clearMediaPreview(true);
@@ -1457,12 +1442,12 @@
           recipeStatus.textContent = "";
           logStatus.textContent = "";
           storageAvailable = true;
-          storageNote.hidden = true;
+          setStorageNote("");
           saveState();
           renderCurrentProgress();
-          dataToolsStatus.textContent = `Demo-only progress imported (${modeLabel}) and saved on this device.`;
+          dataToolsStatus.textContent = t("demo.data.imported", { mode: modeLabel });
         } catch (error) {
-          dataToolsStatus.textContent = `Import failed: ${error.message || "the selected file is invalid."}`;
+          dataToolsStatus.textContent = t("demo.data.failed", { message: error.message || t("demo.data.invalid") });
         }
       };
       reader.readAsText(file);
@@ -1509,18 +1494,17 @@
     }
 
     function resetDemoProgress() {
-      if (!window.confirm("Reset all MycoQuest demo progress saved in this browser? This clears local demo XP, grow notes, recipe posts, votes, and media previews.")) return;
+      if (!window.confirm(t("demo.reset.confirm"))) return;
 
-      let resetMessage = "Demo progress reset on this device.";
+      let resetMessage = t("demo.reset.done");
       try {
         localStorage.removeItem(storageKey);
         storageAvailable = true;
-        storageNote.hidden = true;
+        setStorageNote("");
       } catch (error) {
         storageAvailable = false;
-        storageNote.hidden = false;
-        storageNote.textContent = "The browser blocked removal of saved demo progress. The page has been reset, but saved progress may return after reloading.";
-        resetMessage = "Demo progress reset for this page, but saved progress could not be removed from browser storage.";
+        setStorageNote("demo.reset.storageNote");
+        resetMessage = t("demo.reset.partial");
       }
 
       state = createEmptyState();
@@ -1529,6 +1513,7 @@
       document.querySelector("#recipe-form").reset();
       document.querySelector("#grow-form").reset();
       searchInput.value = "";
+      activeCategory = "all";
       recipeStatus.textContent = "";
       logStatus.textContent = "";
       resetStatus.textContent = resetMessage;
@@ -1548,93 +1533,112 @@
     }
 
     function renderCatalog() {
-      const terms = searchInput.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-      const matches = products.filter((product) => {
-        const searchable = `${product.name} ${product.category} ${product.species} ${product.form} ${product.availability} ${product.description} ${product.tags}`.toLocaleLowerCase();
+      const terms = I18N.fold(searchInput.value.trim()).split(/\s+/).filter(Boolean);
+      document.querySelector("#category-about").textContent = categoryText(activeCategory, "about");
+      document.querySelectorAll("#category-bar button").forEach((button) => {
+        button.textContent = categoryText(button.dataset.category, "label");
+        button.setAttribute("aria-pressed", String(button.dataset.category === activeCategory));
+      });
+      const inCategory = products.filter((product) => activeCategory === "all" || product.type === activeCategory);
+      const matches = inCategory.filter((product) => {
+        const searchable = I18N.fold([
+          productText(product, "name"), t(`demo.product.category.${product.category}`), product.species, productText(product, "form"),
+          t(`demo.product.availability.${product.availability}`), productText(product, "description"), productText(product, "tags")
+        ].join(" "));
         return terms.every((term) => searchable.includes(term));
       });
 
       productGrid.replaceChildren();
-      catalogCount.textContent = `${matches.length} ${matches.length === 1 ? "product" : "products"}${terms.length ? " found" : ""}.`;
+      catalogCount.textContent = t(terms.length ? "demo.shop.countFound" : "demo.shop.count", { count: matches.length });
+      if (!inCategory.length) {
+        const panel = document.createElement("div");
+        panel.className = "category-empty";
+        const heading = document.createElement("h3");
+        heading.textContent = t("demo.shop.emptyTitle", { category: categoryText(activeCategory, "label") });
+        const text = document.createElement("p");
+        text.textContent = t("demo.shop.emptyText");
+        const next = document.createElement("a");
+        next.className = "chip-link";
+        const growing = activeCategory === "genetics" || activeCategory === "kits";
+        next.href = growing ? "#grow-log" : "#faq";
+        next.textContent = t(growing ? "demo.shop.emptyGrow" : "demo.shop.emptyFaq");
+        panel.append(heading, text, next);
+        productGrid.append(panel);
+        return;
+      }
       if (!matches.length) {
         const empty = document.createElement("p");
         empty.className = "empty-state";
-        empty.textContent = "No match in this demo catalog. Try Lion’s Mane, oyster, shiitake, or clear your search.";
+        empty.textContent = t("demo.shop.noMatch");
         productGrid.append(empty);
         return;
       }
 
       matches.forEach((product) => {
+        const name = productText(product, "name");
         const card = document.createElement("article");
         card.className = product.featured ? "product-card product-card--featured" : "product-card";
         card.dataset.productId = product.id;
         const imageFrame = document.createElement("div");
         imageFrame.className = "product-image";
-        if (product.image) {
-          const image = document.createElement("img");
-          image.src = product.image;
-          image.alt = product.imageAlt;
-          image.loading = "lazy";
-          imageFrame.append(image);
-        } else {
-          const placeholder = document.createElement("div");
-          placeholder.className = "product-placeholder";
-          placeholder.setAttribute("role", "img");
-          placeholder.setAttribute("aria-label", product.imageAlt);
-          placeholder.innerHTML = '<svg viewBox="0 0 64 64" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M32 34v20m0-22c-10 0-18-5-18-13 0-7 8-12 18-12s18 5 18 12c0 8-8 13-18 13Zm0 10c-6 0-10 4-10 10m10-6c6 0 10 2 10 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>';
-          const placeholderText = document.createElement("span");
-          placeholderText.textContent = product.imageStatus;
-          placeholder.append(placeholderText);
-          imageFrame.append(placeholder);
-        }
+        const image = document.createElement("img");
+        image.src = product.image;
+        image.alt = productText(product, "imageAlt");
+        image.loading = "lazy";
+        imageFrame.append(image);
         const info = document.createElement("div");
         info.className = "product-info";
         const label = document.createElement("span");
         label.className = "product-category";
-        label.textContent = product.category;
+        label.textContent = t(`demo.product.category.${product.category}`);
         const titleRow = document.createElement("div");
         titleRow.className = "product-title-row";
         const title = document.createElement("h3");
-        title.textContent = product.name;
+        title.textContent = name;
         const badge = document.createElement("span");
         badge.className = product.packages.length ? "product-badge" : "product-badge product-badge--testing";
-        badge.textContent = product.packages.length ? "Demo concept" : "Future concept";
+        badge.textContent = t(product.packages.length ? "demo.card.badge.concept" : "demo.card.badge.future");
         titleRow.append(title, badge);
         const description = document.createElement("p");
-        description.textContent = product.description;
+        description.textContent = productText(product, "description");
         const facts = document.createElement("dl");
         facts.className = "product-facts";
-        const addFact = (name, value, wide = false) => {
+        const addFact = (term, value, wide = false, lang = "") => {
           const item = document.createElement("div");
           if (wide) item.className = "product-fact--wide";
-          const term = document.createElement("dt");
-          term.textContent = name;
+          const termNode = document.createElement("dt");
+          termNode.textContent = term;
           const detail = document.createElement("dd");
           detail.textContent = value;
-          item.append(term, detail);
+          if (lang) detail.lang = lang;
+          item.append(termNode, detail);
           facts.append(item);
         };
-        addFact("Species", product.species);
-        addFact("Form", product.form);
-        addFact("Package weight", product.packages.length
-          ? product.packages.map((packageOption) => packageOption.label).join(" or ")
-          : "Not set · future concept", true);
-        addFact("Availability", product.availability, true);
-        addFact("Image status", product.imageStatus, true);
+        // Scientific names are marked as Latin so screen readers don't read them as English or Spanish.
+        addFact(t("demo.card.species"), product.species || productText(product, "species"), false, product.species ? "la" : "");
+        addFact(t("demo.card.form"), productText(product, "form"));
+        addFact(t("demo.card.packageWeight"), product.packages.length
+          ? listOr(product.packages.map((packageOption) => packageOption.label))
+          : t("demo.card.packageNotSet"), true);
+        addFact(t("demo.card.availability"), t(`demo.product.availability.${product.availability}`), true);
+        addFact(t("demo.card.imageStatus"), t(`demo.product.imageStatus.${product.imageStatus}`), true);
         const storageItem = document.createElement("div");
         storageItem.className = "product-fact--wide";
         const storageTerm = document.createElement("dt");
-        storageTerm.textContent = "Storage instructions";
+        storageTerm.textContent = t("demo.card.storage");
         const storageDetail = document.createElement("dd");
-        const storageDisclosure = document.createElement("details");
-        const storageSummary = document.createElement("summary");
-        storageSummary.textContent = product.storageStatus;
+        const storageStatus = document.createElement("strong");
+        storageStatus.textContent = t(`demo.storage.${product.storage}.status`);
         const storageText = document.createElement("p");
-        storageText.textContent = product.storage;
-        storageDisclosure.append(storageSummary, storageText);
-        storageDetail.append(storageDisclosure);
+        storageText.textContent = t(`demo.storage.${product.storage}.text`);
+        storageDetail.append(storageStatus, storageText);
         storageItem.append(storageTerm, storageDetail);
         facts.append(storageItem);
+        const more = document.createElement("details");
+        more.className = "product-more";
+        const moreSummary = document.createElement("summary");
+        moreSummary.textContent = t("demo.card.details");
+        more.append(moreSummary, facts);
 
         const xp = document.createElement("p");
         xp.className = "purchase-xp";
@@ -1649,24 +1653,19 @@
           const priceUnit = document.createElement("small");
           const priceQualifier = document.createElement("small");
           priceQualifier.className = "price-qualifier";
-          priceQualifier.textContent = "Example price";
+          priceQualifier.textContent = t("demo.card.examplePrice");
           price.append(priceAmount, priceUnit, priceQualifier);
 
           const packageLabel = document.createElement("label");
-          packageLabel.textContent = "Package weight";
+          packageLabel.textContent = t("demo.card.packageWeight");
           const packageSelect = document.createElement("select");
           packageSelect.name = "package";
-          packageSelect.setAttribute("aria-label", `${product.name} package weight`);
-          product.packages.forEach((packageOption, index) => {
-            const option = document.createElement("option");
-            option.value = String(index);
-            option.textContent = packageOption.label;
-            packageSelect.append(option);
-          });
+          packageSelect.setAttribute("aria-label", t("demo.card.packageFor", { product: name }));
+          product.packages.forEach((packageOption, index) => packageSelect.append(new Option(packageOption.label, String(index))));
           packageLabel.append(packageSelect);
 
           const quantityLabel = document.createElement("label");
-          quantityLabel.textContent = "Packages";
+          quantityLabel.textContent = t("demo.card.packages");
           const quantityInput = document.createElement("input");
           quantityInput.type = "number";
           quantityInput.name = "quantity";
@@ -1688,45 +1687,56 @@
           status.className = "product-note";
           status.setAttribute("role", "status");
           status.dataset.purchaseStatus = "";
-          xp.textContent = "Purchases do not award XP in this leveling prototype.";
-          note.textContent = "Demo only — no payment or real order is processed.";
-          info.append(label, titleRow, description, facts, price, xp, purchaseForm);
+          xp.textContent = t("demo.card.noXp");
+          note.textContent = t("demo.card.notLive");
+          info.append(label, titleRow, description, more, price, xp, purchaseForm);
 
-          const updateCard = () => updatePurchaseButton(packageSelect, quantityInput, buyButton, priceAmount, priceUnit, priceQualifier, xp, product);
+          const updateCard = () => updatePurchaseButton(packageSelect, quantityInput, buyButton, priceAmount, priceUnit, product);
           updateCard();
           packageSelect.addEventListener("change", updateCard);
           quantityInput.addEventListener("input", updateCard);
           purchaseForm.addEventListener("submit", (event) => {
             event.preventDefault();
             const quantity = Number(quantityInput.value);
-            const packageIndex = Number(packageSelect.value);
-            const packageOption = product.packages[packageIndex];
+            const packageOption = product.packages[Number(packageSelect.value)];
             if (!packageOption || !Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
-              status.textContent = "Choose a listed package size and a whole number from 1 to 20 packages.";
+              status.textContent = t("demo.card.chooseValid");
               return;
             }
-            const totalCents = packageOption.priceCents * quantity;
-            const weightOz = packageOption.weightOz * quantity;
-            status.textContent = `Demo order only: ${quantity} × ${packageOption.label} (${weightOz / 16} lb) · $${(totalCents / 100).toFixed(2)} example price. No payment was taken and no XP was awarded.`;
+            status.textContent = t("demo.card.previewResult", {
+              quantity: I18N.number(quantity),
+              package: packageOption.label,
+              pounds: I18N.number((packageOption.weightOz * quantity) / 16),
+              total: I18N.currency(packageOption.priceCents * quantity)
+            });
           });
         } else {
           price = document.createElement("p");
           price.className = "product-price";
-          price.textContent = "No price proposed";
-          xp.textContent = "Not available in this demo; purchases do not award XP.";
-          note.textContent = "Not available in this demo.";
-          info.append(label, titleRow, description, facts, price, xp);
+          price.textContent = t("demo.card.noPrice");
+          xp.textContent = t("demo.card.unavailableXp");
+          note.textContent = t("demo.card.unavailable");
+          info.append(label, titleRow, description, more, price, xp);
         }
         if (product.id === "fresh-lions-mane") {
           const recipeLink = document.createElement("a");
           recipeLink.className = "recipe-link";
           recipeLink.href = "#recipes";
-          recipeLink.textContent = "Discover 5 Lion’s Mane recipe quests";
+          recipeLink.textContent = t("demo.card.recipeLink");
           recipeLink.addEventListener("click", () => {
             document.querySelectorAll(".recipe-card").forEach((recipeCard) => recipeCard.classList.add("is-unlocked"));
-            showRecipeToast("Recipe quest board unlocked — choose a dish and start your next side quest!");
+            showRecipeToast(t("demo.card.recipeToast"));
           });
           info.append(recipeLink);
+        }
+        if (product.grow) {
+          const growName = productText(product, "growName");
+          const startGrow = document.createElement("button");
+          startGrow.type = "button";
+          startGrow.className = "recipe-link start-grow";
+          startGrow.textContent = t("demo.card.startGrow", { name: growName });
+          startGrow.addEventListener("click", () => startGrowLog(growName));
+          info.append(startGrow);
         }
         if (status) info.append(status);
         info.append(note);
@@ -1735,24 +1745,22 @@
       });
     }
 
-    function updatePurchaseButton(packageSelect, quantityInput, button, priceAmount, priceUnit, priceQualifier, xp, product) {
+    function updatePurchaseButton(packageSelect, quantityInput, button, priceAmount, priceUnit, product) {
       const packageOption = product.packages[Number(packageSelect.value)];
       const quantity = Number(quantityInput.value);
       if (!packageOption) {
-        button.textContent = "Choose a package";
+        button.textContent = t("demo.card.choosePackage");
         button.disabled = true;
         return;
       }
-      const packagePrice = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(packageOption.priceCents / 100);
-      priceAmount.textContent = packagePrice;
-      priceUnit.textContent = `/ ${packageOption.label}`;
+      priceAmount.textContent = I18N.currency(packageOption.priceCents);
+      priceUnit.textContent = t("demo.card.perPackage", { label: packageOption.label });
       if (!Number.isInteger(quantity) || quantity < 1 || quantity > 20) {
-        button.textContent = "Choose 1–20 packages";
+        button.textContent = t("demo.card.chooseQuantity");
         button.disabled = true;
         return;
       }
-      const totalCents = packageOption.priceCents * quantity;
-      button.textContent = `Demo order · ${new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(totalCents / 100)}`;
+      button.textContent = t("demo.card.previewTotal", { total: I18N.currency(packageOption.priceCents * quantity) });
       button.disabled = false;
     }
 
@@ -1796,40 +1804,43 @@
       const formData = new FormData(document.querySelector("#recipe-form"));
       const complexity = Number(formData.get("complexity"));
       const role = String(formData.get("role"));
-      const hasReadyVideo = Boolean(mediaInput.files[0]?.type.startsWith("video/") && mediaPreviewReady);
+      const isVideo = Boolean(mediaInput.files[0] && videoTypes.includes(mediaInput.files[0].type));
+      const hasReadyVideo = isVideo && mediaPreviewReady;
+      const preview = document.querySelector("#recipe-xp-preview");
       if (!Number.isFinite(complexity) || complexity < 1 || complexity > 5) {
-        document.querySelector("#recipe-xp-preview").textContent = "Enter any complexity value from 1 to 5; decimals are allowed.";
+        preview.textContent = t("demo.recipes.xp.badComplexity");
         return;
       }
       const baseXp = calculateRecipeXp(complexity, role, false);
       const totalXp = calculateRecipeXp(complexity, role, hasReadyVideo);
-      const videoText = hasReadyVideo ? "" :
-        mediaInput.files[0]?.type.startsWith("video/") ? " Video bonus appears after a valid preview loads." : "";
-      document.querySelector("#recipe-xp-preview").textContent =
-        `Pending approval: estimated ${formatXp(baseXp)} demo-only base XP${hasReadyVideo ? " + 100 demo-only video XP" : ""} = ${formatXp(totalXp)} demo-only XP. No XP is awarded while pending.${videoText}`;
+      const parts = [hasReadyVideo
+        ? t("demo.recipes.xp.estimateVideo", { base: formatXp(baseXp), total: formatXp(totalXp) })
+        : t("demo.recipes.xp.estimate", { total: formatXp(totalXp) })];
+      if (isVideo && !hasReadyVideo) parts.push(t("demo.recipes.xp.videoWaiting"));
+      preview.textContent = parts.join(" ");
     }
 
     function formatXp(amount) {
-      return new Intl.NumberFormat("en-US", { maximumFractionDigits: 2 }).format(amount);
+      return I18N.number(amount, { maximumFractionDigits: 2 });
     }
 
     function createPostStatus(post, type, approveHandler, rejectHandler) {
       const wrapper = document.createElement("div");
       const status = document.createElement("p");
       status.className = "post-status";
-      const stateLabel = post.status === "approved" ? "Approved" :
-        post.status === "rejected" ? "Rejected" :
-          post.status === "legacy" ? "Legacy demo post · no moderation record" : "Pending review";
-      status.textContent = `${stateLabel} · ${formatXp(post.xpAwarded || 0)} demo-only XP awarded${post.legacyXp ? ` · ${formatXp(post.legacyXp)} historical demo-only XP` : ""}`;
-      if (post.status === "pending" && Number.isFinite(post.proposedXp)) {
-        status.textContent += ` · estimated ${formatXp(post.proposedXp)} demo-only XP if approved`;
-      }
+      const stateKey = post.status === "approved" ? "demo.post.approved" :
+        post.status === "rejected" ? "demo.post.rejected" :
+          post.status === "legacy" ? "demo.post.legacy" : "demo.post.pending";
+      let statusText = t("demo.post.status", { state: t(stateKey), xp: formatXp(post.xpAwarded || 0) });
+      if (post.legacyXp) statusText += t("demo.post.historical", { xp: formatXp(post.legacyXp) });
+      if (post.status === "pending" && Number.isFinite(post.proposedXp)) statusText += t("demo.post.estimate", { xp: formatXp(post.proposedXp) });
+      status.textContent = statusText;
       wrapper.append(status);
 
       if (post.status === "rejected") {
         const reason = document.createElement("p");
         reason.className = "post-status post-rejection";
-        reason.textContent = `Rejection reason: ${post.rejectionReason}`;
+        reason.textContent = t("demo.post.reason", { reason: post.rejectionReason });
         wrapper.append(reason);
       }
 
@@ -1838,24 +1849,24 @@
         controls.className = "post-moderation";
         const note = document.createElement("p");
         note.className = "demo-moderation-note";
-        note.textContent = "Demo moderation only. These controls do not submit a real review.";
+        note.textContent = t("demo.post.moderationNote");
         const rejectLabel = document.createElement("label");
-        rejectLabel.textContent = "Rejection reason";
+        rejectLabel.textContent = t("demo.post.reasonLabel");
         const rejectInput = document.createElement("input");
         rejectInput.type = "text";
         rejectInput.maxLength = 200;
-        rejectInput.placeholder = "Enter a reason to reject…";
-        rejectInput.setAttribute("aria-label", `Rejection reason for ${type} post`);
+        rejectInput.placeholder = t("demo.post.reasonPlaceholder");
+        rejectInput.setAttribute("aria-label", t(`demo.post.reasonFor.${type}`));
         rejectLabel.append(rejectInput);
         const actions = document.createElement("div");
         actions.className = "post-moderation-actions";
         const approveButton = document.createElement("button");
         approveButton.type = "button";
-        approveButton.textContent = "Demo-only · Simulate approval";
+        approveButton.textContent = t("demo.post.approve");
         approveButton.addEventListener("click", approveHandler);
         const rejectButton = document.createElement("button");
         rejectButton.type = "button";
-        rejectButton.textContent = "Demo-only · Reject post";
+        rejectButton.textContent = t("demo.post.reject");
         rejectButton.disabled = true;
         rejectInput.addEventListener("input", () => {
           rejectButton.disabled = !rejectInput.value.trim();
@@ -1888,7 +1899,7 @@
       renderProgress();
       renderRecipeSubmissions();
       showLevelUpBanner(previousLevel, levelFromXp(state.totalXp));
-      recipeStatus.textContent = `Demo-only approval recorded locally. +${formatXp(awardedXp)} demo-only XP awarded; this is not server-verified.`;
+      recipeStatus.textContent = t("demo.recipes.approved", { xp: formatXp(awardedXp) });
     }
 
     function approveGrowPost(postId) {
@@ -1927,10 +1938,8 @@
       saveState();
       renderProgress();
       showLevelUpBanner(previousLevel, levelFromXp(state.totalXp));
-      const duplicateStageMessage = estimate.stageAlreadyCredited
-        ? "This grow stage was already credited; no stage demo-only XP was awarded. "
-        : "";
-      logStatus.textContent = `${duplicateStageMessage}Demo-only approval recorded locally. +${formatXp(awardedXp)} demo-only XP awarded; this is not server-verified.`;
+      const duplicateStageMessage = estimate.stageAlreadyCredited ? `${t("demo.log.stageAlreadyCredited")} ` : "";
+      logStatus.textContent = `${duplicateStageMessage}${t("demo.log.approved", { xp: formatXp(awardedXp) })}`;
     }
 
     function estimateGrowPostXp(post, sourceState = state) {
@@ -1958,7 +1967,7 @@
 
     function showLevelUpBanner(previousLevel, currentLevel) {
       if (currentLevel <= previousLevel) return;
-      levelUpMessage.textContent = `Level up · demo only · Level ${currentLevel}`;
+      levelUpMessage.textContent = t("demo.level.up", { level: I18N.number(currentLevel) });
       levelUpBanner.hidden = false;
       window.clearTimeout(levelUpTimer);
       levelUpTimer = window.setTimeout(() => {
@@ -1986,6 +1995,7 @@
         return left.collection - right.collection;
       });
 
+      // Labels are stored as translation keys and turned into text when the feed renders.
       const events = posts.flatMap(({ post, type }) => {
         const postEvents = [];
         const addEvent = (amount, label, name) => {
@@ -1995,18 +2005,18 @@
         if (type === "grow") {
           const name = post.growId || post.species;
           if (awards) {
-            addEvent(awards.growStage, "Grow stage approved", name);
-            addEvent(awards.photoBonus, "Grow photo bonus", name);
-            addEvent(awards.firstGrowBonus, "First-grow bonus", name);
-            addEvent(awards.firstPostBonus, "First-post bonus", name);
+            addEvent(awards.growStage, "demo.feed.growStage", name);
+            addEvent(awards.photoBonus, "demo.feed.photo", name);
+            addEvent(awards.firstGrowBonus, "demo.feed.firstGrow", name);
+            addEvent(awards.firstPostBonus, "demo.feed.firstPost", name);
           } else {
-            addEvent(post.xpAwarded || 0, "Approved grow XP", name);
+            addEvent(post.xpAwarded || 0, "demo.feed.growApproved", name);
           }
         } else if (awards) {
-          addEvent(awards.recipeApproval, "Recipe approval", post.name);
-          addEvent(awards.firstPostBonus, "First-post bonus", post.name);
+          addEvent(awards.recipeApproval, "demo.feed.recipe", recipeDisplayName(post));
+          addEvent(awards.firstPostBonus, "demo.feed.firstPost", recipeDisplayName(post));
         } else {
-          addEvent(post.xpAwarded || 0, "Recipe approval", post.name);
+          addEvent(post.xpAwarded || 0, "demo.feed.recipe", recipeDisplayName(post));
         }
         return postEvents;
       });
@@ -2019,7 +2029,7 @@
       if (!events.length) {
         const empty = document.createElement("p");
         empty.className = "xp-feed-empty";
-        empty.textContent = "No approved demo-only XP events yet.";
+        empty.textContent = t("demo.feed.empty");
         xpFeedList.append(empty);
         return;
       }
@@ -2029,10 +2039,10 @@
         link.href = `#${event.type}-post-${event.postId}`;
         const amount = document.createElement("span");
         amount.className = "xp-feed-amount";
-        amount.textContent = `+${formatXp(event.amount)} demo-only XP`;
+        amount.textContent = t("demo.feed.amount", { xp: formatXp(event.amount) });
         const label = document.createElement("span");
         label.className = "xp-feed-label";
-        label.textContent = event.label;
+        label.textContent = t(event.label);
         const name = document.createElement("span");
         name.className = "xp-feed-name";
         name.textContent = event.name;
@@ -2060,7 +2070,7 @@
       if (!groups.size) {
         const empty = document.createElement("p");
         empty.className = "xp-feed-empty";
-        empty.textContent = "Submit a grow post to start a quest track. Track progress awards no XP.";
+        empty.textContent = t("demo.quest.empty");
         questList.append(empty);
         return;
       }
@@ -2072,7 +2082,7 @@
         title.textContent = name;
         const track = document.createElement("ol");
         track.className = "quest-track";
-        track.setAttribute("aria-label", `${name} grow quest stages · track progress awards no XP`);
+        track.setAttribute("aria-label", t("demo.quest.trackLabel", { name }));
         const completed = new Set(posts
           .filter((post) => post.status === "approved")
           .map((post) => normalizeGrowStage(post.stage).toLocaleLowerCase()));
@@ -2085,21 +2095,19 @@
           const normalizedStage = stage.toLocaleLowerCase();
           const node = document.createElement("li");
           node.className = "quest-node";
-          node.textContent = stage;
+          node.textContent = stageName(stage);
           if (completed.has(normalizedStage)) node.classList.add("is-complete");
           if (pending.has(normalizedStage)) node.classList.add("has-pending");
           if (activeStage === stage) node.classList.add("is-active");
-          node.setAttribute("aria-label", `${stage}: ${completed.has(normalizedStage) ? "approved and complete" : pending.has(normalizedStage) ? "pending review" : activeStage === stage ? "active objective" : "not started"}`);
-          if (pending.has(normalizedStage)) {
-            const pendingLabel = document.createElement("span");
-            pendingLabel.className = "quest-node-status";
-            pendingLabel.textContent = "Pending";
-            node.append(pendingLabel);
-          } else if (completed.has(normalizedStage)) {
-            const completeLabel = document.createElement("span");
-            completeLabel.className = "quest-node-status";
-            completeLabel.textContent = "Approved";
-            node.append(completeLabel);
+          const statusKey = completed.has(normalizedStage) ? "demo.quest.status.complete" :
+            pending.has(normalizedStage) ? "demo.quest.status.pending" :
+              activeStage === stage ? "demo.quest.status.active" : "demo.quest.status.notStarted";
+          node.setAttribute("aria-label", t("demo.quest.node", { stage: stageName(stage), status: t(statusKey) }));
+          if (pending.has(normalizedStage) || completed.has(normalizedStage)) {
+            const stateLabel = document.createElement("span");
+            stateLabel.className = "quest-node-status";
+            stateLabel.textContent = t(pending.has(normalizedStage) ? "demo.quest.pending" : "demo.quest.approved");
+            node.append(stateLabel);
           }
           track.append(node);
         });
@@ -2107,11 +2115,11 @@
         const nextStep = document.createElement("p");
         nextStep.className = "quest-next-step";
         if (!activeStage) {
-          nextStep.textContent = "All quest stages approved · track completion awards no XP.";
+          nextStep.textContent = t("demo.quest.allDone");
         } else {
           const stageKey = `${normalizeGrowName(name)}::${activeStage.toLocaleLowerCase()}`;
           const hasApprovedPhoto = state.growPhotoPosts.includes(stageKey);
-          nextStep.textContent = `Next: log ${activeStage}.${hasApprovedPhoto ? "" : " Tip: add a photo to earn the demo-only photo bonus."}`;
+          nextStep.textContent = [t("demo.quest.next", { stage: stageName(activeStage) }), hasApprovedPhoto ? "" : t("demo.quest.photoTip")].filter(Boolean).join(" ");
         }
         card.append(title, track, nextStep);
         questList.append(card);
@@ -2124,14 +2132,14 @@
       if (entry.status === "approved") {
         const note = document.createElement("span");
         note.className = "demo-moderation-note";
-        note.textContent = "Approved posts are locked to preserve their demo-only XP history.";
+        note.textContent = t("demo.post.locked");
         actions.append(note);
         return actions;
       }
 
       const editButton = document.createElement("button");
       editButton.type = "button";
-      editButton.textContent = "Demo-only · Edit post";
+      editButton.textContent = t("demo.post.edit");
       editButton.addEventListener("click", () => {
         const existing = actions.querySelector(".grow-edit-form");
         if (existing) {
@@ -2143,13 +2151,13 @@
 
       const deleteButton = document.createElement("button");
       deleteButton.type = "button";
-      deleteButton.textContent = "Demo-only · Delete post";
+      deleteButton.textContent = t("demo.post.delete");
       deleteButton.addEventListener("click", () => {
-        if (!window.confirm("Delete this pending or rejected demo grow post?")) return;
+        if (!window.confirm(t("demo.post.deleteConfirm"))) return;
         state.entries = state.entries.filter((item) => item.postId !== entry.postId);
         saveState();
         renderProgress();
-        logStatus.textContent = "Demo-only grow post deleted. No XP was awarded or removed.";
+        logStatus.textContent = t("demo.post.deleted");
       });
       actions.append(editButton, deleteButton);
       return actions;
@@ -2158,10 +2166,10 @@
     function createGrowEditForm(entry) {
       const form = document.createElement("form");
       form.className = "grow-edit-form";
-      form.setAttribute("aria-label", `Edit demo grow post for ${entry.growId || entry.species}`);
-      const addField = (labelText, name, value, type = "text") => {
+      form.setAttribute("aria-label", t("demo.post.editLabel", { name: entry.growId || entry.species }));
+      const addField = (labelKey, name, value, type = "text") => {
         const label = document.createElement("label");
-        label.textContent = labelText;
+        label.textContent = t(labelKey);
         const input = document.createElement(type === "textarea" ? "textarea" : "input");
         if (type !== "textarea") input.type = type;
         input.name = name;
@@ -2172,23 +2180,18 @@
         form.append(label);
         return input;
       };
-      const growId = addField("Grow name", "growId", entry.growId || entry.species, "text");
-      const species = addField("Species", "species", entry.species, "text");
+      const growId = addField("demo.post.edit.growName", "growId", entry.growId || entry.species, "text");
+      const species = addField("demo.post.edit.species", "species", entry.species, "text");
       const stageLabel = document.createElement("label");
-      stageLabel.textContent = "Stage";
+      stageLabel.textContent = t("demo.post.edit.stage");
       const stage = document.createElement("select");
       stage.name = "stage";
       stage.required = true;
-      growQuestStages.forEach((stageName) => {
-        const option = document.createElement("option");
-        option.value = stageName;
-        option.textContent = stageName;
-        stage.append(option);
-      });
+      growQuestStages.forEach((stageValue) => stage.append(new Option(stageName(stageValue), stageValue)));
       stage.value = normalizeGrowStage(entry.stage);
       stageLabel.append(stage);
       form.append(stageLabel);
-      const observation = addField("Observation", "observation", entry.observation, "textarea");
+      const observation = addField("demo.post.edit.observation", "observation", entry.observation, "textarea");
       observation.classList.add("full-width");
       stageLabel.classList.add("full-width");
       const estimate = document.createElement("p");
@@ -2202,7 +2205,13 @@
           stage: normalizeGrowStage(stage.value)
         };
         const result = estimateGrowPostXp(estimatePost);
-        estimate.textContent = `Estimated ${formatXp(result.totalXp)} demo-only XP if approved · stage ${formatXp(result.stageXp)} · photo ${formatXp(result.photoXp)} · first-grow ${formatXp(result.firstGrowAward)} · first-post ${formatXp(result.firstPostAward)}.`;
+        estimate.textContent = t("demo.post.edit.estimate", {
+          total: formatXp(result.totalXp),
+          stage: formatXp(result.stageXp),
+          photo: formatXp(result.photoXp),
+          firstGrow: formatXp(result.firstGrowAward),
+          firstPost: formatXp(result.firstPostAward)
+        });
       };
       growId.addEventListener("input", updateEstimate);
       species.addEventListener("input", updateEstimate);
@@ -2212,10 +2221,10 @@
       buttons.className = "grow-edit-form-actions full-width";
       const saveButton = document.createElement("button");
       saveButton.type = "submit";
-      saveButton.textContent = "Demo-only · Save changes";
+      saveButton.textContent = t("demo.post.edit.save");
       const cancelButton = document.createElement("button");
       cancelButton.type = "button";
-      cancelButton.textContent = "Cancel";
+      cancelButton.textContent = t("common.cancel");
       cancelButton.addEventListener("click", () => form.remove());
       buttons.append(saveButton, cancelButton);
       form.append(estimate, buttons);
@@ -2232,7 +2241,7 @@
         entry.proposedXp = estimateGrowPostXp(entry).totalXp;
         saveState();
         renderProgress();
-        logStatus.textContent = "Grow post updated and returned to pending review. No demo-only XP was awarded.";
+        logStatus.textContent = t("demo.post.edit.saved");
       });
       return form;
     }
@@ -2248,103 +2257,68 @@
     }
 
     function chooseWelcomeNote() {
-      const welcomeNotes = [
-        {
-          title: "A forest of flavor.",
-          tagline: "One quest at a time.",
-          label: "Today’s field note",
-          fact: "Lion’s Mane’s cascading spines are one of its easiest visual clues. In the kitchen, it takes on a tender, savory character when browned."
-        },
-        {
-          title: "Follow the forest floor.",
-          tagline: "Good things grow slowly.",
-          label: "Cultivation minute",
-          fact: "Mushrooms are fungi, not plants. A grow log helps you notice changes in stages and conditions instead of relying on memory."
-        },
-        {
-          title: "Meet your next meal.",
-          tagline: "The wild has a menu.",
-          label: "Kitchen note",
-          fact: "For better browning, give mushrooms room in the pan. Crowding can trap steam and slow the golden sear."
-        },
-        {
-          title: "Small harvest. Big wonder.",
-          tagline: "There’s always more to learn.",
-          label: "Species spotlight",
-          fact: "Oyster mushrooms grow in overlapping clusters, while Lion’s Mane forms a rounded mass of soft, icicle-like spines."
-        },
-        {
-          title: "Let curiosity take root.",
-          tagline: "Your next quest is simmering.",
-          label: "Flavor pairing",
-          fact: "Lion’s Mane pairs easily with savory staples like garlic, black pepper, lemon, and fresh herbs. Add seasoning as it finishes cooking."
-        },
-        {
-          title: "Good food grows stories.",
-          tagline: "Bring a little forest home.",
-          label: "Grow-log tip",
-          fact: "A useful grow note captures what changed, when you noticed it, and any conditions you adjusted. Little details make a better record."
-        }
-      ];
       const welcomeNoteKey = "mycoquest-last-welcome-note";
+      const count = 6;
       let previousIndex = -1;
       try {
         const savedIndex = Number(sessionStorage.getItem(welcomeNoteKey));
-        if (Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < welcomeNotes.length) {
-          previousIndex = savedIndex;
-        }
+        if (Number.isInteger(savedIndex) && savedIndex >= 0 && savedIndex < count) previousIndex = savedIndex;
       } catch (error) {
-        document.querySelector("#forest-note-label").textContent = "Forest note · visit rotation unavailable";
+        welcomeRotation = false;
       }
-
-      let index = Math.floor(Math.random() * welcomeNotes.length);
-      if (welcomeNotes.length > 1 && index === previousIndex) {
-        index = (index + 1 + Math.floor(Math.random() * (welcomeNotes.length - 1))) % welcomeNotes.length;
-      }
-      const welcome = welcomeNotes[index];
-      document.querySelector("#welcome-title").textContent = welcome.title;
-      document.querySelector("#welcome-tagline").textContent = welcome.tagline;
-      document.querySelector("#forest-note-label").textContent = welcome.label;
-      document.querySelector("#forest-note-text").textContent = welcome.fact;
+      let index = Math.floor(Math.random() * count);
+      if (index === previousIndex) index = (index + 1 + Math.floor(Math.random() * (count - 1))) % count;
+      welcomeIndex = index;
       try {
         sessionStorage.setItem(welcomeNoteKey, String(index));
       } catch (error) {
-        document.querySelector("#forest-note-label").textContent = `${welcome.label} · fresh pick`;
+        welcomeRotation = false;
       }
+      renderWelcome();
     }
 
+    let welcomeIndex = 0;
+    let welcomeRotation = true;
+    function renderWelcome() {
+      const key = `demo.welcome.${welcomeIndex + 1}`;
+      document.querySelector("#welcome-title").textContent = t(`${key}.title`);
+      document.querySelector("#welcome-tagline").textContent = t(`${key}.tagline`);
+      document.querySelector("#forest-note-label").textContent = welcomeRotation ? t(`${key}.label`) : t("demo.welcome.rotationOff");
+      document.querySelector("#forest-note-text").textContent = t(`${key}.fact`);
+    }
+
+    const openRecipes = new Set();
     function renderRecipes() {
       const recipeGrid = document.querySelector("#recipe-grid");
       const recipeSelect = document.querySelector("#recipe-select");
+      const selected = recipeSelect.value;
+      const unlocked = new Set([...document.querySelectorAll(".recipe-card.is-unlocked")].map((card) => card.id));
       recipeGrid.replaceChildren();
       recipeSelect.replaceChildren();
       recipes.forEach((recipe, index) => {
-        const option = document.createElement("option");
-        option.value = recipe.id;
-        option.textContent = recipe.name;
-        recipeSelect.append(option);
+        const name = recipeText(recipe.id, "name");
+        recipeSelect.append(new Option(name, recipe.id));
 
         const card = document.createElement("article");
         card.className = "recipe-card";
         card.id = `recipe-${recipe.id}`;
+        if (unlocked.has(card.id)) card.classList.add("is-unlocked");
         const meta = document.createElement("div");
         meta.className = "recipe-meta";
         const region = document.createElement("span");
-        region.textContent = recipe.region;
+        region.textContent = recipeText(recipe.id, "region");
         const indexLabel = document.createElement("span");
-        indexLabel.textContent = `Quest ${String(index + 1).padStart(2, "0")}`;
+        indexLabel.textContent = t("demo.recipes.questNumber", { number: String(index + 1).padStart(2, "0") });
         meta.append(region, indexLabel);
         const title = document.createElement("h3");
-        title.textContent = recipe.name;
+        title.textContent = name;
         const summary = document.createElement("p");
-        summary.textContent = recipe.summary;
+        summary.textContent = recipeText(recipe.id, "summary");
         const toggle = document.createElement("button");
         toggle.className = "recipe-toggle";
         toggle.type = "button";
-        toggle.setAttribute("aria-expanded", "false");
         toggle.setAttribute("aria-controls", `details-${recipe.id}`);
         const toggleText = document.createElement("span");
-        toggleText.textContent = "Open recipe quest";
         const icon = document.createElement("span");
         icon.setAttribute("aria-hidden", "true");
         icon.textContent = "↗";
@@ -2353,36 +2327,44 @@
         details.className = "recipe-details";
         details.id = `details-${recipe.id}`;
         const ingredientsTitle = document.createElement("h4");
-        ingredientsTitle.textContent = "Gather your ingredients";
+        ingredientsTitle.textContent = t("demo.recipes.ingredients");
         const ingredients = document.createElement("p");
-        ingredients.textContent = recipe.ingredients;
+        ingredients.textContent = recipeText(recipe.id, "ingredients");
         const methodTitle = document.createElement("h4");
-        methodTitle.textContent = "The cooking quest";
+        methodTitle.textContent = t("demo.recipes.method");
         const method = document.createElement("p");
-        method.textContent = recipe.method;
+        method.textContent = recipeText(recipe.id, "method");
         details.append(ingredientsTitle, ingredients, methodTitle, method);
-        toggle.addEventListener("click", () => {
-          const isOpen = card.classList.toggle("is-open");
+        const showState = (isOpen) => {
+          card.classList.toggle("is-open", isOpen);
           toggle.setAttribute("aria-expanded", String(isOpen));
-          toggleText.textContent = isOpen ? "Close recipe quest" : "Open recipe quest";
+          toggleText.textContent = t(isOpen ? "demo.recipes.close" : "demo.recipes.open");
+        };
+        showState(openRecipes.has(recipe.id));
+        toggle.addEventListener("click", () => {
+          const isOpen = !openRecipes.has(recipe.id);
+          if (isOpen) openRecipes.add(recipe.id); else openRecipes.delete(recipe.id);
+          showState(isOpen);
           card.classList.add("is-unlocked");
           if (isOpen) awardSmallInteraction(recipe.id);
-          showRecipeToast(isOpen ? `Quest unlocked: ${recipe.name}` : "Recipe quest tucked away.");
+          showRecipeToast(isOpen ? t("demo.recipes.unlocked", { name }) : t("demo.recipes.tucked"));
         });
         card.append(meta, title, summary, toggle, details);
         recipeGrid.append(card);
       });
+      if (selected) recipeSelect.value = selected;
     }
 
     function renderRecipeSubmissions() {
+      renderJourney();
       const container = document.querySelector("#submission-list");
       container.replaceChildren();
       const title = document.createElement("h4");
-      title.textContent = "Recipe posts · local prototype";
+      title.textContent = t("demo.recipes.posts.title");
       container.append(title);
       if (!state.recipeSubmissions.length) {
         const empty = document.createElement("p");
-        empty.textContent = "No recipe posts submitted yet.";
+        empty.textContent = t("demo.recipes.posts.empty");
         container.append(empty);
         return;
       }
@@ -2391,7 +2373,12 @@
         item.className = "recipe-submission";
         item.id = `recipe-post-${submission.postId}`;
         const summary = document.createElement("p");
-        summary.textContent = `${submission.name} · ${submission.date} · complexity ${submission.complexity ?? "legacy"} · ${submission.role || "legacy role"}${submission.videoName ? ` · video: ${submission.videoName}` : ""}`;
+        summary.textContent = t("demo.recipes.posts.summary", {
+          name: recipeDisplayName(submission),
+          date: fmtDate(submission.date),
+          complexity: Number.isFinite(submission.complexity) ? formatXp(submission.complexity) : t("demo.recipes.posts.legacyComplexity"),
+          role: submission.role && I18N.has(`demo.recipes.roleName.${submission.role}`) ? t(`demo.recipes.roleName.${submission.role}`) : t("demo.recipes.posts.legacyRole")
+        }) + (submission.videoName ? t("demo.recipes.posts.video", { file: submission.videoName }) : "");
         item.append(summary, createPostStatus(
           submission,
           "recipe",
@@ -2400,21 +2387,17 @@
         ));
         const votes = document.createElement("div");
         votes.className = "recipe-votes";
-        votes.setAttribute("aria-label", `Demo feedback for ${submission.name}; reactions do not award XP`);
-        [
-          ["like", "Like"],
-          ["dislike", "Dislike"],
-          ["undecided", "Undecided"]
-        ].forEach(([value, label]) => {
+        votes.setAttribute("aria-label", t("demo.recipes.votes.label", { name: recipeDisplayName(submission) }));
+        ["like", "dislike", "undecided"].forEach((value) => {
           const button = document.createElement("button");
           button.type = "button";
-          button.textContent = label;
+          button.textContent = t(`demo.recipes.votes.${value}`);
           button.setAttribute("aria-pressed", String(submission.vote === value));
           button.addEventListener("click", () => {
             submission.vote = value;
             saveState();
             renderRecipeSubmissions();
-            recipeStatus.textContent = "Demo reaction saved locally. Reactions are not counted as votes and do not award XP.";
+            recipeStatus.textContent = t("demo.recipes.votes.saved");
           });
           votes.append(button);
         });
@@ -2433,14 +2416,14 @@
         updateRecipeXpPreview();
         return;
       }
-      if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
-        recipeStatus.textContent = "Choose an image or video file.";
+      if (!imageTypes.includes(file.type) && !videoTypes.includes(file.type)) {
+        recipeStatus.textContent = t("demo.recipes.media.badType");
         mediaInput.value = "";
         updateRecipeXpPreview();
         return;
       }
       if (file.size > 25 * 1024 * 1024) {
-        recipeStatus.textContent = "That file is over 25 MB. Choose a smaller image or video.";
+        recipeStatus.textContent = t("demo.recipes.media.tooBig");
         mediaInput.value = "";
         updateRecipeXpPreview();
         return;
@@ -2454,20 +2437,20 @@
           selectedMediaDuration = videoPreview.duration;
           if (!Number.isFinite(selectedMediaDuration) || selectedMediaDuration <= 0) {
             clearMediaPreview(true);
-            recipeStatus.textContent = "This video could not be previewed. Choose a different file.";
+            recipeStatus.textContent = t("demo.recipes.media.videoUnreadable");
           } else if (selectedMediaDuration > 60) {
             clearMediaPreview(true);
-            recipeStatus.textContent = "Choose a video that is 60 seconds or shorter.";
+            recipeStatus.textContent = t("demo.recipes.media.videoTooLong");
           } else {
             mediaPreviewReady = true;
-            recipeStatus.textContent = `${file.name} is ready for the local demo preview.`;
+            recipeStatus.textContent = t("demo.recipes.media.ready", { file: file.name });
             updateRecipeXpPreview();
           }
         };
         videoPreview.onerror = () => {
           if (videoPreview.src !== activeMediaUrl || !activeMediaUrl) return;
           clearMediaPreview(true);
-          recipeStatus.textContent = "This video could not be previewed. Choose a supported video file.";
+          recipeStatus.textContent = t("demo.recipes.media.videoUnsupported");
           updateRecipeXpPreview();
         };
       } else {
@@ -2476,33 +2459,33 @@
         imagePreview.onload = () => {
           if (imagePreview.src !== activeMediaUrl) return;
           mediaPreviewReady = true;
-          recipeStatus.textContent = `${file.name} is ready for the local demo preview.`;
+          recipeStatus.textContent = t("demo.recipes.media.ready", { file: file.name });
           updateRecipeXpPreview();
         };
         imagePreview.onerror = () => {
           if (imagePreview.src !== activeMediaUrl || !activeMediaUrl) return;
           clearMediaPreview(true);
-          recipeStatus.textContent = "This image could not be previewed. Choose a supported image file.";
+          recipeStatus.textContent = t("demo.recipes.media.imageUnsupported");
           updateRecipeXpPreview();
         };
       }
-      recipeStatus.textContent = `Loading ${file.name} for the local demo preview…`;
+      recipeStatus.textContent = t("demo.recipes.media.loading", { file: file.name });
       updateRecipeXpPreview();
     }
 
     function handleRecipeSubmit(event) {
       event.preventDefault();
       const file = mediaInput.files[0];
-      if (file && (!file.type.startsWith("image/") && !file.type.startsWith("video/") || file.size > 25 * 1024 * 1024)) {
-        recipeStatus.textContent = "Choose a supported image or video up to 25 MB, or remove the optional media.";
+      if (file && (!imageTypes.includes(file.type) && !videoTypes.includes(file.type) || file.size > 25 * 1024 * 1024)) {
+        recipeStatus.textContent = t("demo.recipes.submit.badMedia");
         return;
       }
       if (file && !mediaPreviewReady) {
-        recipeStatus.textContent = "Wait for the optional media preview to load, or remove it before submitting.";
+        recipeStatus.textContent = t("demo.recipes.submit.waitMedia");
         return;
       }
       if (file && file.type.startsWith("video/") && (!selectedMediaDuration || selectedMediaDuration > 60)) {
-        recipeStatus.textContent = "Wait for the video preview to load, then submit a clip up to 60 seconds.";
+        recipeStatus.textContent = t("demo.recipes.submit.waitVideo");
         return;
       }
       const form = event.currentTarget;
@@ -2510,13 +2493,13 @@
       const recipeId = String(formData.get("recipe"));
       const recipe = recipes.find((item) => item.id === recipeId);
       if (!recipe) {
-        recipeStatus.textContent = "Choose a recipe quest before submitting.";
+        recipeStatus.textContent = t("demo.recipes.submit.chooseRecipe");
         return;
       }
       if (state.recipeSubmissions.some((submission) =>
         submission.recipeId === recipeId && submission.status !== "rejected"
       )) {
-        recipeStatus.textContent = "This recipe already has a pending or approved demo post.";
+        recipeStatus.textContent = t("demo.recipes.submit.duplicate");
         return;
       }
       const complexity = Number(formData.get("complexity"));
@@ -2524,13 +2507,14 @@
       const videoName = file && file.type.startsWith("video/") ? file.name : "";
       const proposedXp = calculateRecipeXp(complexity, role, Boolean(videoName));
       if (!proposedXp) {
-        recipeStatus.textContent = "Enter a complexity from 1 to 5 (decimals are allowed) and choose a mushroom role.";
+        recipeStatus.textContent = t("demo.recipes.submit.badComplexity");
         return;
       }
+      const name = recipeText(recipeId, "name");
       state.recipeSubmissions.unshift({
         postId: `recipe-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         recipeId,
-        name: recipe.name,
+        name,
         date: getTodayKey(),
         status: "pending",
         rejectionReason: "",
@@ -2544,8 +2528,139 @@
       });
       saveState();
       renderRecipeSubmissions();
-      recipeStatus.textContent = `Recipe post submitted locally and is pending review. No XP was awarded. Estimated ${formatXp(proposedXp)} demo-only XP if approved, before any first-post milestone.`;
-      showRecipeToast(`${recipe.name} submitted · pending review.`);
+      recipeStatus.textContent = t("demo.recipes.submit.done", { xp: formatXp(proposedXp) });
+      showRecipeToast(t("demo.recipes.submit.toast", { name }));
+    }
+
+    // Each action: [label key, link target, optional shop category to select].
+    const trails = {
+      cook: {
+        new: [["demo.trail.action.seeFresh", "#shop", "fresh"], ["demo.trail.action.openRecipes", "#recipes"]],
+        experienced: [["demo.trail.action.chooseQuest", "#recipes"], ["demo.trail.action.postCookUp", "#recipe-form"]]
+      },
+      grow: {
+        new: [["demo.trail.action.growBasics", "#faq-cultivating"], ["demo.trail.action.startLog", "#grow-form"]],
+        experienced: [["demo.trail.action.logCheckIn", "#grow-form"], ["demo.trail.action.importBackup", "#rewards"]]
+      },
+      learn: {
+        new: [["demo.category.genetics.label", "#shop", "genetics"], ["demo.category.kits.label", "#shop", "kits"], ["demo.category.supplements.label", "#shop", "supplements"], ["demo.category.tinctures.label", "#shop", "tinctures"]],
+        experienced: [["demo.trail.action.browse", "#shop", "all"], ["demo.trail.action.questions", "#faq"]]
+      },
+      share: {
+        new: [["demo.trail.action.logCheckIn", "#grow-form"], ["demo.trail.action.shareCard", "#share"]],
+        experienced: [["demo.trail.action.makeCard", "#share"], ["demo.trail.action.postCookUp", "#recipe-form"]]
+      }
+    };
+
+    function renderTrailChoice() {
+      document.querySelectorAll("[data-trail]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.trail === activeTrail)));
+      document.querySelectorAll("[data-level]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.level === activeLevel)));
+      document.querySelectorAll("[data-branch]").forEach((path) => path.classList.toggle("is-lit", path.dataset.branch === activeTrail));
+      const summary = document.createElement("p");
+      summary.textContent = t(`demo.trail.${activeTrail}.${activeLevel}`);
+      const row = document.createElement("div");
+      row.className = "trail-actions";
+      trails[activeTrail][activeLevel].forEach(([labelKey, target, category]) => {
+        const link = document.createElement("a");
+        link.className = "chip-link";
+        link.href = target;
+        link.textContent = t(labelKey);
+        link.addEventListener("click", () => {
+          if (category) {
+            activeCategory = category;
+            searchInput.value = "";
+            renderCatalog();
+          }
+          const destination = document.querySelector(target);
+          if (destination.tagName === "DETAILS") destination.open = true;
+        });
+        row.append(link);
+      });
+      document.querySelector("#trail-panel").replaceChildren(summary, row);
+    }
+
+    function startGrowLog(species) {
+      const form = document.querySelector("#grow-form");
+      form.elements.species.value = species;
+      form.scrollIntoView();
+      form.elements.growId.focus({ preventScroll: true });
+      logStatus.textContent = t("demo.card.startGrowStatus", { species });
+    }
+
+    // One record per grow, holding its most recent check-in.
+    function latestByGrow() {
+      const grows = new Map();
+      state.entries.forEach((entry) => {
+        const name = (entry.growId || entry.species).trim();
+        const key = normalizeGrowName(name);
+        const grow = grows.get(key) || { key, name, latest: entry, stages: new Set() };
+        if (String(entry.date) > String(grow.latest.date)) grow.latest = entry;
+        grow.stages.add(normalizeGrowStage(entry.stage));
+        grows.set(key, grow);
+      });
+      return [...grows.values()];
+    }
+
+    function renderJourney() {
+      const grows = latestByGrow();
+      const steps = [
+        { label: "demo.journey.step.checkIn", done: state.entries.length > 0, next: "demo.journey.next.checkIn", link: ["demo.trail.action.logCheckIn", "#grow-form"] },
+        { label: "demo.journey.step.secondStage", done: grows.some((grow) => grow.stages.size > 1), next: "demo.journey.next.secondStage", link: ["demo.journey.link.logNext", "#grow-form"] },
+        { label: "demo.journey.step.cookUp", done: state.recipeSubmissions.length > 0, next: "demo.journey.next.cookUp", link: ["demo.journey.link.chooseRecipe", "#recipes"] },
+        { label: "demo.journey.step.approved", done: [...state.entries, ...state.recipeSubmissions].some((post) => post.status === "approved"), next: "demo.journey.next.approved", link: ["demo.journey.link.seePosts", "#log-list"] }
+      ];
+      const list = document.querySelector("#milestones");
+      list.replaceChildren(...steps.map((step) => {
+        const item = document.createElement("li");
+        if (step.done) item.className = "is-done";
+        item.textContent = t(step.done ? "demo.journey.done" : "demo.journey.todo", { label: t(step.label) });
+        return item;
+      }));
+      const next = steps.find((step) => !step.done);
+      const newest = [...grows].sort((a, b) => String(b.latest.date).localeCompare(String(a.latest.date)))[0];
+      let since = "";
+      if (newest) {
+        const days = Math.round((new Date(`${getTodayKey()}T00:00`) - new Date(`${newest.latest.date}T00:00`)) / 86400000);
+        const vars = { name: newest.name, stage: stageName(newest.latest.stage), days: I18N.number(days) };
+        const key = !Number.isFinite(days) || days < 0 ? "unknown" : days === 0 ? "today" : days === 1 ? "yesterday" : "days";
+        since = t(`demo.journey.lastLogged.${key}`, vars);
+      }
+      document.querySelector("#journey-next").textContent = since + t(next ? next.next : "demo.journey.allDone");
+      const link = document.querySelector("#journey-link");
+      const [labelKey, target] = next ? next.link : ["demo.trail.action.makeCard", "#share"];
+      link.textContent = t(labelKey);
+      link.href = target;
+    }
+
+    function renderShareOptions() {
+      const select = document.querySelector("#share-grow");
+      const previous = select.value;
+      const grows = latestByGrow();
+      select.replaceChildren(...grows.map((grow) => new Option(grow.name, grow.key)));
+      if (grows.some((grow) => grow.key === previous)) {
+        select.value = previous;
+      } else {
+        // A different grow must not inherit permission to share private fields.
+        document.querySelector("#share-name").checked = false;
+        document.querySelector("#share-note").checked = false;
+      }
+      renderShareCard();
+    }
+
+    function renderShareCard() {
+      const grow = latestByGrow().find((item) => item.key === document.querySelector("#share-grow").value);
+      const include = (id) => document.querySelector(id).checked;
+      const lines = grow ? [
+        t("demo.share.card.title"),
+        include("#share-name") && grow.name,
+        include("#share-species") && t("demo.share.card.species", { value: grow.latest.species }),
+        include("#share-stage") && t("demo.share.card.stage", { value: stageName(grow.latest.stage) }),
+        include("#share-note") && t("demo.share.card.note", { value: grow.latest.observation })
+      ].filter(Boolean) : [];
+      document.querySelector("#share-preview").textContent = grow ? lines.join("\n") : t("demo.share.card.empty");
+      document.querySelector("#share-copy").disabled = !grow;
+      document.querySelector("#share-send").disabled = !grow;
+      document.querySelector("#share-status").textContent = "";
     }
 
     function renderProgress() {
@@ -2555,23 +2670,27 @@
       const xpIntoLevel = state.totalXp - levelInfo.xpAtLevel;
       const xpToNext = atLevelCap ? 0 : levelInfo.xpToNext;
       const progress = atLevelCap ? 100 : Math.min(100, (xpIntoLevel / xpToNext) * 100);
-      document.querySelector("#player-level").textContent = `Level ${levelInfo.level}`;
+      const levelText = t("demo.level.badge", { level: I18N.number(levelInfo.level) });
+      const progressLabel = atLevelCap
+        ? t("demo.level.capReached", { level: I18N.number(maxDemoLevel) })
+        : t("demo.level.progressTo", { level: I18N.number(levelInfo.level + 1) });
+      document.querySelector("#player-level").textContent = levelText;
       document.querySelector("#xp-into-level").textContent = formatXp(xpIntoLevel);
       document.querySelector("#xp-to-next-level").textContent = formatXp(xpToNext);
       document.querySelector("#level-progress").style.width = `${progress}%`;
-      document.querySelector(".progress-track").setAttribute("aria-valuemax", String(Math.max(1, xpToNext)));
-      document.querySelector(".progress-track").setAttribute("aria-valuenow", String(atLevelCap ? 1 : xpIntoLevel));
-      document.querySelector(".progress-track").setAttribute("aria-label", atLevelCap ? `Demo-only Level ${maxDemoLevel} cap reached` : `Demo-only progress to level ${levelInfo.level + 1}`);
-      document.querySelector("#player-caption").textContent =
-        `${formatXp(state.totalXp)} demo-only total XP earned · ${atLevelCap ? `Level ${maxDemoLevel} cap reached` : `${formatXp(xpToNext - xpIntoLevel)} demo-only XP to level ${levelInfo.level + 1}`}`;
-      document.querySelector("#sticky-level-label").textContent = `Level ${levelInfo.level}`;
+      [document.querySelector(".progress-track"), document.querySelector("#sticky-level-progress")].forEach((bar) => {
+        bar.setAttribute("aria-valuemax", String(Math.max(1, xpToNext)));
+        bar.setAttribute("aria-valuenow", String(atLevelCap ? 1 : xpIntoLevel));
+        bar.setAttribute("aria-label", progressLabel);
+      });
+      document.querySelector("#player-caption").textContent = atLevelCap
+        ? t("demo.level.captionCap", { total: formatXp(state.totalXp), level: I18N.number(maxDemoLevel) })
+        : t("demo.level.caption", { total: formatXp(state.totalXp), xp: formatXp(xpToNext - xpIntoLevel), level: I18N.number(levelInfo.level + 1) });
+      document.querySelector("#sticky-level-label").textContent = levelText;
       document.querySelector("#sticky-level-fill").style.width = `${progress}%`;
-      document.querySelector("#sticky-level-progress").setAttribute("aria-valuemax", String(Math.max(1, xpToNext)));
-      document.querySelector("#sticky-level-progress").setAttribute("aria-valuenow", String(atLevelCap ? 1 : xpIntoLevel));
-      document.querySelector("#sticky-level-progress").setAttribute("aria-label", atLevelCap ? `Demo-only Level ${maxDemoLevel} cap reached` : `Demo-only progress to level ${levelInfo.level + 1}`);
       document.querySelector("#sticky-level-next").textContent = atLevelCap
-        ? "Demo-only · Level cap"
-        : `Demo-only · ${formatXp(xpToNext - xpIntoLevel)} XP to next`;
+        ? t("demo.level.stickyCap")
+        : t("demo.level.stickyNext", { xp: formatXp(xpToNext - xpIntoLevel) });
 
       const logList = document.querySelector("#log-list");
       logList.replaceChildren();
@@ -2580,9 +2699,10 @@
         item.className = "log-entry";
         item.id = `grow-post-${entry.postId}`;
         const title = document.createElement("strong");
-        title.textContent = `${entry.growId || entry.species} · ${entry.species} · ${entry.stage}`;
+        title.textContent = t("demo.log.entryTitle", { grow: entry.growId || entry.species, species: entry.species, stage: stageName(entry.stage) });
         const note = document.createElement("span");
-        note.textContent = `${entry.date} — ${entry.observation}${entry.mediaName ? ` · photo preview: ${entry.mediaName}` : ""}`;
+        note.textContent = t("demo.log.entryNote", { date: fmtDate(entry.date), observation: entry.observation }) +
+          (entry.mediaName ? t("demo.log.entryPhoto", { file: entry.mediaName }) : "");
         item.append(title, note, createPostStatus(
           entry,
           "grow",
@@ -2595,11 +2715,13 @@
       if (!state.entries.length) {
         const empty = document.createElement("p");
         empty.className = "player-caption";
-        empty.textContent = "Your first check-in will show up here.";
+        empty.textContent = t("demo.log.empty");
         logList.append(empty);
       }
       renderGrowQuests();
       renderXpFeed();
+      renderJourney();
+      renderShareOptions();
     }
 
     searchInput.addEventListener("input", renderCatalog);
@@ -2622,13 +2744,13 @@
       clearGrowPhotoPreview();
       logStatus.textContent = "";
       if (!file) return;
-      if (!file.type.startsWith("image/")) {
-        logStatus.textContent = "Choose an image for the optional grow photo.";
+      if (!imageTypes.includes(file.type)) {
+        logStatus.textContent = t("demo.log.photo.badType");
         growPhotoInput.value = "";
         return;
       }
       if (file.size > 25 * 1024 * 1024) {
-        logStatus.textContent = "That grow photo is over 25 MB. Choose a smaller image.";
+        logStatus.textContent = t("demo.log.photo.tooBig");
         growPhotoInput.value = "";
         return;
       }
@@ -2639,12 +2761,12 @@
       preview.onload = () => {
         if (preview.src !== activeGrowPhotoUrl) return;
         growPhotoReady = true;
-        logStatus.textContent = `${file.name} is ready for a local grow-photo preview.`;
+        logStatus.textContent = t("demo.log.photo.ready", { file: file.name });
       };
       preview.onerror = () => {
         if (preview.src !== activeGrowPhotoUrl || !activeGrowPhotoUrl) return;
         clearGrowPhotoPreview(true);
-        logStatus.textContent = "This grow photo could not be previewed. Choose a different image.";
+        logStatus.textContent = t("demo.log.photo.unreadable");
       };
     });
 
@@ -2653,12 +2775,12 @@
       const formData = new FormData(event.currentTarget);
       const todayKey = getTodayKey();
       const photo = growPhotoInput.files[0];
-      if (photo && (!photo.type.startsWith("image/") || photo.size > 25 * 1024 * 1024)) {
-        logStatus.textContent = "Choose a supported grow photo up to 25 MB, or remove it.";
+      if (photo && (!imageTypes.includes(photo.type) || photo.size > 25 * 1024 * 1024)) {
+        logStatus.textContent = t("demo.log.submit.badPhoto");
         return;
       }
       if (photo && !growPhotoReady) {
-        logStatus.textContent = "Wait for the grow photo preview to load, or remove it before saving.";
+        logStatus.textContent = t("demo.log.submit.waitPhoto");
         return;
       }
       const entry = {
@@ -2670,7 +2792,7 @@
         mediaName: photo ? photo.name : ""
       };
       if (!entry.growId || !entry.species || !entry.observation) {
-        logStatus.textContent = "Add a grow name, species, and observation before saving.";
+        logStatus.textContent = t("demo.log.submit.missing");
         return;
       }
       const estimate = estimateGrowPostXp(entry);
@@ -2682,10 +2804,67 @@
       state.entries.unshift(entry);
       saveState();
       renderProgress();
-      logStatus.textContent = `Grow post submitted locally and is pending review. No XP was awarded. Estimated ${formatXp(estimate.totalXp)} demo-only XP if approved; approval rechecks duplicate grow stages and milestones. Photo preview is local only.`;
+      logStatus.textContent = t("demo.log.submit.done", { xp: formatXp(estimate.totalXp) });
       clearGrowPhotoPreview(true);
       event.currentTarget.reset();
     });
+
+    document.querySelector("#category-bar").append(...categories.map((category) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.category = category.id;
+      button.addEventListener("click", () => {
+        activeCategory = category.id;
+        renderCatalog();
+      });
+      return button;
+    }));
+    document.querySelectorAll("[data-trail]").forEach((button) => button.addEventListener("click", () => {
+      activeTrail = button.dataset.trail;
+      renderTrailChoice();
+    }));
+    document.querySelectorAll("[data-level]").forEach((button) => button.addEventListener("click", () => {
+      activeLevel = button.dataset.level;
+      renderTrailChoice();
+    }));
+    document.querySelector("#share-grow").addEventListener("change", () => {
+      document.querySelector("#share-name").checked = false;
+      document.querySelector("#share-note").checked = false;
+      renderShareCard();
+    });
+    ["#share-species", "#share-stage", "#share-name", "#share-note"].forEach((id) => document.querySelector(id).addEventListener("change", renderShareCard));
+    document.querySelector("#share-copy").addEventListener("click", async () => {
+      const status = document.querySelector("#share-status");
+      try {
+        await navigator.clipboard.writeText(document.querySelector("#share-preview").textContent);
+        status.textContent = t("demo.share.copied");
+      } catch (error) {
+        status.textContent = t("demo.share.copyBlocked");
+      }
+    });
+    if (navigator.share) {
+      const send = document.querySelector("#share-send");
+      send.hidden = false;
+      send.addEventListener("click", () => navigator.share({ text: document.querySelector("#share-preview").textContent }).catch(() => {}));
+    }
+
+    // Language: static text is filled by I18N.apply(); everything built in script re-renders on change.
+    // Saved records are never translated or rewritten; only what is shown changes.
+    I18N.apply();
+    I18N.mountSwitch(document.querySelector("#language-switch"));
+    window.addEventListener("mq:languagechange", () => {
+      [recipeStatus, logStatus, resetStatus, dataToolsStatus, document.querySelector("#share-status")].forEach((node) => { node.textContent = ""; });
+      setStorageNote(storageNoteKey);
+      renderWelcome();
+      renderTrailChoice();
+      renderCatalog();
+      renderRecipes();
+      updateRecipeXpPreview();
+      renderRecipeSubmissions();
+      renderProgress();
+    });
+    if (storageNoteKey) setStorageNote(storageNoteKey);
+    renderTrailChoice();
 
     searchInput.value = new URLSearchParams(location.search).get("search") || "";
     document.querySelector("#year").textContent = new Date().getFullYear();

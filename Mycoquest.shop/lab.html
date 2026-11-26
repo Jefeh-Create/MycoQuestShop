@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#191610">
+  <!-- Private prep lab. No network requests and no remote code. Records stay in this browser. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data: blob:; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23242018'/%3E%3Cpath d='M32 15v36M32 29c-9 0-15-5-15-13M32 36c9 0 15-5 15-13M32 43c-7 0-11 4-11 9M32 47c7 0 11 3 12 7' fill='none' stroke='%23e3a94f' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+  <title>Prep lab · MycoQuest (private)</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f1eade;
+      --muted: #b9ae9b;
+      --bg: #191610;
+      --panel: #242018;
+      --line: rgba(235, 220, 192, .16);
+      --lime: #a8b487;
+      --gold: #e3a94f;
+      --spruce: #20271c;
+      --orange: #c77c59;
+      --paper: #efe5cf;
+      --paper-ink: #2a2219;
+      --serif: Georgia, "Times New Roman", serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(ellipse at 85% 0, rgba(126, 87, 57, .2), transparent 32rem),
+        radial-gradient(ellipse at 5% 40%, rgba(116, 128, 83, .11), transparent 28rem),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    a { color: inherit; }
+    button, input, select, textarea { font: inherit; }
+    [hidden] { display: none !important; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin-inline: auto; }
+    :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .skip-link { position: fixed; z-index: 40; top: 10px; left: 10px; padding: 10px 14px; border-radius: 8px; background: var(--panel); transform: translateY(-160%); }
+    .skip-link:focus { transform: none; }
+
+    .lab-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; padding-block: 20px 16px; }
+    .brand-row { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid rgba(227, 169, 79, .55); border-radius: 13px; color: var(--gold); transform: rotate(-7deg); }
+    .brand-mark svg { width: 22px; height: 22px; }
+    .brand-name { margin: 0; font-family: var(--serif); font-size: 1.3rem; }
+    .brand-sub { margin: 0; color: var(--muted); font-size: .85rem; }
+    .private-pill { padding: 8px 13px; border: 1px dashed rgba(227, 169, 79, .65); border-radius: 99px; color: #f0cf98; font-size: .85rem; }
+    .lab-nav { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+    .lab-nav a { display: inline-flex; min-height: 44px; align-items: center; padding: 8px 16px; border: 1px solid rgba(235, 220, 192, .26); border-radius: 99px; font-size: .9rem; text-decoration: none; }
+    .lab-nav a:hover { border-color: var(--gold); }
+    .lab-nav a[aria-current="page"] { border-color: var(--gold); background: var(--gold); color: #1d170c; font-weight: 750; }
+    main { padding-block: 30px 80px; }
+
+    h1 { margin: 0 0 8px; font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.4rem); font-weight: 500; letter-spacing: -.03em; line-height: 1.05; }
+    h1:focus { outline: none; }
+    h2 { margin: 0 0 10px; font-family: var(--serif); font-size: 1.5rem; font-weight: 500; }
+    h3 { margin: 0; font-family: var(--serif); font-size: 1.25rem; font-weight: 500; }
+    .lede { max-width: 62ch; margin: 0; color: var(--muted); }
+    .view-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .stack { display: grid; gap: 16px; align-content: start; }
+    .meta { margin: 0; color: var(--muted); font-size: .88rem; }
+    .tally { margin: -8px 0 22px; color: #d3ddb6; font-size: .92rem; }
+    .back { display: inline-block; margin-bottom: 14px; color: #d3ddb6; font-size: .9rem; }
+
+    .btn { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; padding: 8px 18px; border: 1px solid rgba(168, 180, 135, .6); border-radius: 99px; background: transparent; color: #e0e6ca; cursor: pointer; font-size: .9rem; font-weight: 700; text-decoration: none; }
+    .btn:hover { background: rgba(168, 180, 135, .12); }
+    .btn--primary { border-color: var(--lime); background: var(--lime); color: #14170e; }
+    .btn--primary:hover { background: #bcc79c; }
+    .btn--quiet { border-color: rgba(235, 220, 192, .26); color: var(--ink); font-weight: 600; }
+    .btn--danger { border-color: rgba(229, 140, 120, .65); color: #f4bcae; }
+    .btn--small { min-height: 38px; padding: 6px 13px; font-size: .84rem; }
+    .btn:disabled { cursor: not-allowed; opacity: .55; }
+
+    .panel { padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: rgba(36, 32, 24, .78); }
+    .panel--warn { border-color: rgba(227, 169, 79, .55); }
+    .panel p { margin: 0 0 12px; }
+    .empty { padding: 32px 24px; border: 1px dashed rgba(235, 220, 192, .3); border-radius: 22px; text-align: center; }
+    .empty p { max-width: 54ch; margin: 0 auto 16px; color: var(--muted); }
+    .empty .row { justify-content: center; }
+    .alert { margin-bottom: 22px; padding: 16px 18px; border: 1px solid rgba(229, 140, 120, .65); border-radius: 14px; background: rgba(199, 124, 89, .13); color: #f8d8cc; }
+    .alert p { margin: 0 0 10px; }
+    .toast { position: fixed; z-index: 50; right: 20px; bottom: 20px; max-width: min(400px, calc(100vw - 40px)); padding: 14px 18px; border: 1px solid rgba(227, 169, 79, .6); border-radius: 14px; background: #2b261a; box-shadow: 0 12px 35px rgba(0, 0, 0, .4); opacity: 0; pointer-events: none; transform: translateY(10px); transition: opacity .25s ease, transform .25s ease; }
+    .toast.is-visible { opacity: 1; transform: none; }
+
+    /* Prep trail */
+    .trail-steps { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); margin: 16px 0 0; padding: 0; list-style: none; }
+    .trail-steps li { position: relative; padding: 34px 6px 0; color: var(--muted); font-size: .84rem; line-height: 1.4; text-align: center; }
+    .trail-steps li::before { position: absolute; z-index: 1; top: 0; left: calc(50% - 11px); width: 18px; height: 18px; border: 2px solid #7d745f; border-radius: 50%; background: var(--panel); content: ""; }
+    .trail-steps li:not(:last-child)::after { position: absolute; top: 10px; left: 50%; width: 100%; height: 2px; background: #4a4335; content: ""; }
+    .trail-steps li.is-done { color: var(--ink); }
+    .trail-steps li.is-done::before { border-color: var(--gold); background: var(--gold); box-shadow: 0 0 0 5px rgba(227, 169, 79, .18); }
+    .trail-steps a { text-underline-offset: 3px; }
+    .today-grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: 16px; margin-top: 16px; }
+    .step-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .step-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 12px 14px; border-left: 3px solid var(--lime); border-radius: 4px 12px 12px 4px; background: rgba(255, 255, 255, .035); }
+    .step-list li.is-overdue { border-left-color: var(--orange); }
+    .step-list .due { color: var(--muted); font-size: .84rem; }
+    .step-list .is-overdue .due, .is-overdue .due { color: #f4bcae; font-weight: 700; }
+    .step-list .step-text { grid-column: 1; overflow-wrap: anywhere; }
+    .step-list .btn { grid-column: 2; grid-row: 1 / span 3; }
+
+    /* Jars */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .filter-bar button { min-height: 44px; padding: 8px 15px; border: 1px solid rgba(235, 220, 192, .26); border-radius: 99px; background: transparent; color: var(--ink); cursor: pointer; font-size: .88rem; }
+    .filter-bar button[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: #1d170c; font-weight: 750; }
+    .filter-bar select { min-height: 44px; padding: 8px 12px; border: 1px solid rgba(235, 220, 192, .26); border-radius: 99px; background: #17140f; color: var(--ink); }
+    .jar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+    .jar-card { display: grid; gap: 8px; align-content: start; padding: 20px 18px 18px; border: 1px solid var(--line); border-radius: 22px; background: rgba(36, 32, 24, .78); }
+    .jar-card h2 { margin: 6px 0 0; font-size: 1.35rem; }
+    .jar-card h2 a { text-decoration: none; }
+    .jar-card h2 a:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .stage-line { margin: 0; font-size: .92rem; }
+    .jar { width: 92px; margin: 0 auto; }
+    .jar--big { width: 150px; }
+    .jar-lid { width: 78%; height: 12px; margin: 0 auto; border-radius: 6px 6px 2px 2px; background: linear-gradient(#8a7150, #5f4c33); }
+    .jar[data-outcome="Finished"] .jar-lid { background: linear-gradient(#f0c06e, var(--gold)); }
+    .jar-body { position: relative; height: 112px; overflow: hidden; border: 2px solid rgba(241, 234, 222, .42); border-top-width: 3px; border-radius: 10px 10px 26px 26px; background: rgba(255, 255, 255, .04); }
+    .jar--big .jar-body { height: 184px; }
+    .jar-fill {
+      position: absolute;
+      inset: auto 0 0;
+      height: calc(var(--fill) * 82%);
+      background:
+        radial-gradient(circle at 30% 40%, rgba(255, 255, 255, .6) 0 1.5px, transparent 2.5px) 0 0 / 14px 12px,
+        radial-gradient(circle at 70% 70%, rgba(255, 255, 255, .45) 0 1px, transparent 2px) 0 0 / 11px 9px,
+        linear-gradient(#efe8d6, #c9b994);
+      transition: height .6s ease;
+    }
+    .jar[data-early] .jar-fill { background: radial-gradient(circle, #a8834f 0 3px, transparent 3.5px) 0 0 / 9px 8px, #6b5232; }
+    .jar[data-outcome="Contaminated"] .jar-fill {
+      background:
+        radial-gradient(circle at 40% 30%, #6f8f4a 0 7px, transparent 8px) 0 0 / 34px 30px,
+        radial-gradient(circle at 30% 40%, rgba(255, 255, 255, .5) 0 1.5px, transparent 2.5px) 0 0 / 14px 12px,
+        linear-gradient(#e2dcc4, #b6aa86);
+    }
+    .jar[data-outcome="Paused"] { opacity: .55; }
+    .jar[data-fruiting] .jar-fill::before { position: absolute; top: -8px; left: calc(22% + 8px); width: 4px; height: 10px; background: #efe8d6; content: ""; box-shadow: 26px 2px 0 #efe8d6; }
+    .jar[data-fruiting] .jar-fill::after { position: absolute; top: -14px; left: 22%; width: 20px; height: 12px; border-radius: 20px 20px 3px 3px; background: var(--gold); content: ""; box-shadow: 26px 3px 0 -2px #d8b46f; }
+    .badge { justify-self: start; padding: 3px 10px; border: 1px solid; border-radius: 99px; font-size: .8rem; font-weight: 700; }
+    .badge--paused { color: #d6cdba; }
+    .badge--contaminated { color: #b7d58e; }
+    .badge--finished { color: #f0cf98; }
+
+    /* Batch detail */
+    .detail { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 30px; margin-bottom: 34px; }
+    .stage-track { display: grid; gap: 6px; margin: 18px 0 0; padding: 0; list-style: none; }
+    .stage-track li { padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; color: var(--muted); font-size: .9rem; }
+    .stage-track li.is-past { border-color: rgba(168, 180, 135, .45); background: rgba(168, 180, 135, .12); color: var(--ink); }
+    .stage-track li.is-current { border-color: var(--gold); background: var(--gold); color: #1d170c; font-weight: 750; }
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 22px; margin: 0; }
+    .facts div { min-width: 0; }
+    .facts dt { color: var(--muted); font-size: .84rem; }
+    .facts dd { margin: 2px 0 0; overflow-wrap: anywhere; }
+    .facts .wide { grid-column: 1 / -1; }
+    .pre { white-space: pre-wrap; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { display: inline-block; padding: 5px 11px; border-radius: 99px; background: rgba(168, 180, 135, .15); color: #e0e6ca; font-size: .85rem; text-decoration: none; }
+    a.chip:hover { text-decoration: underline; }
+    .timeline { display: grid; gap: 16px; margin: 0; padding: 0 0 0 24px; border-left: 2px solid rgba(168, 180, 135, .35); list-style: none; }
+    .timeline > li { position: relative; }
+    .timeline > li::before { position: absolute; top: 18px; left: -32px; width: 14px; height: 14px; border: 3px solid var(--bg); border-radius: 50%; background: var(--lime); content: ""; }
+    .obs { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px; padding: 16px 18px; border-radius: 16px; background: rgba(255, 255, 255, .035); }
+    .obs p { margin: 0 0 8px; }
+    .obs-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .readings { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .reading { padding: 3px 9px; border: 1px solid var(--line); border-radius: 8px; font-size: .84rem; }
+    .thumb { width: 120px; height: 120px; padding: 0; overflow: hidden; border: 0; border-radius: 12px; background: #2e281e; cursor: zoom-in; }
+    .thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    /* Sources */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .col-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .col-head h2 { margin: 0; }
+    .source-list { display: grid; gap: 12px; }
+    .source-card { display: grid; gap: 8px; padding: 18px; border: 1px solid var(--line); border-radius: 18px; background: rgba(36, 32, 24, .78); }
+    .source-card--genetics { grid-template-columns: 58px minmax(0, 1fr); gap: 8px 16px; }
+    .source-card--genetics > div { display: grid; gap: 6px; }
+    .plate { width: 58px; height: 58px; border: 2px solid rgba(241, 234, 222, .4); border-radius: 50%; background: radial-gradient(circle, #efe8d6 0 22%, rgba(239, 232, 214, .35) 23% 34%, transparent 36%), #3a3122; }
+    .source-card p { margin: 0; }
+    .source-card details summary { color: #d3ddb6; cursor: pointer; font-size: .88rem; font-weight: 650; }
+
+    /* Specimen tags */
+    .tag-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 34px 22px; padding-top: 16px; }
+    .tag { position: relative; display: grid; gap: 10px; align-content: start; padding: 24px 20px 18px 44px; border-radius: 4px 24px 4px 4px; background: var(--paper); box-shadow: 0 12px 26px rgba(0, 0, 0, .38); color: var(--paper-ink); }
+    .tag:nth-child(odd) { transform: rotate(-.6deg); }
+    .tag:nth-child(even) { transform: rotate(.5deg); }
+    .tag::before { position: absolute; top: 20px; left: 15px; width: 14px; height: 14px; border-radius: 50%; background: var(--bg); box-shadow: inset 0 0 0 2px #b9a47c; content: ""; }
+    .tag::after { position: absolute; top: -20px; left: 21px; width: 2px; height: 42px; background: #c9b083; content: ""; transform: rotate(14deg); transform-origin: bottom; }
+    .tag h2 { margin: 0; color: var(--paper-ink); font-size: 1.45rem; }
+    .tag p { margin: 0; color: #3b3226; font-size: .92rem; }
+    .tag-type { color: #5d4d36 !important; font-size: .84rem !important; font-weight: 700; }
+    .stamp { justify-self: start; padding: 3px 10px; border: 2px solid currentColor; border-radius: 5px; font-size: .84rem; font-weight: 800; transform: rotate(-2.5deg); }
+    .stamp--researching { color: #2f4d73; }
+    .stamp--preparing { color: #7a4c0c; }
+    .stamp--planned { color: #34601f; }
+    .stamp--unavailable { color: #5a5249; }
+    .stamp--ready-for-review { color: #94301c; }
+    .meter { height: 7px; margin-top: 4px; overflow: hidden; border-radius: 99px; background: #d8cbb0; }
+    .meter span { display: block; height: 100%; background: #34601f; }
+    .threads { display: grid; gap: 3px; margin: 0; font-size: .86rem; }
+    .threads dt { display: inline; color: #5d4d36; font-weight: 700; }
+    .threads dd { display: inline; margin: 0; }
+    .tag .btn { border-color: #2a2219; color: var(--paper-ink); }
+    .tag .btn:hover { background: rgba(42, 34, 25, .08); }
+    .tag .btn--danger { border-color: #94301c; color: #94301c; }
+    .tag :focus-visible { outline-color: var(--paper-ink); }
+    .status-guide { margin-bottom: 18px; color: var(--muted); font-size: .9rem; }
+    .status-guide summary { color: #d3ddb6; cursor: pointer; font-weight: 650; }
+    .status-guide dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 12px 0 0; }
+    .status-guide dt { color: var(--ink); font-weight: 700; }
+    .status-guide dd { margin: 0; }
+
+    /* Journey map */
+    .map { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 22px; padding: 22px; border-radius: 26px; background: radial-gradient(ellipse at 50% 0, rgba(227, 169, 79, .13), transparent 60%), var(--spruce); }
+    .map svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .map path { fill: none; stroke: rgba(200, 210, 170, .3); stroke-width: 1.5; }
+    .map path.is-lit { stroke: var(--gold); stroke-width: 3; }
+    .map-col { position: relative; z-index: 1; display: grid; gap: 8px; align-content: start; }
+    .map-col h2 { margin: 0 0 4px; color: #d3ddb6; font-family: inherit; font-size: .95rem; font-weight: 750; }
+    .node { display: grid; min-height: 44px; padding: 8px 12px; border: 1px solid rgba(235, 220, 192, .3); border-radius: 22px; background: #1d1a14; color: var(--ink); cursor: pointer; font-size: .86rem; overflow-wrap: anywhere; text-align: left; }
+    .node-kind { color: var(--muted); font-size: .74rem; }
+    .node.is-linked { border-color: var(--gold); }
+    .node[aria-pressed="true"] { border-color: var(--gold); background: var(--gold); color: #1d170c; font-weight: 750; }
+    .node[aria-pressed="true"] .node-kind { color: #3b2c12; }
+    .map.has-selection .node:not(.is-linked):not([aria-pressed="true"]) { opacity: .42; }
+    .thread-panel { margin-top: 16px; }
+    .thread-panel ul { margin: 0 0 12px; padding-left: 20px; }
+
+    /* Backup and storage */
+    .data-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .data-grid .wide { grid-column: 1 / -1; }
+    .data-grid ul { margin: 0; padding-left: 20px; }
+    .data-grid li { margin-bottom: 6px; }
+    .inline-check { display: flex; min-height: 36px; align-items: center; gap: 10px; }
+    input[type="checkbox"] { width: 20px; height: 20px; flex: 0 0 auto; accent-color: var(--gold); }
+    input[type="file"] { max-width: 100%; }
+
+    /* Dialog and forms */
+    dialog { width: min(660px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); padding: 0; border: 1px solid rgba(227, 169, 79, .5); border-radius: 22px; background: #211d16; color: var(--ink); }
+    dialog::backdrop { background: rgba(10, 9, 6, .72); }
+    dialog form, .dialog-frame { display: flex; max-height: calc(100dvh - 26px); flex-direction: column; }
+    .dialog-body { padding: 24px; overflow: auto; }
+    .dialog-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--line); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .field { display: grid; gap: 6px; align-content: start; min-width: 0; margin: 0; padding: 0; border: 0; }
+    .field.wide { grid-column: 1 / -1; }
+    .field label, .field legend { padding: 0; font-size: .9rem; font-weight: 650; }
+    .field input:not([type="checkbox"]):not([type="file"]), .field select, .field textarea { width: 100%; min-height: 44px; padding: 9px 11px; border: 1px solid rgba(235, 220, 192, .3); border-radius: 10px; background: #17140f; color: var(--ink); }
+    .field textarea { min-height: 92px; resize: vertical; }
+    .hint { margin: 0; color: var(--muted); font-size: .82rem; }
+    .checks-list { display: grid; gap: 2px; }
+    .checks-list label { display: flex; min-height: 36px; align-items: center; gap: 10px; font-weight: 400; }
+    .form-error { margin: 0 0 16px; padding: 11px 13px; border-radius: 10px; background: rgba(199, 124, 89, .18); color: #f8d8cc; }
+    .photo-preview { max-width: 100%; max-height: 220px; border-radius: 12px; }
+    .photo-large { display: block; max-width: 100%; max-height: 70dvh; margin: 0 auto; border-radius: 12px; }
+    .visitor { display: grid; gap: 10px; margin-top: 14px; padding: 26px; border: 1px solid rgba(227, 169, 79, .45); border-radius: 70px 70px 18px 18px; background: var(--spruce); }
+    .visitor h3 { font-size: 1.7rem; }
+    .visitor p { margin: 0; }
+    .not-live { padding: 9px 12px; border-radius: 10px; background: rgba(199, 124, 89, .15); color: #f4d2c4; font-size: .9rem; }
+
+    /* Language switch */
+    .lang-switch { display: inline-flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid rgba(227, 169, 79, .5); border-radius: 99px; background: rgba(36, 32, 24, .85); }
+    .lang-switch button { min-width: 44px; min-height: 40px; padding: 4px 13px; border: 0; border-radius: 99px; background: transparent; color: var(--ink); cursor: pointer; font-size: .86rem; }
+    .lang-switch button:hover { background: rgba(227, 169, 79, .14); }
+    .lang-switch button[aria-pressed="true"] { background: var(--gold); color: #1d170c; font-weight: 750; }
+    .lang-icon { display: grid; width: 28px; place-items: center; color: var(--gold); }
+    .lang-icon svg { width: 18px; height: 18px; }
+
+    @media (max-width: 760px) {
+      .today-grid, .detail, .two-col, .data-grid, .form-grid { grid-template-columns: minmax(0, 1fr); }
+      .trail-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 0; }
+      .trail-steps li::after { display: none; }
+      .map { grid-template-columns: minmax(0, 1fr); }
+      .map svg { display: none; }
+      .facts { grid-template-columns: minmax(0, 1fr); }
+      .obs { grid-template-columns: minmax(0, 1fr); }
+      .detail .jar--big { width: 120px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" id="skip-link" href="#view" data-i18n="common.skip">Skip to main content</a>
+  <header class="wrap lab-top">
+    <div class="brand-row">
+      <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M12 8c-4 0-6-2-6-5M12 12c4 0 6-2 6-5M12 16c-3 0-5 2-5 5M12 17c3 0 5 1 5 4" stroke="currentColor" stroke-linecap="round" stroke-width="1.7"/></svg></span>
+      <div><p class="brand-name" data-i18n="lab.brand.name">MycoQuest prep lab</p><p class="brand-sub" data-i18n="lab.brand.sub">Private planning while the mushrooms grow</p></div>
+    </div>
+    <div class="row">
+      <span class="private-pill" data-i18n="lab.brand.private">Saved only in this browser</span>
+      <div id="language-switch"></div>
+      <a class="btn btn--quiet" href="Index.html" data-i18n="lab.brand.visitor">Open the visitor demo</a>
+    </div>
+  </header>
+  <nav class="wrap lab-nav" data-i18n-attr="aria-label: lab.nav.label">
+    <a href="#today" data-i18n="lab.nav.today">Today</a>
+    <a href="#batches" data-i18n="lab.nav.batches">Batches</a>
+    <a href="#sources" data-i18n="lab.nav.sources">Genetics &amp; suppliers</a>
+    <a href="#catalog" data-i18n="lab.nav.catalog">Catalog plan</a>
+    <a href="#map" data-i18n="lab.nav.map">Journey map</a>
+    <a href="#data" data-i18n="lab.nav.data">Backup &amp; storage</a>
+  </nav>
+  <main class="wrap">
+    <div class="alert" id="lab-alert" role="alert" hidden></div>
+    <div id="view"></div>
+  </main>
+  <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="i18n/en.js"></script>
+  <script src="i18n/es.js"></script>
+  <script src="i18n/hmn.js"></script>
+  <script src="i18n/i18n.js"></script>
+  <script>
+    "use strict";
+    const { t } = I18N;
+
+    /* ---------- constants ---------- */
+    const STORE_KEY = "mycoquest-prep-lab-v1";
+    const PHOTO_DB = "mycoquest-prep-lab-photos";
+    const PHOTO_TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const PHOTO_MAX_BYTES = 20 * 1024 * 1024;
+    const PHOTO_MAX_PIXELS = 60_000_000;
+    const BACKUP_MAX_BYTES = 250 * 1024 * 1024;
+    const ID_RE = /^[a-z0-9-]{6,48}$/;
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    // Stored values stay in English so records and backups mean the same thing in every language.
+    // What people see comes from i18n/<language>.js.
+    const STAGES = ["Planning", "Inoculation", "Colonization", "Fruiting", "Harvest", "Complete"];
+    const OUTCOMES = ["Active", "Paused", "Contaminated", "Finished"];
+    const CATALOG_TYPES = ["Cultivation supplies", "Genetics", "Edible mushrooms", "Supplements", "Tinctures"];
+    const CATALOG_STATUSES = ["Researching", "Preparing", "Planned", "Unavailable", "Ready for review"];
+    const SUPPLIER_KINDS = ["Genetics", "Substrate and grain", "Equipment", "Packaging", "Other"];
+    const GENETICS_FORMS = ["Liquid culture", "Agar culture", "Grain spawn", "Spore print or syringe", "Tissue clone", "Other"];
+    // Recipe ids match the recipe quests in Index.html; their names come from the shared demo.recipe.* text.
+    const RECIPES = ["crab-cakes", "miso-ramen", "mushroom-risotto", "mushroom-tacos", "mushroom-masala"];
+    // Learning quests point to sections of the visitor demo.
+    const QUESTS = [
+      { id: "first-grow", href: "Index.html#grow-log" },
+      { id: "grow-basics", href: "Index.html#faq-cultivating" },
+      { id: "product-types", href: "Index.html#shop" },
+      { id: "kitchen-basics", href: "Index.html#faq" },
+      { id: "share-safely", href: "Index.html#share" }
+    ];
+    const REVIEW_CHECKS = ["facts", "photos", "directions", "rules", "claims", "cost"];
+
+    const slug = (text) => text.toLowerCase().replace(/[^a-z]+/g, "-").replace(/^-|-$/g, "");
+    const stageName = (value) => t(`common.stage.${value}`);
+    const outcomeName = (value) => t(`lab.outcome.${slug(value)}`);
+    const typeName = (value) => t(`lab.type.${slug(value)}`);
+    const statusName = (value) => t(`lab.status.${slug(value)}`);
+    const recipeName = (id) => t(`demo.recipe.${id}.name`);
+    const questName = (id) => t(`lab.quest.${id}`);
+    const fixed = (list, prefix) => () => list.map((value) => [value, t(`${prefix}${slug(value)}`)]);
+    const refTo = (collection) => (source) => (source ? source[collection] : []).map((item) => [item.id, item.name]);
+    const recipeOptions = () => RECIPES.map((id) => [id, recipeName(id)]);
+    const questOptions = () => QUESTS.map((quest) => [quest.id, questName(quest.id)]);
+
+    // Field definitions drive the forms, saving, and backup validation. Labels and hints are text keys.
+    const schemas = {
+      supplier: { kind: "supplier", collection: "suppliers", limit: 500, fields: [
+        { key: "name", label: "lab.field.name", type: "text", required: true, max: 80 },
+        { key: "kind", label: "lab.field.supplierKind", type: "select", options: fixed(SUPPLIER_KINDS, "lab.supplierKind."), default: "Genetics" },
+        { key: "website", label: "lab.field.website", type: "url", max: 300, hint: "lab.hint.website" },
+        { key: "contact", label: "lab.field.contact", type: "textarea", max: 1000, wide: true, hint: "lab.hint.contact" },
+        { key: "notes", label: "lab.field.notes", type: "textarea", max: 2000, wide: true }
+      ] },
+      genetics: { kind: "genetics", collection: "genetics", limit: 500, fields: [
+        { key: "name", label: "lab.field.yourLabel", type: "text", required: true, max: 80, hint: "lab.hint.geneticsLabel" },
+        { key: "commonName", label: "lab.field.commonName", type: "text", max: 80 },
+        { key: "species", label: "lab.field.species", type: "text", max: 120 },
+        { key: "form", label: "lab.field.form", type: "select", options: fixed(GENETICS_FORMS, "lab.geneticsForm."), default: "Liquid culture" },
+        { key: "supplierId", label: "lab.field.supplier", type: "select", ref: true, blank: "lab.blank.notRecorded", options: refTo("suppliers") },
+        { key: "lotCode", label: "lab.field.lotCode", type: "text", max: 80 },
+        { key: "receivedDate", label: "lab.field.received", type: "date" },
+        { key: "notes", label: "lab.field.notes", type: "textarea", max: 2000, wide: true }
+      ] },
+      batch: { kind: "batch", collection: "batches", limit: 1000, fields: [
+        { key: "name", label: "lab.field.batchName", type: "text", required: true, max: 80, hint: "lab.hint.batchName" },
+        { key: "geneticsId", label: "lab.field.genetics", type: "select", ref: true, blank: "lab.blank.notRecorded", options: refTo("genetics") },
+        { key: "variety", label: "lab.field.variety", type: "text", max: 80 },
+        { key: "supplierId", label: "lab.field.supplier", type: "select", ref: true, blank: "lab.blank.sameAsGenetics", options: refTo("suppliers") },
+        { key: "source", label: "lab.field.source", type: "text", max: 160, hint: "lab.hint.source" },
+        { key: "substrate", label: "lab.field.substrate", type: "text", max: 120 },
+        { key: "startDate", label: "lab.field.started", type: "date" },
+        { key: "stage", label: "lab.field.stage", type: "select", options: () => STAGES.map((value) => [value, stageName(value)]), default: "Planning" },
+        { key: "outcome", label: "lab.field.status", type: "select", options: fixed(OUTCOMES, "lab.outcome."), default: "Active" },
+        { key: "nextStep", label: "lab.field.nextStep", type: "text", max: 160 },
+        { key: "nextStepDate", label: "lab.field.nextStepDate", type: "date" },
+        { key: "recipeIds", label: "lab.field.batchRecipes", type: "multi", options: recipeOptions },
+        { key: "questIds", label: "lab.field.batchQuests", type: "multi", options: questOptions },
+        { key: "notes", label: "lab.field.notes", type: "textarea", max: 2000, wide: true }
+      ] },
+      catalog: { kind: "idea", collection: "catalog", limit: 500, fields: [
+        { key: "name", label: "lab.field.workingName", type: "text", required: true, max: 80 },
+        { key: "type", label: "lab.field.productKind", type: "select", options: fixed(CATALOG_TYPES, "lab.type."), default: "Edible mushrooms" },
+        { key: "status", label: "lab.field.status", type: "select", options: fixed(CATALOG_STATUSES, "lab.status."), default: "Researching", hint: "lab.hint.status" },
+        { key: "summary", label: "lab.field.summary", type: "textarea", max: 600, wide: true, hint: "lab.hint.summary" },
+        { key: "batchIds", label: "lab.field.ideaBatches", type: "multi", ref: true, options: refTo("batches") },
+        { key: "geneticsIds", label: "lab.field.genetics", type: "multi", ref: true, options: refTo("genetics") },
+        { key: "supplierIds", label: "lab.field.suppliers", type: "multi", ref: true, options: refTo("suppliers") },
+        { key: "recipeIds", label: "lab.field.recipes", type: "multi", options: recipeOptions },
+        { key: "questIds", label: "lab.field.quests", type: "multi", options: questOptions },
+        { key: "checks", label: "lab.field.checks", type: "multi", options: () => REVIEW_CHECKS.map((id) => [id, t(`lab.check.${id}`)]) },
+        { key: "costNotes", label: "lab.field.costNotes", type: "textarea", max: 1000, wide: true, hint: "lab.hint.costNotes" },
+        { key: "notes", label: "lab.field.notes", type: "textarea", max: 2000, wide: true }
+      ] },
+      observation: { kind: "observation", fields: [
+        { key: "date", label: "lab.field.date", type: "date", required: true },
+        { key: "stage", label: "lab.field.stage", type: "select", options: () => STAGES.map((value) => [value, stageName(value)]), default: "Planning", hint: "lab.hint.obsStage" },
+        { key: "temperature", label: "lab.field.temperature", type: "number", min: -40, max: 150, step: "0.1" },
+        { key: "tempUnit", label: "lab.field.unit", type: "select", options: () => [["F", "°F"], ["C", "°C"]], default: "F" },
+        { key: "humidity", label: "lab.field.humidity", type: "number", min: 0, max: 100, step: "1" },
+        { key: "conditions", label: "lab.field.conditions", type: "text", max: 200, hint: "lab.hint.conditions" },
+        { key: "notes", label: "lab.field.whatYouSaw", type: "textarea", required: true, max: 2000, wide: true }
+      ] }
+    };
+    const NEXT_STEP_FIELDS = [
+      { key: "nextStep", label: "lab.field.nextStepForBatch", type: "text", max: 160 },
+      { key: "nextStepDate", label: "lab.field.nextStepDate", type: "date" }
+    ];
+
+    const MILESTONES = [
+      { id: "supplier", go: "#sources", done: (d) => d.suppliers.length > 0 },
+      { id: "genetics", go: "#sources", done: (d) => d.genetics.length > 0 },
+      { id: "batch", go: "#batches", done: (d) => d.batches.length > 0 },
+      { id: "conditions", go: "#batches", done: (d) => d.batches.some((b) => b.observations.some((o) => o.temperature !== null || o.humidity !== null)) },
+      { id: "fruiting", go: "#batches", done: (d) => d.batches.some((b) => STAGES.indexOf(b.stage) >= 3 && b.outcome !== "Contaminated") },
+      { id: "journey", go: "#catalog", done: (d) => d.catalog.some((c) => (c.batchIds.length > 0 || c.geneticsIds.length > 0) && (c.recipeIds.length > 0 || c.questIds.length > 0)) },
+      { id: "review", go: "#catalog", done: (d) => d.catalog.some((c) => c.status === "Ready for review") },
+      { id: "backup", go: "#data", done: (d) => daysSinceBackup(d) !== null && daysSinceBackup(d) <= 14 }
+    ];
+    const milestoneName = (m) => t(`lab.milestone.${m.id}`);
+
+    /* ---------- small helpers ---------- */
+    function el(tag, props = {}, ...kids) {
+      const node = document.createElement(tag);
+      for (const [key, value] of Object.entries(props)) {
+        if (value === undefined || value === null || value === false) continue;
+        if (key === "class") node.className = value;
+        else if (key === "text") node.textContent = value;
+        else if (key.startsWith("on") && typeof value === "function") node.addEventListener(key.slice(2), value);
+        else node.setAttribute(key, value === true ? "" : String(value));
+      }
+      node.append(...kids.flat(Infinity).filter((kid) => kid !== null && kid !== undefined && kid !== false && kid !== ""));
+      return node;
+    }
+    function btn(label, onClick, variant = "", props = {}) {
+      return el("button", { type: "button", class: `btn${variant ? variant.split(" ").map((v) => ` btn--${v}`).join("") : ""}`, onclick: onClick, ...props }, label);
+    }
+    function viewHead(title, lede, actions = []) {
+      return el("div", { class: "view-head" },
+        el("div", {}, el("h1", { tabindex: "-1", text: title }), lede && el("p", { class: "lede", text: lede })),
+        el("div", { class: "row" }, actions));
+    }
+    function emptyState(text, ...actions) {
+      return el("div", { class: "empty" }, el("p", { text }), el("div", { class: "row" }, actions));
+    }
+    const pad = (n) => String(n).padStart(2, "0");
+    const count = (key, n) => t(key, { count: n });
+    const byId = (collection, id) => (id ? data[collection].find((item) => item.id === id) : undefined);
+    function newId() {
+      return [...crypto.getRandomValues(new Uint8Array(12))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    }
+    function todayKey() {
+      const now = new Date();
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    }
+    function isDateKey(value) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+      const [y, m, d] = value.split("-").map(Number);
+      const date = new Date(Date.UTC(y, m - 1, d));
+      return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d;
+    }
+    const isTimestamp = (value) => typeof value === "string" && value.length < 40 && Number.isFinite(Date.parse(value));
+    function dayNumber(key) {
+      const [y, m, d] = key.split("-").map(Number);
+      return Date.UTC(y, m - 1, d) / 86400000;
+    }
+    const daysFromToday = (key) => dayNumber(key) - dayNumber(todayKey());
+    const formatDate = (key) => (key ? I18N.date(key) : t("lab.notSet"));
+    function relativeDay(key) {
+      const days = daysFromToday(key);
+      if (days === 0) return t("lab.when.today");
+      if (days === -1) return t("lab.when.yesterday");
+      if (days < 0) return t("lab.when.daysAgo", { count: -days });
+      return t("lab.when.on", { date: formatDate(key) });
+    }
+    function dueLabel(key) {
+      if (!key) return t("lab.due.none");
+      const days = daysFromToday(key);
+      if (days < 0) return t("lab.due.overdue", { count: -days });
+      if (days === 0) return t("lab.due.today");
+      if (days === 1) return t("lab.due.tomorrow");
+      return t("lab.due.inDays", { count: days });
+    }
+    function daysSinceBackup(source = data) {
+      if (!source.lastBackupAt) return null;
+      return Math.max(0, Math.floor((Date.now() - Date.parse(source.lastBackupAt)) / 86400000));
+    }
+    function backupText(since) {
+      if (since === null) return t("lab.backup.never");
+      if (since === 0) return t("lab.backup.today");
+      return t("lab.backup.daysAgo", { count: since });
+    }
+    function lastLogged(batch) {
+      return batch.observations.reduce((latest, obs) => (obs.date > latest ? obs.date : latest), "");
+    }
+    function newestFirst(list) {
+      return [...list].sort((a, b) => b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt));
+    }
+    function geneticsLabel(batch) {
+      const genetics = byId("genetics", batch.geneticsId);
+      if (genetics) return [genetics.name, genetics.commonName].filter(Boolean).join(" · ");
+      return batch.variety || t("lab.varietyMissing");
+    }
+    function supplierOf(batch) {
+      const own = byId("suppliers", batch.supplierId);
+      if (own) return { supplier: own, inherited: false };
+      const inherited = byId("suppliers", byId("genetics", batch.geneticsId)?.supplierId);
+      return inherited ? { supplier: inherited, inherited: true } : null;
+    }
+    const recipeHref = (id) => `Index.html#recipe-${id}`;
+    function journeyChips(recipeIds, questIds) {
+      return el("div", { class: "chips" },
+        recipeIds.filter((id) => RECIPES.includes(id)).map((id) => el("a", { class: "chip", href: recipeHref(id) }, t("lab.chip.recipe", { name: recipeName(id) }))),
+        questIds.map((id) => QUESTS.find((q) => q.id === id)).filter(Boolean).map((q) => el("a", { class: "chip", href: q.href }, t("lab.chip.quest", { name: questName(q.id) }))));
+    }
+
+    /* ---------- validation (forms and backups) ---------- */
+    function cleanField(field, value, context, prefix = "") {
+      const where = `${prefix}${t(field.label)}`;
+      if (field.type === "multi") {
+        if (value === undefined || value === null) return [];
+        if (!Array.isArray(value)) throw new Error(t("lab.error.list", { field: where }));
+        const allowed = new Set(field.options(context).map(([v]) => v));
+        return [...new Set(value.filter((v) => typeof v === "string" && allowed.has(v)))];
+      }
+      if (field.type === "number") {
+        if (value === undefined || value === null || value === "") return null;
+        const number = typeof value === "number" ? value : Number(value);
+        if (!Number.isFinite(number) || number < field.min || number > field.max) {
+          throw new Error(t("lab.error.number", { field: where, min: I18N.number(field.min), max: I18N.number(field.max) }));
+        }
+        return number;
+      }
+      if (value === undefined || value === null) value = "";
+      if (typeof value !== "string") throw new Error(t("lab.error.text", { field: where }));
+      const text = value.trim();
+      if (field.type === "select") {
+        if (text === "" && field.blank !== undefined) return "";
+        if (field.options(context).some(([v]) => v === text)) return text;
+        if (field.ref) return "";
+        if (text === "" && field.default !== undefined) return field.default;
+        throw new Error(t("lab.error.unknown", { field: where }));
+      }
+      if (field.required && !text) throw new Error(t("lab.error.required", { field: where }));
+      if (field.type === "date") {
+        if (text && !isDateKey(text)) throw new Error(t("lab.error.date", { field: where }));
+        return text;
+      }
+      const max = field.max ?? 200;
+      if (text.length > max) throw new Error(t("lab.error.long", { field: where, max: I18N.number(max) }));
+      if (field.type === "url" && text && !/^https?:\/\/[^\s<>"']+$/i.test(text)) throw new Error(t("lab.error.url", { field: where }));
+      return text;
+    }
+
+    function sanitizeRecord(schema, raw, context, label) {
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error(t("lab.error.notRecord", { label }));
+      if (typeof raw.id !== "string" || !ID_RE.test(raw.id)) throw new Error(t("lab.error.badId", { label }));
+      const record = {
+        id: raw.id,
+        createdAt: isTimestamp(raw.createdAt) ? raw.createdAt : "",
+        updatedAt: isTimestamp(raw.updatedAt) ? raw.updatedAt : ""
+      };
+      for (const field of schema.fields) record[field.key] = cleanField(field, raw[field.key], context, `${label}: `);
+      return record;
+    }
+
+    function emptyData() {
+      return { suppliers: [], genetics: [], batches: [], catalog: [], lastBackupAt: "", reached: [] };
+    }
+
+    function sanitizeData(raw) {
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error(t("lab.error.notSet"));
+      const clean = emptyData();
+      clean.lastBackupAt = isTimestamp(raw.lastBackupAt) ? raw.lastBackupAt : "";
+      const milestoneIds = MILESTONES.map((m) => m.id);
+      clean.reached = Array.isArray(raw.reached) ? [...new Set(raw.reached.filter((id) => milestoneIds.includes(id)))] : [];
+      // Order matters: each collection may only point to ones already checked.
+      for (const kind of ["supplier", "genetics", "batch", "catalog"]) {
+        const schema = schemas[kind];
+        const list = raw[schema.collection];
+        if (list === undefined) continue;
+        if (!Array.isArray(list)) throw new Error(t("lab.error.collectionList", { collection: schema.collection }));
+        if (list.length > schema.limit) throw new Error(t("lab.error.tooMany", { limit: schema.limit, collection: schema.collection }));
+        const seen = new Set();
+        list.forEach((item, index) => {
+          const label = t(`lab.recordLabel.${schema.kind}`, { number: index + 1 });
+          const record = sanitizeRecord(schema, item, clean, label);
+          if (seen.has(record.id)) throw new Error(t("lab.error.repeatId", { label }));
+          seen.add(record.id);
+          if (kind === "batch") record.observations = sanitizeObservations(item.observations, label);
+          clean[schema.collection].push(record);
+        });
+      }
+      return clean;
+    }
+
+    function sanitizeObservations(list, label) {
+      if (list === undefined) return [];
+      if (!Array.isArray(list)) throw new Error(t("lab.error.obsList", { label }));
+      if (list.length > 1000) throw new Error(t("lab.error.obsTooMany", { label }));
+      const seen = new Set();
+      return list.map((raw, index) => {
+        const record = sanitizeRecord(schemas.observation, raw, null, t("lab.recordLabel.observation", { label, number: index + 1 }));
+        record.photoId = typeof raw.photoId === "string" && ID_RE.test(raw.photoId) ? raw.photoId : "";
+        if (seen.has(record.id)) throw new Error(t("lab.error.obsRepeat", { label }));
+        seen.add(record.id);
+        return record;
+      });
+    }
+
+    /* ---------- storage ---------- */
+    let data = emptyData();
+    let storageMode = "ok"; // ok | blocked | unreadable
+    let unreadableRaw = "";
+    let unreadableReason = "";
+    const alertBox = document.querySelector("#lab-alert");
+
+    function showAlert(message, ...actions) {
+      alertBox.replaceChildren(el("p", { text: message }), actions.length ? el("div", { class: "row" }, actions) : "");
+      alertBox.hidden = false;
+    }
+    function hideAlert() {
+      alertBox.hidden = true;
+      alertBox.replaceChildren();
+    }
+    let alertState = null; // remembered so the alert can be re-shown in another language
+    function renderAlert() {
+      if (alertState === "blocked") showAlert(t("lab.alert.blocked"));
+      else if (alertState === "full") showAlert(t("lab.alert.full"));
+      else if (alertState === "unreadable") {
+        showAlert(t("lab.alert.unreadable", { reason: unreadableReason }),
+          btn(t("lab.alert.downloadUnreadable"), () => downloadText(unreadableRaw, `MycoQuest-prep-lab-unreadable-${todayKey()}.json`)),
+          btn(t("lab.alert.startFresh"), () => {
+            if (!confirm(t("lab.alert.startFreshConfirm"))) return;
+            storageMode = "ok";
+            data = emptyData();
+            alertState = null;
+            hideAlert();
+            commit(t("lab.toast.fresh"));
+          }, "danger"));
+      } else hideAlert();
+    }
+
+    function load() {
+      let raw;
+      try {
+        raw = localStorage.getItem(STORE_KEY);
+      } catch (error) {
+        storageMode = "blocked";
+        alertState = "blocked";
+        return;
+      }
+      if (!raw) return;
+      try {
+        data = sanitizeData(JSON.parse(raw));
+      } catch (error) {
+        storageMode = "unreadable";
+        unreadableRaw = raw;
+        unreadableReason = error.message;
+        alertState = "unreadable";
+      }
+    }
+
+    function save() {
+      if (storageMode !== "ok") return false;
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(data));
+        return true;
+      } catch (error) {
+        alertState = "full";
+        renderAlert();
+        return false;
+      }
+    }
+
+    function commit(message) {
+      const newly = MILESTONES.filter((m) => m.done(data) && !data.reached.includes(m.id));
+      data.reached.push(...newly.map((m) => m.id));
+      const saved = save();
+      render();
+      keepFocus();
+      const note = newly.length ? ` ${t("lab.toast.milestone", { names: newly.map(milestoneName).join(", ") })}` : "";
+      toast(saved ? `${message}${note}` : storageMode === "ok" ? t("lab.toast.refused") : `${message} ${t("lab.toast.unavailable")}`);
+    }
+
+    window.addEventListener("storage", (event) => {
+      if (event.key !== STORE_KEY || storageMode !== "ok") return;
+      try {
+        data = event.newValue ? sanitizeData(JSON.parse(event.newValue)) : emptyData();
+        render();
+        toast(t("lab.toast.otherTab"));
+      } catch (error) {
+        // Leave the current view alone; the next save from this tab will overwrite the bad value.
+      }
+    });
+
+    /* Photos live in IndexedDB, keyed by observation photo id. */
+    let dbPromise;
+    let photoStorage = true;
+    function photoDb() {
+      if (!dbPromise) {
+        dbPromise = new Promise((resolve, reject) => {
+          const request = indexedDB.open(PHOTO_DB, 1);
+          request.onupgradeneeded = () => request.result.createObjectStore("photos");
+          request.onsuccess = () => resolve(request.result);
+          request.onerror = () => reject(request.error);
+        });
+      }
+      return dbPromise;
+    }
+    async function photoTx(mode, action) {
+      const db = await photoDb();
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction("photos", mode);
+        const request = action(tx.objectStore("photos"));
+        tx.oncomplete = () => resolve(request ? request.result : undefined);
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
+    }
+    const putPhoto = (id, blob) => photoTx("readwrite", (store) => store.put(blob, id));
+    const getPhoto = (id) => photoTx("readonly", (store) => store.get(id));
+    const deletePhoto = (id) => photoTx("readwrite", (store) => store.delete(id)).catch(() => {});
+    const clearPhotos = () => photoTx("readwrite", (store) => store.clear());
+    const photoKeys = () => photoTx("readonly", (store) => store.getAllKeys());
+
+    // Decode, shrink, and re-save as JPEG. Re-encoding drops EXIF, including GPS location.
+    async function processImage(blob) {
+      if (!PHOTO_TYPES.includes(blob.type)) throw new Error(t("lab.photo.badType"));
+      if (blob.size > PHOTO_MAX_BYTES) throw new Error(t("lab.photo.tooBig"));
+      let bitmap;
+      try {
+        bitmap = await createImageBitmap(blob);
+      } catch (error) {
+        throw new Error(t("lab.photo.unreadable"));
+      }
+      if (bitmap.width * bitmap.height > PHOTO_MAX_PIXELS) {
+        bitmap.close();
+        throw new Error(t("lab.photo.tooLarge"));
+      }
+      const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+      const out = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+      if (!out) throw new Error(t("lab.photo.saveFailed"));
+      return out;
+    }
+
+    /* ---------- feedback ---------- */
+    const toastBox = document.querySelector("#toast");
+    let toastTimer;
+    function toast(message) {
+      toastBox.textContent = message;
+      toastBox.classList.add("is-visible");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toastBox.classList.remove("is-visible"), 4200);
+    }
+    function keepFocus() {
+      setTimeout(() => {
+        const active = document.activeElement;
+        if (!active || active === document.body || !document.body.contains(active)) document.querySelector("#view h1")?.focus();
+      });
+    }
+
+    /* ---------- dialog and forms ---------- */
+    const dialog = document.querySelector("#dialog");
+    dialog.addEventListener("close", () => { dialog.replaceChildren(); keepFocus(); });
+
+    function openDialog(content) {
+      if (dialog.open) dialog.close();
+      dialog.replaceChildren(content);
+      dialog.showModal();
+    }
+
+    function buildField(field, value) {
+      const id = `f-${field.key}`;
+      const hint = field.hint ? el("p", { class: "hint", id: `${id}-hint`, text: t(field.hint) }) : null;
+      const labelText = field.required ? t("lab.form.required", { label: t(field.label) }) : t(field.label);
+      if (field.type === "multi") {
+        const options = field.options(data);
+        const chosen = new Set(value || []);
+        const set = el("fieldset", { class: "field wide", id, "aria-describedby": hint?.id }, el("legend", { text: labelText }), hint);
+        set.append(options.length
+          ? el("div", { class: "checks-list" }, options.map(([v, l]) => el("label", {}, el("input", { type: "checkbox", value: v, checked: chosen.has(v) }), l)))
+          : el("p", { class: "hint", text: t("lab.form.nothingToLink") }));
+        return { wrap: set, control: set };
+      }
+      let control;
+      if (field.type === "textarea") {
+        control = el("textarea", { id, maxlength: field.max });
+        control.value = value ?? "";
+      } else if (field.type === "select") {
+        control = el("select", { id });
+        if (field.blank !== undefined) control.append(new Option(t(field.blank), ""));
+        field.options(data).forEach(([v, l]) => control.append(new Option(l, v)));
+        control.value = value ?? (field.blank !== undefined ? "" : field.default ?? "");
+        if (control.selectedIndex < 0) control.selectedIndex = 0;
+      } else if (field.type === "number") {
+        control = el("input", { id, type: "number", min: field.min, max: field.max, step: field.step || "any", inputmode: "decimal" });
+        control.value = value === null || value === undefined ? "" : String(value);
+      } else {
+        control = el("input", { id, type: field.type === "url" ? "url" : field.type === "date" ? "date" : "text", maxlength: field.max });
+        control.value = value ?? "";
+      }
+      if (field.required) control.setAttribute("aria-required", "true");
+      if (hint) control.setAttribute("aria-describedby", hint.id);
+      return { wrap: el("div", { class: `field${field.wide || field.type === "textarea" ? " wide" : ""}` }, el("label", { for: id, text: labelText }), control, hint), control };
+    }
+    function readControl(field, control) {
+      if (field.type === "multi") return [...control.querySelectorAll("input:checked")].map((input) => input.value);
+      return control.value;
+    }
+
+    function buildPhotoField(existingId) {
+      const input = el("input", { id: "f-photo", type: "file", accept: PHOTO_TYPES.join(","), "aria-describedby": "f-photo-hint f-photo-status" });
+      const preview = el("img", { class: "photo-preview", alt: t("lab.photo.previewAlt"), hidden: true });
+      const status = el("p", { class: "hint", id: "f-photo-status", role: "status" });
+      const remove = existingId ? el("input", { type: "checkbox", id: "f-photo-remove" }) : null;
+      let url = "";
+      input.addEventListener("change", () => {
+        if (url) URL.revokeObjectURL(url);
+        url = "";
+        preview.hidden = true;
+        status.textContent = "";
+        const file = input.files[0];
+        if (!file) return;
+        const problem = !PHOTO_TYPES.includes(file.type) ? t("lab.photo.badType") : file.size > PHOTO_MAX_BYTES ? t("lab.photo.tooBig") : "";
+        if (problem) {
+          input.value = "";
+          status.textContent = problem;
+          return;
+        }
+        url = URL.createObjectURL(file);
+        preview.src = url;
+        preview.hidden = false;
+      });
+      dialog.addEventListener("close", () => { if (url) URL.revokeObjectURL(url); }, { once: true });
+      if (!photoStorage) {
+        input.disabled = true;
+        status.textContent = t("lab.photo.unavailable");
+      }
+      const wrap = el("div", { class: "field wide" },
+        el("label", { for: "f-photo", text: t(existingId ? "lab.photo.replace" : "lab.photo.label") }),
+        input,
+        el("p", { class: "hint", id: "f-photo-hint", text: t("lab.photo.hint") }),
+        preview, status,
+        remove && el("label", { class: "inline-check" }, remove, t("lab.photo.remove")));
+      return { wrap, file: () => input.files[0] || null, remove: () => Boolean(remove?.checked) };
+    }
+
+    function openEditor({ title, fields, record, submitLabel, onSave, photo, intro, wire }) {
+      const error = el("p", { class: "form-error", role: "alert", hidden: true });
+      const grid = el("div", { class: "form-grid" });
+      const controls = {};
+      fields.forEach((field) => {
+        const { wrap, control } = buildField(field, record[field.key]);
+        controls[field.key] = control;
+        grid.append(wrap);
+      });
+      const photoField = photo ? buildPhotoField(photo.existingId) : null;
+      if (photoField) grid.append(photoField.wrap);
+      const submit = el("button", { type: "submit", class: "btn btn--primary", text: submitLabel });
+      const form = el("form", { novalidate: true },
+        el("div", { class: "dialog-body" }, el("h2", { id: "dialog-title", text: title }), intro && el("p", { class: "hint", text: intro }), error, grid),
+        el("div", { class: "dialog-actions" }, btn(t("common.cancel"), () => dialog.close(), "quiet"), submit));
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        error.hidden = true;
+        const clean = {};
+        for (const field of fields) {
+          try {
+            clean[field.key] = cleanField(field, readControl(field, controls[field.key]), data);
+          } catch (problem) {
+            error.textContent = problem.message;
+            error.hidden = false;
+            (controls[field.key].matches("fieldset") ? controls[field.key].querySelector("input") : controls[field.key])?.focus();
+            return;
+          }
+        }
+        submit.disabled = true;
+        submit.textContent = t("lab.form.saving");
+        try {
+          await onSave(clean, photoField ? { file: photoField.file(), remove: photoField.remove() } : null);
+          dialog.close();
+        } catch (problem) {
+          error.textContent = problem.message || t("lab.form.saveFailed");
+          error.hidden = false;
+          submit.disabled = false;
+          submit.textContent = submitLabel;
+          error.scrollIntoView({ block: "nearest" });
+        }
+      });
+      openDialog(form);
+      wire?.(controls);
+      form.querySelector("input, select, textarea")?.focus();
+    }
+
+    function defaultsFor(kind) {
+      if (kind === "batch") return { startDate: todayKey(), stage: "Planning", outcome: "Active" };
+      if (kind === "catalog") return { status: "Researching" };
+      return {};
+    }
+
+    function openRecordEditor(kind, existing, preset = {}) {
+      const schema = schemas[kind];
+      openEditor({
+        title: t(existing ? `lab.editor.edit.${schema.kind}` : `lab.editor.new.${schema.kind}`),
+        fields: schema.fields,
+        record: existing || { ...defaultsFor(kind), ...preset },
+        submitLabel: t(existing ? "lab.editor.saveChanges" : `lab.editor.add.${schema.kind}`),
+        intro: kind === "catalog" ? t("lab.editor.catalogIntro") : "",
+        onSave: (clean) => {
+          const list = data[schema.collection];
+          const now = new Date().toISOString();
+          if (existing) {
+            const target = list.find((item) => item.id === existing.id);
+            if (!target) throw new Error(t("lab.editor.gone"));
+            Object.assign(target, clean, { updatedAt: now });
+            commit(t("lab.toast.saved"));
+            return;
+          }
+          if (list.length >= schema.limit) throw new Error(t("lab.editor.limit", { limit: I18N.number(schema.limit) }));
+          const record = { id: newId(), createdAt: now, updatedAt: now, ...clean };
+          if (kind === "batch") record.observations = [];
+          list.push(record);
+          if (kind === "batch") location.hash = `#batch/${record.id}`;
+          commit(t(`lab.toast.added.${schema.kind}`));
+        }
+      });
+    }
+
+    function openObservationEditor(batchId, existing) {
+      const fixedBatch = batchId ? byId("batches", batchId) : null;
+      const pickBatch = { key: "batchId", label: "lab.field.batch", type: "select", ref: true, options: refTo("batches") };
+      const fields = [...(fixedBatch ? [] : [pickBatch]), ...schemas.observation.fields, ...NEXT_STEP_FIELDS];
+      const startBatch = fixedBatch || data.batches.find((b) => b.outcome === "Active") || data.batches[0];
+      const lastUnit = newestFirst(data.batches.flatMap((b) => b.observations)).find((o) => o.temperature !== null)?.tempUnit;
+      const record = existing
+        ? { ...existing, nextStep: fixedBatch.nextStep, nextStepDate: fixedBatch.nextStepDate }
+        : { batchId: startBatch?.id, date: todayKey(), stage: startBatch?.stage || "Planning", tempUnit: lastUnit || "F", nextStep: startBatch?.nextStep, nextStepDate: startBatch?.nextStepDate };
+      openEditor({
+        title: existing ? t("lab.editor.edit.observation") : fixedBatch ? t("lab.editor.logFor", { name: fixedBatch.name }) : t("lab.editor.new.observation"),
+        fields,
+        record,
+        photo: { existingId: existing?.photoId || "" },
+        submitLabel: t(existing ? "lab.editor.saveChanges" : "lab.editor.add.observation"),
+        wire: (controls) => {
+          // Picking another batch brings in its current stage and next step.
+          controls.batchId?.addEventListener("change", () => {
+            const chosen = byId("batches", controls.batchId.value);
+            if (!chosen) return;
+            controls.stage.value = chosen.stage;
+            controls.nextStep.value = chosen.nextStep;
+            controls.nextStepDate.value = chosen.nextStepDate;
+          });
+        },
+        onSave: async (clean, photo) => {
+          const target = byId("batches", fixedBatch ? fixedBatch.id : clean.batchId);
+          if (!target) throw new Error(t("lab.editor.chooseBatch"));
+          let photoId = existing?.photoId || "";
+          let oldPhoto = "";
+          if (photo.file) {
+            if (!photoStorage) throw new Error(t("lab.photo.unavailable"));
+            const blob = await processImage(photo.file);
+            const id = newId();
+            await putPhoto(id, blob);
+            oldPhoto = photoId;
+            photoId = id;
+          } else if (photo.remove) {
+            oldPhoto = photoId;
+            photoId = "";
+          }
+          const now = new Date().toISOString();
+          const fields = Object.fromEntries(schemas.observation.fields.map((f) => [f.key, clean[f.key]]));
+          let savedId;
+          if (existing) {
+            const obs = target.observations.find((o) => o.id === existing.id);
+            if (!obs) throw new Error(t("lab.editor.gone"));
+            Object.assign(obs, fields, { photoId, updatedAt: now });
+            savedId = obs.id;
+          } else {
+            savedId = newId();
+            target.observations.push({ id: savedId, createdAt: now, updatedAt: now, ...fields, photoId });
+          }
+          if (newestFirst(target.observations)[0].id === savedId) target.stage = clean.stage;
+          target.nextStep = clean.nextStep;
+          target.nextStepDate = clean.nextStepDate;
+          target.updatedAt = now;
+          if (!fixedBatch) location.hash = `#batch/${target.id}`;
+          commit(t("lab.toast.added.observation"));
+          if (oldPhoto) deletePhoto(oldPhoto);
+        }
+      });
+    }
+
+    function openPhoto(url, alt) {
+      openDialog(el("div", { class: "dialog-frame" },
+        el("div", { class: "dialog-body" }, el("h2", { id: "dialog-title", text: alt }), el("img", { class: "photo-large", src: url, alt: t("lab.photo.alt", { name: alt }) })),
+        el("div", { class: "dialog-actions" }, btn(t("common.close"), () => dialog.close(), "primary"))));
+    }
+
+    function openVisitorPreview(idea) {
+      const fromBatches = idea.batchIds.map((id) => byId("genetics", byId("batches", id)?.geneticsId));
+      const species = [...new Set([...idea.geneticsIds.map((id) => byId("genetics", id)), ...fromBatches]
+        .filter(Boolean).map((g) => g.commonName || g.species).filter(Boolean))];
+      const hasJourney = idea.recipeIds.length > 0 || idea.questIds.length > 0;
+      openDialog(el("div", { class: "dialog-frame" },
+        el("div", { class: "dialog-body" },
+          el("h2", { id: "dialog-title", text: t("lab.preview.title") }),
+          el("p", { class: "hint", text: t("lab.preview.intro") }),
+          el("article", { class: "visitor" },
+            el("p", { class: "meta", text: typeName(idea.type) }),
+            el("h3", { text: idea.name }),
+            species.length > 0 && el("p", { class: "meta", text: t("lab.preview.species", { names: species.join(", ") }) }),
+            el("p", { text: idea.summary || t("lab.preview.noSummary") }),
+            el("p", { class: "not-live", text: t("lab.preview.notAvailable") }),
+            hasJourney && el("p", { class: "meta", text: t("lab.preview.tryNext") }),
+            hasJourney && journeyChips(idea.recipeIds, idea.questIds))),
+        el("div", { class: "dialog-actions" }, btn(t("common.close"), () => dialog.close(), "primary"))));
+    }
+
+    /* ---------- deleting, with links cleaned up ---------- */
+    function confirmDelete(name, links) {
+      const linkText = links.filter(([n]) => n > 0).map(([n, key]) => count(key, n)).join(", ");
+      return confirm(t(linkText ? "lab.delete.confirmLinked" : "lab.delete.confirm", { name, links: linkText }));
+    }
+    function deleteSupplier(supplier) {
+      const genetics = data.genetics.filter((g) => g.supplierId === supplier.id);
+      const batches = data.batches.filter((b) => b.supplierId === supplier.id);
+      const ideas = data.catalog.filter((c) => c.supplierIds.includes(supplier.id));
+      if (!confirmDelete(supplier.name, [[genetics.length, "lab.count.genetics"], [batches.length, "lab.count.batch"], [ideas.length, "lab.count.idea"]])) return;
+      data.suppliers = data.suppliers.filter((s) => s.id !== supplier.id);
+      genetics.forEach((g) => { g.supplierId = ""; });
+      batches.forEach((b) => { b.supplierId = ""; });
+      ideas.forEach((c) => { c.supplierIds = c.supplierIds.filter((id) => id !== supplier.id); });
+      commit(t("lab.toast.deleted.supplier"));
+    }
+    function deleteGenetics(genetics) {
+      const batches = data.batches.filter((b) => b.geneticsId === genetics.id);
+      const ideas = data.catalog.filter((c) => c.geneticsIds.includes(genetics.id));
+      if (!confirmDelete(genetics.name, [[batches.length, "lab.count.batch"], [ideas.length, "lab.count.idea"]])) return;
+      data.genetics = data.genetics.filter((g) => g.id !== genetics.id);
+      batches.forEach((b) => { b.geneticsId = ""; });
+      ideas.forEach((c) => { c.geneticsIds = c.geneticsIds.filter((id) => id !== genetics.id); });
+      commit(t("lab.toast.deleted.genetics"));
+    }
+    function deleteBatch(batch) {
+      const ideas = data.catalog.filter((c) => c.batchIds.includes(batch.id));
+      if (!confirmDelete(batch.name, [[batch.observations.length, "lab.count.observationDeleted"], [ideas.length, "lab.count.idea"]])) return;
+      data.batches = data.batches.filter((b) => b.id !== batch.id);
+      ideas.forEach((c) => { c.batchIds = c.batchIds.filter((id) => id !== batch.id); });
+      batch.observations.forEach((o) => { if (o.photoId) deletePhoto(o.photoId); });
+      if (location.hash.startsWith("#batch/")) history.replaceState(null, "", "#batches");
+      commit(t("lab.toast.deleted.batch"));
+    }
+    function deleteIdea(idea) {
+      if (!confirmDelete(idea.name, [])) return;
+      data.catalog = data.catalog.filter((c) => c.id !== idea.id);
+      commit(t("lab.toast.deleted.idea"));
+    }
+    function deleteObservation(batch, obs) {
+      if (!confirm(t(obs.photoId ? "lab.delete.observationPhoto" : "lab.delete.observation", { date: formatDate(obs.date) }))) return;
+      batch.observations = batch.observations.filter((o) => o.id !== obs.id);
+      if (obs.photoId) deletePhoto(obs.photoId);
+      commit(t("lab.toast.deleted.observation"));
+    }
+
+    /* ---------- views ---------- */
+    let renderGeneration = 0;
+    let liveUrls = [];
+
+    function renderToday() {
+      const active = data.batches.filter((b) => b.outcome === "Active");
+      const done = MILESTONES.filter((m) => m.done(data));
+      const next = MILESTONES.find((m) => !m.done(data));
+      const head = viewHead(t("lab.today.title"), t("lab.today.lede"), [
+        data.batches.length > 0 && btn(t("lab.action.logObservation"), () => openObservationEditor(), "primary"),
+        btn(t(data.batches.length ? "lab.action.startBatch" : "lab.action.startFirstBatch"), () => openRecordEditor("batch"), data.batches.length ? "quiet" : "primary")
+      ]);
+      const tally = el("p", { class: "tally", text: [count("lab.count.activeBatch", active.length), count("lab.count.genetics", data.genetics.length), count("lab.count.supplier", data.suppliers.length), count("lab.count.idea", data.catalog.length)].join(" · ") });
+      const trail = el("section", { class: "panel", "aria-labelledby": "trail-title" },
+        el("h2", { id: "trail-title", text: t("lab.today.trail") }),
+        el("p", { class: "meta", text: next
+          ? t("lab.today.trailProgress", { done: done.length, total: MILESTONES.length, next: milestoneName(next) })
+          : t("lab.today.trailDone", { done: done.length, total: MILESTONES.length }) }),
+        el("ol", { class: "trail-steps" }, MILESTONES.map((m) => m.done(data)
+          ? el("li", { class: "is-done" }, t("lab.milestone.done", { name: milestoneName(m) }))
+          : el("li", {}, el("a", { href: m.go }, t("lab.milestone.todo", { name: milestoneName(m) }))))));
+
+      const steps = data.batches
+        .filter((b) => b.nextStep && (b.outcome === "Active" || b.outcome === "Paused"))
+        .sort((a, b) => (a.nextStepDate || "9999").localeCompare(b.nextStepDate || "9999"));
+      const stepsPanel = el("section", { class: "panel", "aria-labelledby": "steps-title" },
+        el("h2", { id: "steps-title", text: t("lab.today.nextSteps") }),
+        steps.length
+          ? el("ul", { class: "step-list" }, steps.map((b) => {
+            const overdue = b.nextStepDate && daysFromToday(b.nextStepDate) < 0;
+            return el("li", { class: overdue ? "is-overdue" : "" },
+              el("a", { href: `#batch/${b.id}` }, el("strong", { text: b.name })),
+              el("span", { class: "due", text: dueLabel(b.nextStepDate) }),
+              el("span", { class: "step-text", text: b.nextStep }),
+              btn(t("lab.action.log"), () => openObservationEditor(b.id), "quiet small", { "aria-label": t("lab.action.logFor", { name: b.name }) }));
+          }))
+          : el("p", { class: "meta", text: t(data.batches.length ? "lab.today.noSteps" : "lab.today.noStepsYet") }));
+
+      const quiet = active.map((b) => ({ b, last: lastLogged(b) })).filter(({ last }) => !last || daysFromToday(last) <= -3);
+      const quietPanel = el("section", { class: "panel", "aria-labelledby": "quiet-title" },
+        el("h2", { id: "quiet-title", text: t("lab.today.waiting") }),
+        quiet.length
+          ? el("ul", { class: "step-list" }, quiet.map(({ b, last }) => el("li", {},
+            el("a", { href: `#batch/${b.id}` }, el("strong", { text: b.name })),
+            el("span", { class: "step-text meta", text: last ? t("lab.lastLogged", { when: relativeDay(last) }) : t("lab.nothingLogged") }))))
+          : el("p", { class: "meta", text: t(active.length ? "lab.today.allLogged" : "lab.today.noActive") }));
+
+      const since = daysSinceBackup();
+      const backupPanel = el("section", { class: `panel${since === null || since > 14 ? " panel--warn" : ""}`, "aria-labelledby": "backup-title" },
+        el("h2", { id: "backup-title", text: t("lab.today.backup") }),
+        el("p", { text: since === null ? t("lab.today.backupNever") : backupText(since) }),
+        el("a", { class: "btn btn--small", href: "#data" }, t("lab.action.backUpNow")));
+
+      return [head, tally, trail, el("div", { class: "today-grid" }, stepsPanel, el("div", { class: "stack" }, quietPanel, backupPanel))];
+    }
+
+    function jarVisual(batch, big = false) {
+      const index = STAGES.indexOf(batch.stage);
+      const jar = el("div", { class: `jar${big ? " jar--big" : ""}`, "aria-hidden": "true", "data-outcome": batch.outcome, "data-early": index < 2, "data-fruiting": index >= 3 && index <= 4 },
+        el("div", { class: "jar-lid" }), el("div", { class: "jar-body" }, el("div", { class: "jar-fill" })));
+      jar.style.setProperty("--fill", String((index + 1) / STAGES.length));
+      return jar;
+    }
+
+    let batchFilter = "All";
+    function renderBatches() {
+      const head = viewHead(t("lab.batches.title"), t("lab.batches.lede"), [btn(t("lab.action.startBatch"), () => openRecordEditor("batch"), "primary")]);
+      if (!data.batches.length) return [head, emptyState(t("lab.batches.empty"), btn(t("lab.action.startFirstBatch"), () => openRecordEditor("batch"), "primary"))];
+      const filters = el("div", { class: "filter-bar", role: "group", "aria-label": t("lab.batches.filterLabel") },
+        ["All", ...OUTCOMES].map((outcome) => {
+          const n = outcome === "All" ? data.batches.length : data.batches.filter((b) => b.outcome === outcome).length;
+          return el("button", { type: "button", "data-filter": outcome, "aria-pressed": String(batchFilter === outcome), onclick: () => {
+            batchFilter = outcome;
+            render();
+            document.querySelector(`[data-filter="${outcome}"]`)?.focus();
+          } }, t("lab.filter.withCount", { label: outcome === "All" ? t("lab.filter.all") : outcomeName(outcome), count: n }));
+        }));
+      const shown = data.batches
+        .filter((b) => batchFilter === "All" || b.outcome === batchFilter)
+        .sort((a, b) => OUTCOMES.indexOf(a.outcome) - OUTCOMES.indexOf(b.outcome) || b.updatedAt.localeCompare(a.updatedAt));
+      const grid = shown.length
+        ? el("div", { class: "jar-grid" }, shown.map((b) => {
+          const last = lastLogged(b);
+          return el("article", { class: "jar-card" },
+            jarVisual(b),
+            el("h2", {}, el("a", { href: `#batch/${b.id}`, text: b.name })),
+            el("p", { class: "meta", text: geneticsLabel(b) }),
+            el("p", { class: "stage-line" }, el("strong", { text: stageName(b.stage) }), ` · ${t("lab.stageOf", { number: STAGES.indexOf(b.stage) + 1, total: STAGES.length })}`),
+            b.outcome !== "Active" && el("span", { class: `badge badge--${slug(b.outcome)}`, text: outcomeName(b.outcome) }),
+            b.nextStep && el("p", { class: `meta${b.nextStepDate && daysFromToday(b.nextStepDate) < 0 ? " is-overdue" : ""}` }, t("lab.nextStep", { step: b.nextStep }), b.nextStepDate ? el("span", { class: "due", text: ` · ${dueLabel(b.nextStepDate)}` }) : ""),
+            el("p", { class: "meta", text: last ? t("lab.lastLogged", { when: relativeDay(last) }) : t("lab.nothingLogged") }));
+        }))
+        : el("p", { class: "meta", text: t("lab.batches.noneWithStatus", { status: outcomeName(batchFilter) }) });
+      return [head, filters, grid];
+    }
+
+    function renderBatch(id) {
+      const batch = byId("batches", id);
+      if (!batch) return [viewHead(t("lab.batch.notFound"), t("lab.batch.notFoundLede")), el("a", { class: "btn", href: "#batches" }, t("lab.batch.all"))];
+      const genetics = byId("genetics", batch.geneticsId);
+      const source = supplierOf(batch);
+      const index = STAGES.indexOf(batch.stage);
+      const ideas = data.catalog.filter((c) => c.batchIds.includes(batch.id));
+      const fact = (term, ...detail) => el("div", {}, el("dt", { text: term }), el("dd", {}, detail));
+      const wideFact = (term, ...detail) => el("div", { class: "wide" }, el("dt", { text: term }), el("dd", {}, detail));
+      const notRecorded = t("lab.notRecorded");
+
+      const head = el("div", {},
+        el("a", { class: "back", href: "#batches" }, t("lab.batch.all")),
+        viewHead(batch.name, `${geneticsLabel(batch)} · ${outcomeName(batch.outcome)}`, [
+          btn(t("lab.action.logObservation"), () => openObservationEditor(batch.id), "primary"),
+          btn(t("lab.action.editDetails"), () => openRecordEditor("batch", batch), "quiet"),
+          btn(t("lab.action.delete"), () => deleteBatch(batch), "danger")
+        ]));
+      const left = el("div", {}, jarVisual(batch, true),
+        el("ol", { class: "stage-track", "aria-label": t("lab.stageOf", { number: index + 1, total: STAGES.length }) }, STAGES.map((stage, i) =>
+          el("li", { class: i < index ? "is-past" : i === index ? "is-current" : "", "aria-current": i === index ? "step" : false }, stageName(stage)))));
+      const facts = el("dl", { class: "facts" },
+        fact(t("lab.field.genetics"), genetics ? (genetics.lotCode ? t("lab.batch.geneticsLot", { name: genetics.name, lot: genetics.lotCode }) : genetics.name) : batch.variety || notRecorded),
+        fact(t("lab.field.supplier"), source ? (source.inherited ? t("lab.batch.inherited", { name: source.supplier.name }) : source.supplier.name) : notRecorded),
+        fact(t("lab.field.source"), batch.source || notRecorded),
+        fact(t("lab.field.substrate"), batch.substrate || notRecorded),
+        fact(t("lab.field.started"), batch.startDate ? t("lab.batch.started", { date: formatDate(batch.startDate), when: relativeDay(batch.startDate) }) : t("lab.notSet")),
+        fact(t("lab.field.status"), outcomeName(batch.outcome)),
+        wideFact(t("lab.field.nextStep"), batch.nextStep
+          ? el("span", { class: batch.nextStepDate && daysFromToday(batch.nextStepDate) < 0 ? "is-overdue" : "" }, batch.nextStep, el("span", { class: "due", text: ` · ${dueLabel(batch.nextStepDate)}` }))
+          : t("lab.noneSet")),
+        wideFact(t("lab.batch.journey"), batch.recipeIds.length || batch.questIds.length ? journeyChips(batch.recipeIds, batch.questIds) : t("lab.batch.noJourney")),
+        wideFact(t("lab.batch.ideas"), ideas.length ? el("div", { class: "chips" }, ideas.map((c) => el("a", { class: "chip", href: "#catalog" }, `${c.name} · ${statusName(c.status)}`))) : t("lab.noneYet")),
+        batch.notes && wideFact(t("lab.field.notes"), el("span", { class: "pre", text: batch.notes })));
+
+      const observations = newestFirst(batch.observations);
+      const timeline = observations.length
+        ? el("ol", { class: "timeline" }, observations.map((obs) => {
+          const date = formatDate(obs.date);
+          const readings = [
+            obs.temperature !== null && `${I18N.number(obs.temperature)}°${obs.tempUnit}`,
+            obs.humidity !== null && t("lab.reading.humidity", { value: I18N.number(obs.humidity) }),
+            obs.conditions
+          ].filter(Boolean);
+          return el("li", {}, el("article", { class: "obs", "aria-label": t("lab.obs.label", { date }) },
+            el("div", {},
+              el("p", {}, el("strong", { text: date }), ` · ${stageName(obs.stage)}`),
+              readings.length > 0 && el("div", { class: "readings" }, readings.map((r) => el("span", { class: "reading", text: r }))),
+              el("p", { class: "obs-notes", text: obs.notes }),
+              el("div", { class: "row" },
+                btn(t("lab.action.edit"), () => openObservationEditor(batch.id, obs), "quiet small", { "aria-label": t("lab.obs.edit", { date }) }),
+                btn(t("lab.action.delete"), () => deleteObservation(batch, obs), "danger small", { "aria-label": t("lab.obs.delete", { date }) }))),
+            obs.photoId && photoThumb(obs.photoId, `${batch.name}, ${date}`)));
+        }))
+        : emptyState(t("lab.batch.noObservations"), btn(t("lab.action.logFirst"), () => openObservationEditor(batch.id), "primary"));
+      return [head, el("div", { class: "detail" }, left, facts), el("h2", { text: t("lab.batch.observations") }), timeline];
+    }
+
+    function photoThumb(id, name) {
+      const generation = renderGeneration;
+      const image = el("img", { alt: t("lab.photo.alt", { name }), width: "120", height: "120" });
+      const button = el("button", { type: "button", class: "thumb", "aria-label": t("lab.photo.enlarge", { name }) }, image);
+      getPhoto(id).then((blob) => {
+        if (generation !== renderGeneration) return;
+        if (!blob) { button.replaceWith(el("p", { class: "meta", text: t("lab.photo.missing") })); return; }
+        const url = URL.createObjectURL(blob);
+        liveUrls.push(url);
+        image.src = url;
+        button.addEventListener("click", () => openPhoto(url, name));
+      }).catch(() => {
+        if (generation === renderGeneration) button.replaceWith(el("p", { class: "meta", text: t("lab.photo.storageOff") }));
+      });
+      return button;
+    }
+
+    function renderSources() {
+      const head = viewHead(t("lab.sources.title"), t("lab.sources.lede"));
+      const geneticsList = data.genetics.length
+        ? el("div", { class: "source-list" }, data.genetics.map((g) => {
+          const supplier = byId("suppliers", g.supplierId);
+          const usedIn = data.batches.filter((b) => b.geneticsId === g.id).length;
+          const ideas = data.catalog.filter((c) => c.geneticsIds.includes(g.id)).length;
+          return el("article", { class: "source-card source-card--genetics" },
+            el("span", { class: "plate", "aria-hidden": "true" }),
+            el("div", {},
+              el("h3", { text: g.name }),
+              // Scientific names are marked as Latin so screen readers pronounce them sensibly.
+              el("p", { class: "meta" }, g.commonName || "", g.commonName && g.species ? " · " : "", g.species ? el("i", { lang: "la", text: g.species }) : "", !g.commonName && !g.species ? t("lab.sources.noSpecies") : ""),
+              el("p", { class: "meta", text: [t(`lab.geneticsForm.${slug(g.form)}`), supplier ? t("lab.sources.from", { name: supplier.name }) : t("lab.sources.noSupplier"), g.lotCode && t("lab.sources.lot", { lot: g.lotCode }), g.receivedDate && t("lab.sources.received", { date: formatDate(g.receivedDate) })].filter(Boolean).join(" · ") }),
+              el("p", { text: t("lab.sources.usedIn", { batches: count("lab.count.batch", usedIn), ideas: count("lab.count.idea", ideas) }) }),
+              g.notes && el("p", { class: "pre meta", text: g.notes }),
+              el("div", { class: "row" },
+                btn(t("lab.action.edit"), () => openRecordEditor("genetics", g), "quiet small", { "aria-label": t("lab.action.editName", { name: g.name }) }),
+                btn(t("lab.action.startBatch"), () => openRecordEditor("batch", null, { geneticsId: g.id }), "quiet small", { "aria-label": t("lab.action.startBatchFrom", { name: g.name }) }),
+                btn(t("lab.action.delete"), () => deleteGenetics(g), "danger small", { "aria-label": t("lab.action.deleteName", { name: g.name }) }))));
+        }))
+        : emptyState(t("lab.sources.noGenetics"), btn(t("lab.action.addGenetics"), () => openRecordEditor("genetics"), "primary"));
+      const supplierList = data.suppliers.length
+        ? el("div", { class: "source-list" }, data.suppliers.map((s) => {
+          const genetics = data.genetics.filter((g) => g.supplierId === s.id).length;
+          const safeSite = /^https?:\/\//i.test(s.website);
+          return el("article", { class: "source-card" },
+            el("h3", { text: s.name }),
+            el("p", { class: "meta", text: `${t(`lab.supplierKind.${slug(s.kind)}`)} · ${t("lab.sources.supplies", { genetics: count("lab.count.genetics", genetics) })}` }),
+            safeSite && el("p", {}, el("a", { href: s.website, target: "_blank", rel: "noopener noreferrer" }, t("lab.sources.website"))),
+            s.contact && el("details", {}, el("summary", { text: t("lab.field.contact") }), el("p", { class: "pre", text: s.contact })),
+            s.notes && el("p", { class: "pre meta", text: s.notes }),
+            el("div", { class: "row" },
+              btn(t("lab.action.edit"), () => openRecordEditor("supplier", s), "quiet small", { "aria-label": t("lab.action.editName", { name: s.name }) }),
+              btn(t("lab.action.delete"), () => deleteSupplier(s), "danger small", { "aria-label": t("lab.action.deleteName", { name: s.name }) })));
+        }))
+        : emptyState(t("lab.sources.noSuppliers"), btn(t("lab.action.addSupplier"), () => openRecordEditor("supplier"), "primary"));
+      return [head, el("div", { class: "two-col" },
+        el("section", { "aria-labelledby": "genetics-title" },
+          el("div", { class: "col-head" }, el("h2", { id: "genetics-title", text: t("lab.sources.genetics") }), data.genetics.length > 0 && btn(t("lab.action.addGenetics"), () => openRecordEditor("genetics"), "small")),
+          geneticsList),
+        el("section", { "aria-labelledby": "suppliers-title" },
+          el("div", { class: "col-head" }, el("h2", { id: "suppliers-title", text: t("lab.sources.suppliers") }), data.suppliers.length > 0 && btn(t("lab.action.addSupplier"), () => openRecordEditor("supplier"), "small")),
+          supplierList))];
+    }
+
+    let catalogType = "All";
+    let catalogStatus = "All";
+    function renderCatalog() {
+      const head = viewHead(t("lab.catalog.title"), t("lab.catalog.lede"), [btn(t("lab.action.newIdea"), () => openRecordEditor("catalog"), "primary")]);
+      const guide = el("details", { class: "status-guide" }, el("summary", { text: t("lab.catalog.statusGuide") }),
+        el("dl", {}, CATALOG_STATUSES.map((s) => [el("dt", { text: statusName(s) }), el("dd", { text: t(`lab.statusHelp.${slug(s)}`) })])));
+      if (!data.catalog.length) return [head, guide, emptyState(t("lab.catalog.empty"), btn(t("lab.action.firstIdea"), () => openRecordEditor("catalog"), "primary"))];
+      const statusSelect = el("select", { id: "status-filter", "aria-label": t("lab.catalog.statusFilter"), onchange: (event) => {
+        catalogStatus = event.target.value;
+        render();
+        document.querySelector("#status-filter")?.focus();
+      } }, new Option(t("lab.catalog.allStatuses"), "All"), CATALOG_STATUSES.map((s) => new Option(statusName(s), s)));
+      statusSelect.value = catalogStatus;
+      const filters = el("div", { class: "filter-bar", role: "group", "aria-label": t("lab.catalog.filterLabel") },
+        ["All", ...CATALOG_TYPES].map((type) => {
+          const n = type === "All" ? data.catalog.length : data.catalog.filter((c) => c.type === type).length;
+          return el("button", { type: "button", "data-type": type, "aria-pressed": String(catalogType === type), onclick: () => {
+            catalogType = type;
+            render();
+            document.querySelector(`[data-type="${type}"]`)?.focus();
+          } }, t("lab.filter.withCount", { label: type === "All" ? t("lab.filter.everything") : typeName(type), count: n }));
+        }), statusSelect);
+      const shown = data.catalog
+        .filter((c) => (catalogType === "All" || c.type === catalogType) && (catalogStatus === "All" || c.status === catalogStatus))
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+      const names = (ids, collection) => ids.map((id) => byId(collection, id)?.name).filter(Boolean).join(", ");
+      const grid = shown.length
+        ? el("div", { class: "tag-grid" }, shown.map((c) => {
+          const threads = [
+            ["lab.thread.batches", names(c.batchIds, "batches")],
+            ["lab.thread.genetics", names(c.geneticsIds, "genetics")],
+            ["lab.thread.suppliers", names(c.supplierIds, "suppliers")],
+            ["lab.thread.recipes", c.recipeIds.filter((id) => RECIPES.includes(id)).map(recipeName).join(", ")],
+            ["lab.thread.quests", c.questIds.map(questName).join(", ")]
+          ].filter(([, value]) => value);
+          const open = REVIEW_CHECKS.length - c.checks.length;
+          const meter = el("div", { class: "meter", "aria-hidden": "true" }, el("span", {}));
+          meter.firstChild.style.width = `${(c.checks.length / REVIEW_CHECKS.length) * 100}%`;
+          return el("article", { class: "tag" },
+            el("p", { class: "tag-type", text: typeName(c.type) }),
+            el("h2", { text: c.name }),
+            el("span", { class: `stamp stamp--${slug(c.status)}`, text: statusName(c.status) }),
+            el("p", { text: c.summary || t("lab.catalog.noSummary") }),
+            el("div", {}, el("p", { text: c.status === "Ready for review" && open > 0
+              ? t("lab.catalog.checksOpen", { done: c.checks.length, total: REVIEW_CHECKS.length, open })
+              : t("lab.catalog.checks", { done: c.checks.length, total: REVIEW_CHECKS.length }) }), meter),
+            threads.length
+              ? el("dl", { class: "threads" }, threads.map(([term, value]) => el("div", {}, el("dt", { text: `${t(term)}: ` }), el("dd", { text: value }))))
+              : el("p", { text: t("lab.catalog.notConnected") }),
+            el("div", { class: "row" },
+              btn(t("lab.action.edit"), () => openRecordEditor("catalog", c), "quiet small", { "aria-label": t("lab.action.editName", { name: c.name }) }),
+              btn(t("lab.action.preview"), () => openVisitorPreview(c), "quiet small", { "aria-label": t("lab.action.previewName", { name: c.name }) }),
+              btn(t("lab.action.delete"), () => deleteIdea(c), "danger small", { "aria-label": t("lab.action.deleteName", { name: c.name }) })));
+        }))
+        : el("p", { class: "meta", text: t("lab.catalog.noMatch") });
+      return [head, guide, filters, grid];
+    }
+
+    let mapSelection = null;
+    let mapEdges = [];
+    let mapLit = new Set();
+    function journeyGraph() {
+      const nodes = [];
+      const edges = [];
+      const add = (kind, id, label, rank, extra = {}) => nodes.push({ key: `${kind}:${id}`, kind, id, label, rank, ...extra });
+      data.suppliers.forEach((s) => add("supplier", s.id, s.name, 0));
+      data.genetics.forEach((g) => add("genetics", g.id, g.name, 1));
+      data.batches.forEach((b) => add("batch", b.id, b.name, 2, { href: `#batch/${b.id}` }));
+      data.catalog.forEach((c) => add("idea", c.id, c.name, 3));
+      RECIPES.forEach((id) => add("recipe", id, recipeName(id), 4, { href: recipeHref(id) }));
+      QUESTS.forEach((q) => add("quest", q.id, questName(q.id), 4, { href: q.href }));
+      const link = (a, b) => edges.push([a, b]);
+      data.genetics.forEach((g) => { if (byId("suppliers", g.supplierId)) link(`supplier:${g.supplierId}`, `genetics:${g.id}`); });
+      data.batches.forEach((b) => {
+        if (byId("genetics", b.geneticsId)) link(`genetics:${b.geneticsId}`, `batch:${b.id}`);
+        if (byId("suppliers", b.supplierId)) link(`supplier:${b.supplierId}`, `batch:${b.id}`);
+        b.recipeIds.forEach((id) => link(`batch:${b.id}`, `recipe:${id}`));
+        b.questIds.forEach((id) => link(`batch:${b.id}`, `quest:${id}`));
+      });
+      data.catalog.forEach((c) => {
+        c.batchIds.forEach((id) => link(`batch:${id}`, `idea:${c.id}`));
+        c.geneticsIds.forEach((id) => link(`genetics:${id}`, `idea:${c.id}`));
+        c.supplierIds.forEach((id) => link(`supplier:${id}`, `idea:${c.id}`));
+        c.recipeIds.forEach((id) => link(`idea:${c.id}`, `recipe:${id}`));
+        c.questIds.forEach((id) => link(`idea:${c.id}`, `quest:${id}`));
+      });
+      return { nodes, edges };
+    }
+    // Follow threads only toward sources (left) and only toward the journey (right), so a trace reads as one chain.
+    function traceFrom(start, graph) {
+      const rank = Object.fromEntries(graph.nodes.map((n) => [n.key, n.rank]));
+      const lit = new Set([start]);
+      for (const direction of [-1, 1]) {
+        const stack = [start];
+        const seen = new Set([start]);
+        while (stack.length) {
+          const key = stack.pop();
+          for (const [a, b] of graph.edges) {
+            const other = a === key ? b : b === key ? a : null;
+            if (!other || seen.has(other) || Math.sign(rank[other] - rank[key]) !== direction) continue;
+            seen.add(other);
+            lit.add(other);
+            stack.push(other);
+          }
+        }
+      }
+      return lit;
+    }
+    const kindName = (kind) => t(`lab.map.kind.${kind}`);
+
+    function renderMap() {
+      const head = viewHead(t("lab.map.title"), t("lab.map.lede"));
+      if (!data.suppliers.length && !data.genetics.length && !data.batches.length && !data.catalog.length) {
+        return [head, emptyState(t("lab.map.empty"), el("a", { class: "btn btn--primary", href: "#sources" }, t("lab.map.emptyAction")))];
+      }
+      const graph = journeyGraph();
+      if (mapSelection && !graph.nodes.some((n) => n.key === mapSelection)) mapSelection = null;
+      mapLit = mapSelection ? traceFrom(mapSelection, graph) : new Set();
+      mapEdges = graph.edges;
+      const map = el("div", { class: `map${mapSelection ? " has-selection" : ""}`, id: "journey-map" });
+      const svg = document.createElementNS(SVG_NS, "svg");
+      svg.setAttribute("aria-hidden", "true");
+      map.append(svg);
+      [["lab.map.col.suppliers", 0], ["lab.map.col.genetics", 1], ["lab.map.col.batches", 2], ["lab.map.col.ideas", 3], ["lab.map.col.journey", 4]].forEach(([titleKey, rank]) => {
+        const nodes = graph.nodes.filter((n) => n.rank === rank);
+        map.append(el("section", { class: "map-col", "aria-label": t(titleKey) },
+          el("h2", { text: t(titleKey) }),
+          nodes.length ? nodes.map((n) => el("button", {
+            type: "button",
+            class: `node${mapLit.has(n.key) && n.key !== mapSelection ? " is-linked" : ""}`,
+            "data-key": n.key,
+            "aria-pressed": String(n.key === mapSelection),
+            onclick: () => {
+              mapSelection = mapSelection === n.key ? null : n.key;
+              render();
+              document.querySelector(`[data-key="${CSS.escape(n.key)}"]`)?.focus();
+            }
+          }, rank === 4 && el("span", { class: "node-kind", text: kindName(n.kind) }), n.label)) : el("p", { class: "meta", text: t("lab.noneYet") })));
+      });
+      let panel;
+      if (mapSelection) {
+        const selected = graph.nodes.find((n) => n.key === mapSelection);
+        const linked = graph.nodes.filter((n) => mapLit.has(n.key) && n.key !== mapSelection);
+        const list = (items) => el("ul", {}, items.map((n) => el("li", {}, `${kindName(n.kind)}: `, n.href ? el("a", { href: n.href, text: n.label }) : n.label)));
+        const up = linked.filter((n) => n.rank < selected.rank);
+        const down = linked.filter((n) => n.rank > selected.rank);
+        panel = el("section", { class: "panel thread-panel", "aria-labelledby": "thread-title" },
+          el("h2", { id: "thread-title", text: t("lab.map.threadsFrom", { name: selected.label }) }),
+          !up.length && !down.length && el("p", { class: "meta", text: t("lab.map.unconnected") }),
+          up.length > 0 && el("p", { class: "meta", text: t("lab.map.comesFrom") }), up.length > 0 && list(up),
+          down.length > 0 && el("p", { class: "meta", text: t("lab.map.leadsTo") }), down.length > 0 && list(down));
+      } else {
+        panel = el("p", { class: "meta thread-panel", text: t("lab.map.hint") });
+      }
+      return [head, map, panel];
+    }
+
+    function drawThreads() {
+      const map = document.querySelector("#journey-map");
+      if (!map) return;
+      const svg = map.querySelector("svg");
+      svg.replaceChildren();
+      if (!matchMedia("(min-width: 761px)").matches) return;
+      const box = map.getBoundingClientRect();
+      svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
+      const lit = (edge) => mapLit.has(edge[0]) && mapLit.has(edge[1]);
+      [...mapEdges].sort((a, b) => Number(lit(a)) - Number(lit(b))).forEach((edge) => {
+        const [first, second] = edge.map((key) => map.querySelector(`[data-key="${CSS.escape(key)}"]`)?.getBoundingClientRect());
+        if (!first || !second) return;
+        const [left, right] = first.left < second.left ? [first, second] : [second, first];
+        const x1 = left.right - box.left;
+        const y1 = left.top + left.height / 2 - box.top;
+        const x2 = right.left - box.left;
+        const y2 = right.top + right.height / 2 - box.top;
+        const bend = Math.max(20, (x2 - x1) / 2);
+        const path = document.createElementNS(SVG_NS, "path");
+        path.setAttribute("d", `M${x1} ${y1} C${x1 + bend} ${y1} ${x2 - bend} ${y2} ${x2} ${y2}`);
+        if (lit(edge)) path.setAttribute("class", "is-lit");
+        svg.append(path);
+      });
+    }
+
+    function renderData() {
+      const origin = location.protocol === "file:" ? t("lab.data.asFile") : location.origin;
+      const observations = data.batches.reduce((n, b) => n + b.observations.length, 0);
+      const counts = [count("lab.count.batch", data.batches.length), count("lab.count.observation", observations), count("lab.count.genetics", data.genetics.length), count("lab.count.supplier", data.suppliers.length), count("lab.count.idea", data.catalog.length)].join(", ");
+      const since = daysSinceBackup();
+      const includePhotos = el("input", { type: "checkbox", id: "include-photos", checked: true });
+      const restoreInput = el("input", { type: "file", id: "restore-file", accept: "application/json,.json", "aria-describedby": "restore-hint" });
+      const restoreStatus = el("p", { class: "meta", role: "status" });
+      restoreInput.addEventListener("change", () => restoreFromFile(restoreInput, restoreStatus));
+      const usage = el("p", { id: "storage-usage", text: t("lab.data.checking") });
+      const persist = el("p", { id: "storage-persist", text: "" });
+      const persistButton = btn(t("lab.data.persist"), async () => {
+        try {
+          const granted = await navigator.storage.persist();
+          toast(t(granted ? "lab.data.persistYes" : "lab.data.persistNo"));
+        } catch (error) {
+          toast(t("lab.data.persistUnsupported"));
+        }
+        render();
+      }, "small", { hidden: true });
+      fillStorageStatus(usage, persist, persistButton);
+      const bullets = (keys, vars = {}) => el("ul", {}, keys.map((key) => el("li", { text: t(key, vars) })));
+
+      return [
+        viewHead(t("lab.data.title"), t("lab.data.lede")),
+        el("div", { class: "data-grid" },
+          el("section", { class: "panel", "aria-labelledby": "where-title" },
+            el("h2", { id: "where-title", text: t("lab.data.whereTitle") }),
+            bullets(["lab.data.where.records", "lab.data.where.address", "lab.data.where.noServer", "lab.data.where.notEncrypted", "lab.data.where.language"], { origin })),
+          el("section", { class: "panel", "aria-labelledby": "lose-title" },
+            el("h2", { id: "lose-title", text: t("lab.data.loseTitle") }),
+            bullets(["lab.data.lose.clear", "lab.data.lose.private", "lab.data.lose.switch", "lab.data.lose.address", "lab.data.lose.persist"])),
+          el("section", { class: "panel", "aria-labelledby": "status-title" },
+            el("h2", { id: "status-title", text: t("lab.data.statusTitle") }),
+            el("p", { text: t("lab.data.holding", { counts }) }), usage, persist, persistButton),
+          el("section", { class: `panel${since === null || since > 14 ? " panel--warn" : ""}`, "aria-labelledby": "backup-file-title" },
+            el("h2", { id: "backup-file-title", text: t("lab.data.backupTitle") }),
+            el("p", { text: backupText(since) }),
+            el("label", { class: "inline-check" }, includePhotos, t("lab.data.includePhotos")),
+            el("p", { class: "meta", text: t("lab.data.backupWarning") }),
+            btn(t("lab.data.download"), () => downloadBackup(includePhotos.checked), "primary")),
+          el("section", { class: "panel", "aria-labelledby": "restore-title" },
+            el("h2", { id: "restore-title", text: t("lab.data.restoreTitle") }),
+            el("label", { for: "restore-file", text: t("lab.data.restoreLabel") }),
+            el("p", {}, restoreInput),
+            el("p", { class: "meta", id: "restore-hint", text: t("lab.data.restoreHint") }),
+            restoreStatus),
+          el("section", { class: "panel", "aria-labelledby": "erase-title" },
+            el("h2", { id: "erase-title", text: t("lab.data.eraseTitle") }),
+            el("p", { class: "meta", text: t("lab.data.eraseText") }),
+            btn(t("lab.data.erase"), eraseLab, "danger")))
+      ];
+    }
+
+    async function fillStorageStatus(usage, persist, persistButton) {
+      const generation = renderGeneration;
+      try {
+        const [estimate, persisted] = await Promise.all([navigator.storage.estimate(), navigator.storage.persisted()]);
+        if (generation !== renderGeneration) return;
+        usage.textContent = t("lab.data.usage", { mb: I18N.number(estimate.usage / 1024 / 1024, { maximumFractionDigits: 1 }) });
+        persist.textContent = t(persisted ? "lab.data.persisted" : "lab.data.notPersisted");
+        persistButton.hidden = persisted;
+      } catch (error) {
+        if (generation !== renderGeneration) return;
+        usage.textContent = t("lab.data.noDetails");
+      }
+    }
+
+    /* ---------- backup and restore ---------- */
+    function downloadText(text, filename) {
+      const url = URL.createObjectURL(new Blob([text], { type: "application/json" }));
+      const link = el("a", { href: url, download: filename });
+      document.body.append(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+    function blobToDataUrl(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(blob);
+      });
+    }
+    function dataUrlToBlob(value) {
+      if (typeof value !== "string" || value.length > 40 * 1024 * 1024) throw new Error("bad photo");
+      const match = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(value);
+      if (!match) throw new Error("bad photo");
+      const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
+      return new Blob([bytes], { type: match[1] });
+    }
+
+    async function buildBackup(includePhotos) {
+      const photos = [];
+      if (includePhotos && photoStorage) {
+        for (const batch of data.batches) {
+          for (const obs of batch.observations) {
+            if (!obs.photoId) continue;
+            const blob = await getPhoto(obs.photoId).catch(() => null);
+            if (blob) photos.push({ id: obs.photoId, dataUrl: await blobToDataUrl(blob) });
+          }
+        }
+      }
+      return JSON.stringify({ app: "MycoQuest prep lab", version: 1, exportedAt: new Date().toISOString(), data, photos }, null, includePhotos ? 0 : 2);
+    }
+    async function downloadBackup(includePhotos) {
+      try {
+        downloadText(await buildBackup(includePhotos), `MycoQuest-prep-lab-${todayKey()}.json`);
+        data.lastBackupAt = new Date().toISOString();
+        commit(t(includePhotos ? "lab.toast.backup" : "lab.toast.backupNoPhotos"));
+      } catch (error) {
+        toast(t("lab.toast.backupFailed"));
+      }
+    }
+
+    async function prepareRestore(text) {
+      let parsed;
+      try { parsed = JSON.parse(text); } catch (error) { throw new Error(t("lab.restore.notJson")); }
+      if (!parsed || parsed.app !== "MycoQuest prep lab" || parsed.version !== 1) throw new Error(t("lab.restore.notBackup"));
+      const clean = sanitizeData(parsed.data);
+      const photosIn = parsed.photos ?? [];
+      if (!Array.isArray(photosIn) || photosIn.length > 5000) throw new Error(t("lab.restore.badPhotos"));
+      const wanted = new Set(clean.batches.flatMap((b) => b.observations.map((o) => o.photoId)).filter(Boolean));
+      const existing = new Set(photoStorage ? await photoKeys().catch(() => []) : []);
+      const prepared = new Map();
+      for (const photo of photosIn) {
+        if (!photo || typeof photo.id !== "string" || !wanted.has(photo.id) || prepared.has(photo.id)) continue;
+        try { prepared.set(photo.id, await processImage(dataUrlToBlob(photo.dataUrl))); } catch (error) { /* counted below as missing */ }
+      }
+      const keepExisting = [];
+      let missing = 0;
+      clean.batches.forEach((b) => b.observations.forEach((o) => {
+        if (!o.photoId || prepared.has(o.photoId)) return;
+        if (existing.has(o.photoId)) { keepExisting.push(o.photoId); return; }
+        o.photoId = "";
+        missing += 1;
+      }));
+      return { clean, prepared, keepExisting, missing, existing: [...existing] };
+    }
+    async function applyRestore(plan) {
+      if (storageMode === "blocked") throw new Error(t("lab.alert.blocked"));
+      if (photoStorage) {
+        const keep = new Set([...plan.keepExisting, ...plan.prepared.keys()]);
+        for (const key of plan.existing) if (!keep.has(key)) await deletePhoto(key);
+        for (const [id, blob] of plan.prepared) await putPhoto(id, blob);
+      }
+      data = plan.clean;
+      storageMode = "ok";
+      alertState = null;
+      hideAlert();
+      commit(plan.missing ? `${t("lab.toast.restored")} ${count("lab.restore.photosDropped", plan.missing)}` : t("lab.toast.restored"));
+    }
+    async function restoreFromFile(input, status) {
+      const file = input.files[0];
+      input.value = "";
+      if (!file) return;
+      if (file.size > BACKUP_MAX_BYTES) { status.textContent = t("lab.restore.tooLarge", { mb: I18N.number(BACKUP_MAX_BYTES / 1024 / 1024) }); return; }
+      status.textContent = t("lab.restore.checking");
+      try {
+        const plan = await prepareRestore(await file.text());
+        const c = plan.clean;
+        const summary = [count("lab.count.batch", c.batches.length), count("lab.count.genetics", c.genetics.length), count("lab.count.supplier", c.suppliers.length), count("lab.count.idea", c.catalog.length), count("lab.count.photo", plan.prepared.size + plan.keepExisting.length)];
+        const message = t("lab.restore.confirm", { summary: new Intl.ListFormat(I18N.locale(), { type: "conjunction" }).format(summary) }) +
+          (plan.missing ? ` ${count("lab.restore.photosMissing", plan.missing)}` : "");
+        if (!confirm(message)) {
+          status.textContent = t("lab.restore.cancelled");
+          return;
+        }
+        await applyRestore(plan);
+      } catch (error) {
+        status.textContent = t("lab.restore.failed", { message: error.message });
+      }
+    }
+    async function eraseLab() {
+      if (!confirm(t("lab.erase.confirm"))) return;
+      try { localStorage.removeItem(STORE_KEY); } catch (error) { /* reported by save below */ }
+      if (photoStorage) await clearPhotos().catch(() => {});
+      data = emptyData();
+      if (storageMode === "unreadable") storageMode = "ok";
+      alertState = storageMode === "blocked" ? "blocked" : null;
+      renderAlert();
+      commit(t("lab.toast.erased"));
+    }
+
+    /* ---------- routing ---------- */
+    const views = { today: renderToday, batches: renderBatches, batch: renderBatch, sources: renderSources, catalog: renderCatalog, map: renderMap, data: renderData };
+    function route() {
+      const [name, id] = location.hash.slice(1).split("/");
+      if (name === "batch") return { name, id: decodeURIComponent(id || "") };
+      return { name: Object.hasOwn(views, name) ? name : "today" };
+    }
+    function render(moveFocus = false) {
+      renderGeneration += 1;
+      liveUrls.forEach((url) => URL.revokeObjectURL(url));
+      liveUrls = [];
+      const current = route();
+      const view = document.querySelector("#view");
+      view.replaceChildren(...[views[current.name](current.id)].flat(Infinity).filter(Boolean));
+      const navTarget = `#${current.name === "batch" ? "batches" : current.name}`;
+      document.querySelectorAll(".lab-nav a").forEach((link) => {
+        if (link.getAttribute("href") === navTarget) link.setAttribute("aria-current", "page");
+        else link.removeAttribute("aria-current");
+      });
+      document.title = t("lab.meta.title", { page: view.querySelector("h1")?.textContent || "" });
+      if (moveFocus) view.querySelector("h1")?.focus();
+      if (current.name === "map") requestAnimationFrame(drawThreads);
+    }
+    window.addEventListener("hashchange", () => { render(true); window.scrollTo(0, 0); });
+    window.addEventListener("resize", () => { if (route().name === "map") drawThreads(); });
+    document.querySelector("#skip-link").addEventListener("click", (event) => {
+      event.preventDefault();
+      document.querySelector("#view h1")?.focus();
+    });
+
+    /* ---------- start ---------- */
+    // The language choice is stored separately (key "mycoquest-language") and never inside lab records.
+    I18N.apply();
+    I18N.mountSwitch(document.querySelector("#language-switch"));
+    window.addEventListener("mq:languagechange", () => {
+      if (dialog.open) dialog.close();
+      renderAlert();
+      render();
+    });
+    load();
+    renderAlert();
+    data.reached = [...new Set([...data.reached, ...MILESTONES.filter((m) => m.done(data)).map((m) => m.id)])];
+    try {
+      if (!window.indexedDB) throw new Error("no IndexedDB");
+      photoDb().catch(() => { photoStorage = false; });
+    } catch (error) {
+      photoStorage = false;
+    }
+    render();
+  </script>
+</body>
+</html>
