@@ -95,6 +95,22 @@ Adding a backend means allowing its origin.
 - Recipe ids are shared between the two pages (`demo.recipe.<id>.*`).
 - Photo credits.
 
+## Future idea: community board (not started)
+
+Owner's idea (2026-11-26), for after launch. It's undecided whether this becomes a very simple social space or more of a
+small blog.
+
+- Regulars post grow cards and share what they know. They can see each other's posts and react: like, dislike, or a
+  small set of reactions.
+- The lab and the share space would feel like one connected thing, still as two tabs.
+- It's meant to be a simple board built around grow cards. It's not meant to be a full social network.
+- Posts can be built from what already exists: the visitor share card (private fields off by default) and lab batches,
+  observations and photos.
+- It needs a live backend: accounts and sign-in, server storage, uploads handled under the checklist above, moderation
+  (review before publishing, report, block, remove), privacy settings, and data export and deletion. Build order step 5
+  covers the same ground.
+- Nothing should be faked in the meantime. A board that only lives in one browser can't show anyone else's posts.
+
 ## Open points
 
 - This demo reaches level 50 at 53,000 XP. The standalone grow log's notes say 55,000.
