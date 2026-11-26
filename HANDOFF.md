@@ -117,8 +117,8 @@ small blog.
 
 ## Open points
 
-- This demo reaches level 50 at 53,000 XP. The standalone grow log's notes say 55,000.
-  They are separate projects, so nothing was changed; confirm that is intended.
+- Levels match the standalone grow log's code: levels 46 to 49 cost 2,000 XP each, so level 50 is reached at 53,000 XP.
+  The grow log's notes once said 55,000; that was a documentation error, corrected 2026-11-26.
 - Not yet checked with a screen reader, a contrast audit tool, a real phone, Safari, or Firefox.
 
 ## Preview
